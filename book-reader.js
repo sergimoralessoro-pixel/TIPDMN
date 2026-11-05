@@ -1,5 +1,6 @@
 /* Lector de libros de Radiolab: hojas, navegación, fórmulas, tablas y animación didáctica. */
 import {topicFigure} from './topic-illustrations.js';
+import {topicRealMedia} from './real-media.js';
 const e=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function underlinedText(text){
   const input=String(text||'');
@@ -56,6 +57,6 @@ export function renderStudyBook(l,current){
  let content='';
  if(page===0)content='<div class="book-paper book-cover"><div class="book-eyebrow">🩻 RADIO LAB · LIBRO DIGITAL DE ESTUDIO</div><div class="book-cover-mark">✦</div><h1>'+e(l.title)+'</h1><p class="book-lede">'+e(l.intro)+'</p>'+radiationVisual(l,page)+'<div class="book-toc"><h3>Índice del capítulo</h3>'+sections.map(([title],i)=>'<button type="button" class="book-toc-link" data-page-select="'+(i+1)+'"><span>'+e(title)+'</span><b>p. '+(i+2)+'</b></button>').join('')+'</div>'+(l.subject==='anatomia'&&l.id==='anatomia-tema-7'?heartAnimation():'')+'<p class="book-small">'+e(l.sourceLabel||'Material de repaso original')+'</p></div>';
  else if(page===total-1)content=extras(l);
- else{const [title,p,tip]=sections[page-1];content='<article class="book-paper"><div class="book-eyebrow">CAPÍTULO · '+e(l.title)+'</div><h2>'+e(title)+'</h2>'+topicFigure(l,title)+'<div class="book-reading">'+paragraphs(p)+'</div>'+(tip?'<aside class="book-recall"><strong>💡 Para memorizar</strong><p>'+e(tip)+'</p></aside>':'')+(l.subject==='anatomia'&&l.id==='anatomia-tema-7'&&(page===4||page===5||page===6)?heartAnimation():'')+'</article>';}
+ else{const [title,p,tip]=sections[page-1];content='<article class="book-paper"><div class="book-eyebrow">CAPÍTULO · '+e(l.title)+'</div><h2>'+e(title)+'</h2>'+(topicRealMedia(l,title)||topicFigure(l,title))+'<div class="book-reading">'+paragraphs(p)+'</div>'+(tip?'<aside class="book-recall"><strong>💡 Para memorizar</strong><p>'+e(tip)+'</p></aside>':'')+(l.subject==='anatomia'&&l.id==='anatomia-tema-7'&&(page===4||page===5||page===6)?heartAnimation():'')+'</article>';}
  return '<div class="book-shell"><div class="book-topline"><span>📖 LIBRO INTERACTIVO</span><span>Página '+(page+1)+' / '+total+'</span></div><div class="book-track"><div style="width:'+pct+'%"></div></div>'+content+'<nav class="book-controls" aria-label="Navegación por las páginas"><button class="btn" data-action="bookPrev" '+(page===0?'disabled':'')+'>← Hoja anterior</button><button class="btn ghost" data-action="bookContents">☰ Índice</button><button class="btn primary" data-action="bookNext" '+(page===total-1?'disabled':'')+'>Siguiente hoja →</button></nav><div class="book-bottom-note">Puedes consultar el índice o pasar las hojas. La última reúne las tablas, fórmulas y claves del examen.</div></div>';
 }

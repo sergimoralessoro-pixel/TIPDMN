@@ -178,7 +178,7 @@ async function spin(){
  try{
   // La pregunta comienza al completar el giro; solo el servidor decide el turno activo.
   await new Promise(r=>setTimeout(r,1850));
-  const next=await rpc('duel_spin',{p_room:prev.id,p_category:cat.id,p_question_key:key});
+  const next=await rpc('duel_spin',{p_room:prev.id,p_category:cat.id,p_question_key:key,p_correct_index:pool.find(x=>x.key===key).q[2]});
   if(room?.id!==prev.id)return;
   room=next;renderRoom();
  }catch(e){status('No ha sido posible girar: '+e.message);await refresh()}finally{animating=false}

@@ -1,4 +1,5 @@
 import { subjects,lessons } from './content.js';
+import {expandedLessons} from './extra-content.js';
 import { SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY } from './config.js';
 const configured=Boolean(SUPABASE_URL&&SUPABASE_PUBLISHABLE_KEY);
 let supa=null;let connectionError='';
@@ -9,7 +10,7 @@ if(!supa){state.records=getStore('radiolab.records',[]);state.mistakes=getStore(
 const ranks=['Estudiante','Auxiliar de imagen','Técnico en prácticas','Técnico de Rayos','Especialista en TC y RM','Técnico Superior de Imagen'];
 function rank(xp){return ranks[Math.min(5,Math.floor(xp/250))]};function xp(){return state.records.reduce((n,r)=>n+r.correct*10,0)};
 const average=()=>state.records.length?(state.records.reduce((n,r)=>n+r.score,0)/state.records.length).toFixed(1):'—';
-const totalErr=()=>Object.keys(state.mistakes).length;const allLessons=()=>[...lessons,...state.customLessons];const getLesson=id=>[...lessons,...state.customLessons].find(l=>l.id===id);const getSubject=id=>subjects.find(s=>s[0]===id);
+const totalErr=()=>Object.keys(state.mistakes).length;const allLessons=()=>[...lessons,...expandedLessons,...state.customLessons];const getLesson=id=>[...lessons,...expandedLessons,...state.customLessons].find(l=>l.id===id);const getSubject=id=>subjects.find(s=>s[0]===id);
 function go(page,args={}){Object.assign(state,args,{page,notice:''});history.pushState({page,sub:state.sub,lesson:state.lesson},'',`#${page}${state.sub?'/'+state.sub:''}${state.lesson?'/'+state.lesson:''}`);render();window.scrollTo(0,0)}
 window.addEventListener('popstate',ev=>{const x=ev.state||{page:'home',sub:null,lesson:null};Object.assign(state,{page:x.page,sub:x.sub,lesson:x.lesson});render()});
 function notify(msg){state.notice=msg;render()}
@@ -31,7 +32,7 @@ if(id==='fun-rayos')return head+`<div class="schematic"><div><strong>Cátodo</st
 if(id==='tc-eco-bases')return head+`<div class="schematic"><div><strong>🩻 TC</strong><small>Radiación ionizante</small></div><div><strong>🔊 Ecografía</strong><small>Ultrasonidos</small></div></div>`+foot;
 return '';}
 
-function lessonPage(){const l=getLesson(state.lesson);if(!l)return allSubjects();return `<div class="breadcrumbs"><button class="btn small ghost" data-sub="${l.subject}">← ${safe(getSubject(l.subject)[1])}</button></div><div class="hero"><span class="tag">📘 GUÍA DE ESTUDIO · EJEMPLO</span><h1>${safe(l.title)}</h1><p>${safe(l.intro)}</p><div class="actions"><button class="btn primary" data-action="lessonTest">Hacer test →</button><button class="btn" data-action="flash">Tarjetas de repaso</button><button class="btn" data-action="timedLesson">⏱️ Contrarreloj</button></div></div>${diagramFor(l.id)}<section class="section"><h2>Explicación fácil</h2><div class="notes">${l.points.map(([h,p],i)=>`<div class="note"><strong>${i+1}. ${safe(h)}</strong>${safe(p)}</div>`).join('')}</div><div class="panel"><strong>🧠 En una frase</strong><p>${safe(l.summary)}</p></div></section>`}
+function lessonPage(){const l=getLesson(state.lesson);if(!l)return allSubjects();return `<div class="breadcrumbs"><button class="btn small ghost" data-sub="${l.subject}">← ${safe(getSubject(l.subject)[1])}</button></div><div class="hero"><span class="tag">📘 GUÍA DE ESTUDIO · REPASO INTRODUCTORIO</span><h1>${safe(l.title)}</h1><p>${safe(l.intro)}</p><div class="actions"><button class="btn primary" data-action="lessonTest">Hacer test →</button><button class="btn" data-action="flash">Tarjetas de repaso</button><button class="btn" data-action="timedLesson">⏱️ Contrarreloj</button></div></div>${diagramFor(l.id)}<section class="section"><h2>Explicación fácil</h2><div class="notes">${l.points.map(([h,p],i)=>`<div class="note"><strong>${i+1}. ${safe(h)}</strong>${safe(p)}</div>`).join('')}</div><div class="panel"><strong>🧠 En una frase</strong><p>${safe(l.summary)}</p></div></section>`}
 function quiz(questions,mode='normal'){if(!questions.length)return notify('No hay preguntas disponibles todavía');state.test=questions;state.answers={};state.result=null;state.mode=mode;state.startedAt=Date.now();go('test')}
 function getQuestion(id,i){return getLesson(id)?.questions[i]}
 function startLesson(){const l=getLesson(state.lesson);if(l)quiz(l.questions.map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q}))) }

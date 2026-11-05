@@ -1,5 +1,6 @@
 /* Ejercicios originales de cálculo y casos clínicos de práctica. Todos los resultados se calculan, no se eligen a mano. */
-import {rng,shuffled} from './quiz-variety.js';
+const rng=(input)=>{let n=2166136261;for(const c of String(input)){n^=c.charCodeAt(0);n=Math.imul(n,16777619)}return ()=>{n=(n+0x6D2B79F5)|0;let t=Math.imul(n^(n>>>15),1|n);t^=t+Math.imul(t^(t>>>7),61|t);return ((t^(t>>>14))>>>0)/4294967296}};
+const shuffled=(items,random=Math.random)=>{const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out};
 const eye=['','no abre los ojos','abre los ojos únicamente ante un estímulo doloroso','abre los ojos al hablarle','abre los ojos espontáneamente'];
 const verbal=['','no emite respuesta verbal','emite sonidos incomprensibles','pronuncia palabras inapropiadas','responde, pero está confundido o desorientado','responde de forma orientada'];
 const motor=['','no presenta respuesta motora','responde con extensión anormal','responde con flexión anormal','retira la extremidad ante un estímulo doloroso','localiza el origen del estímulo doloroso','obedece órdenes motoras'];

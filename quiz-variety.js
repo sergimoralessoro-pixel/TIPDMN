@@ -27,15 +27,27 @@ export function varyQuestion(question,random=Math.random,form=0){
 }
 export function drawVaried(items,count,historyKey,options={}){
  const distinct=uniqueBank(items),random=rng(options.seed??(Date.now()+'|'+Math.random()));
+ const requested=Math.min(Math.max(0,count),distinct.length);
  let history=[];try{history=JSON.parse(localStorage.getItem(historyKey)||'[]')}catch{}
- const recent=new Set(history.slice(-Math.max(20,count*5)));
- const mixed=shuffled(distinct,random);
- const pool=[...mixed.filter(item=>!recent.has(item.qid||item.key)),...mixed.filter(item=>recent.has(item.qid||item.key))];
- const result=[],lessons=new Set();
- for(const x of pool){const lesson=x.l||String(x.key||'').split(':')[0];if(!lessons.has(lesson)){result.push(x);lessons.add(lesson)}if(result.length>=count)break}
- for(const x of pool){if(result.length>=count)break;if(!result.includes(x))result.push(x)}
- if(options.remember!==false){try{const ids=result.map(x=>x.qid||x.key);localStorage.setItem(historyKey,JSON.stringify([...history,...ids].slice(-500)))}catch{}}
- return result;
+ const keys=new Set(distinct.map(item=>item.qid||item.key));
+ let cycle=history.filter(id=>keys.has(id));
+ const seen=new Set(cycle);
+ const fresh=shuffled(distinct.filter(x=>!seen.has(x.qid||x.key)),random);
+ const recycled=shuffled(distinct.filter(x=>seen.has(x.qid||x.key)),random);
+ // No repetir preguntas hasta agotar el banco disponible para ese tema.
+ const selected=[...fresh,...recycled].slice(0,requested);
+ if(options.remember!==false){
+  try{
+   let nextCycle=[...cycle];
+   for(const item of selected){
+    const id=item.qid||item.key;
+    if(nextCycle.includes(id))nextCycle=[];
+    nextCycle.push(id);
+   }
+   localStorage.setItem(historyKey,JSON.stringify(nextCycle.slice(-Math.max(400,distinct.length))));
+  }catch{}
+ }
+ return selected;
 }
 
 /**
@@ -46,27 +58,23 @@ export function drawVaried(items,count,historyKey,options={}){
 export function augmentLessons(lessons){
  return lessons.map(lesson=>{
   const pts=Array.isArray(lesson.sections)&&lesson.sections.length?lesson.sections:(Array.isArray(lesson.points)?lesson.points:[]);
-  const eligible=pts.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&typeof p[1]==='string'&&p[0].trim().length>=4&&p[0].trim().length<=90&&p[1].trim().length>=20&&p[1].trim().length<=190);
+  const eligible=pts.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&typeof p[1]==='string'&&p[0].trim().length>=3&&p[0].trim().length<=100&&p[1].trim().length>=8&&p[1].trim().length<=260);
   const seen=new Set();
-  const distinct=eligible.filter(p=>{const k=p[0].toLocaleLowerCase('es').trim();if(seen.has(k))return false;seen.add(k);return true});
+  const distinct=eligible.filter(p=>{const key=p[0].normalize('NFD').toLowerCase().replace(/[\u0300-\u036f]/g,'').trim();if(seen.has(key))return false;seen.add(key);return true});
   const extra=[];
   if(distinct.length>=4){
    for(let i=0;i<distinct.length;i++){
-    const item=distinct[i],wrong=distinct.filter((_,j)=>j!==i);
-    const idxs=shuffled(wrong,rng(lesson.id+'concept'+i)).slice(0,3);
-    const conceptOptions=[item,...idxs].map(x=>x[0].trim());
-    const answerOptions=[item,...idxs].map(x=>x[1].trim());
-    const description=item[1].trim();
-    extra.push([
-      '¿Qué concepto corresponde a esta descripción? «'+description+'»',
-      conceptOptions,0,
-      'El concepto correcto es «'+item[0].trim()+'»: '+description
-    ]);
-    extra.push([
-      '¿Qué afirmación describe correctamente «'+item[0].trim()+'»?',
-      answerOptions,0,
-      description
-    ]);
+    const current=distinct[i],concept=current[0].trim(),definition=current[1].trim(),wrong=shuffled(distinct.filter((_,j)=>j!==i),rng(lesson.id+'distractors:'+i)).slice(0,3);
+    const termOptions=[concept,...wrong.map(x=>x[0].trim())];
+    const definitionOptions=[definition,...wrong.map(x=>x[1].trim())];
+    const pairing=wrong.map((x,j)=>x[0].trim()+' — '+wrong[(j+1)%wrong.length][1].trim());
+    extra.push(
+      ['¿Qué término corresponde a «'+definition+'»?',termOptions,0,'«'+concept+'» se define como: '+definition],
+      ['¿Qué significa «'+concept+'»?',definitionOptions,0,definition],
+      ['¿Cómo se llama lo siguiente? «'+definition+'»',termOptions,0,'El término es «'+concept+'». '+definition],
+      ['¿Cuál es la descripción correcta de «'+concept+'»?',definitionOptions,0,definition],
+      ['¿Qué asociación de término y definición es correcta?',[concept+' — '+definition,...pairing],0,concept+': '+definition]
+    );
    }
   }
   return {...lesson,questions:[...(lesson.questions||[]),...extra,...generatePractice(lesson),...generateVisualQuestions(lesson)]};

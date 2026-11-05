@@ -27,3 +27,38 @@ export function drawVaried(items,count,historyKey,options={}){
  if(options.remember!==false){try{const ids=result.map(x=>x.qid||x.key);localStorage.setItem(historyKey,JSON.stringify([...history,...ids].slice(-500)))}catch{}}
  return result;
 }
+
+/**
+ * Preguntas de comprensión creadas exclusivamente a partir de parejas
+ * concepto-definición que ya existen en los apuntes del tema.
+ * No inventa datos nuevos ni usa respuestas de otros temas como distractores.
+ */
+export function augmentLessons(lessons){
+ return lessons.map(lesson=>{
+  const pts=Array.isArray(lesson.points)?lesson.points:[];
+  const eligible=pts.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&typeof p[1]==='string'&&p[0].trim().length>=4&&p[0].trim().length<=90&&p[1].trim().length>=20&&p[1].trim().length<=550);
+  const seen=new Set();
+  const distinct=eligible.filter(p=>{const k=p[0].toLocaleLowerCase('es').trim();if(seen.has(k))return false;seen.add(k);return true});
+  const extra=[];
+  if(distinct.length>=4){
+   for(let i=0;i<distinct.length;i++){
+    const item=distinct[i],wrong=distinct.filter((_,j)=>j!==i);
+    const idxs=shuffled(wrong,rng(lesson.id+'concept'+i)).slice(0,3);
+    const conceptOptions=[item,...idxs].map(x=>x[0].trim());
+    const answerOptions=[item,...idxs].map(x=>x[1].trim());
+    const description=item[1].trim();
+    extra.push([
+      'En «'+lesson.title+'», ¿qué concepto corresponde a esta explicación: «'+description+'»?',
+      conceptOptions,0,
+      'El concepto correcto es «'+item[0].trim()+'»: '+description
+    ]);
+    extra.push([
+      'En «'+lesson.title+'», ¿qué afirmación describe correctamente «'+item[0].trim()+'»?',
+      answerOptions,0,
+      description
+    ]);
+   }
+  }
+  return {...lesson,questions:[...(lesson.questions||[]),...extra]};
+ });
+}

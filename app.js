@@ -12,7 +12,7 @@ import {ipe1Book} from './ipe1-book.js';
 import {classStudyBooks} from './class-books.js?v=4';
 import {radiationTopics} from './radiation-topics.js';
 import {additionalDriveBooks} from './additional-drive-books.js?v=2';
-import {renderStudyBook} from './book-reader.js?v=6';
+import {renderStudyBook} from './book-reader.js?v=7';
 import {anatomyBookA} from './anatomy-book-a.js';
 import {anatomyBookB} from './anatomy-book-b.js';
 import {anatomyBookC} from './anatomy-book-c.js';

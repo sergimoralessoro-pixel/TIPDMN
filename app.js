@@ -1,5 +1,5 @@
 import { subjects,lessons } from './content.js';
-import {drawVaried,uniqueBank,varyQuestion,shuffled} from './quiz-variety.js';
+import {drawVaried,uniqueBank,varyQuestion,shuffled,augmentLessons} from './quiz-variety.js';
 import {expandedLessons} from './extra-content.js';
 import {englishBook} from './english-book.js';
 import {patientPart1} from './patient-part1.js';
@@ -33,7 +33,7 @@ const xpPenalty=(wrong)=>Array.from({length:Math.max(0,wrong)},(_,i)=>Math.min(6
 const xpChange=(correct,total)=>Math.max(0,Number(correct)||0)*3-xpPenalty(Math.max(0,(Number(total)||0)-(Number(correct)||0)));
 function rank(points){return ranks[Math.min(5,Math.floor(points/250))]};function xp(){return Math.max(0,state.records.reduce((n,r)=>n+xpChange(r.correct,r.total),0))};
 const average=()=>state.records.length?(state.records.reduce((n,r)=>n+r.score,0)/state.records.length).toFixed(1):'—';
-const totalErr=()=>Object.keys(state.mistakes).length;const allLessons=()=>[...anatomyBook,...radiationTopics,...classStudyBooks.filter(l=>l.subject!=='proteccion'),...additionalDriveBooks,...state.customLessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject))];const getLesson=id=>allLessons().find(l=>l.id===id);const getSubject=id=>subjects.find(s=>s[0]===id);
+const totalErr=()=>Object.keys(state.mistakes).length;const allLessons=()=>augmentLessons([...anatomyBook,...radiationTopics,...classStudyBooks.filter(l=>l.subject!=='proteccion'),...additionalDriveBooks,...state.customLessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject))]);const getLesson=id=>allLessons().find(l=>l.id===id);const getSubject=id=>subjects.find(s=>s[0]===id);
 function go(page,args={}){if(state.page==='forum'&&page!=='forum')stopForum();Object.assign(state,args,{page,notice:'',mobileMenu:false});history.pushState({page,sub:state.sub,lesson:state.lesson},'',`#${page}${state.sub?'/'+state.sub:''}${state.lesson?'/'+state.lesson:''}`);render();if(page==='forum')enterForum();window.scrollTo(0,0)}
 window.addEventListener('popstate',ev=>{const x=ev.state||{page:'home',sub:null,lesson:null};if(state.page==='forum'&&x.page!=='forum')stopForum();Object.assign(state,{page:x.page,sub:x.sub,lesson:x.lesson});render();if(state.page==='forum')enterForum()});
 function notify(msg){state.notice=msg;render()}
@@ -102,7 +102,9 @@ function lessonPage(){
  <div class="book-intro"><div><span class="tag">📚 LIBRO DE ESTUDIO · ${safe(getSubject(l.subject)[1])}</span><h1>${safe(l.title)}</h1><p>${safe(l.intro)}</p></div><div class="actions"><button class="btn primary" data-action="lessonTest">📝 Examen tipo test (${l.questions.length} preguntas)</button><button class="btn" data-action="flash">🧠 Tarjetas de repaso</button><button class="btn" data-action="timedLesson">⏱️ Contrarreloj</button></div></div>
  ${renderStudyBook(l,state.bookPage)}`;
 }
-function quiz(questions,mode='normal'){if(!questions.length)return notify('No hay preguntas disponibles todavía');state.test=shuffled(uniqueBank(questions)).map((item,i)=>({...item,q:varyQuestion(item.q,Math.random,i%4)}));state.answers={};state.result=null;state.mode=mode;state.startedAt=Date.now();go('test')}
+function quiz(questions,mode='normal'){if(!questions.length)return notify('No hay preguntas disponibles todavía');const key='radiolab.history.'+(mode==='daily'?'daily':mode==='normal'||mode==='selected'?('lesson.'+(state.lesson||state.sub||'all')):mode);
+ const picked=mode==='mistakes'?shuffled(uniqueBank(questions)):drawVaried(questions,Math.min(questions.length,mode==='normal'||mode==='selected'||mode==='exam'?Math.max(10,Math.min(20,questions.length)):questions.length),key);
+ state.test=picked.map((item,i)=>({...item,q:varyQuestion(item.q,Math.random,i%4)}));state.answers={};state.result=null;state.mode=mode;state.startedAt=Date.now();go('test')}
 function getQuestion(id,i){return getLesson(id)?.questions[i]}
 function startLesson(){const l=getLesson(state.lesson);if(!l)return;if(l.questions.length<10)return notify('Este tema tiene menos de 10 preguntas y su examen está en preparación. No lo presentaré como examen completo.');quiz(l.questions.map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q}))) }
 function startSubject(){const ls=allLessons().filter(l=>l.subject===state.sub);quiz(ls.flatMap(l=>l.questions.map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q}))))}

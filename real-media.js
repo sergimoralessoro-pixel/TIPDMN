@@ -12,7 +12,7 @@ const items=[
  {id:'torax-pa',sub:'rxsimple',match:/t[oó]rax|pulm[oó]n|par[eé]nquima pulmonar|posteroanterior|proyecci[oó]n PA/i,file:'Normal posteroanterior (PA) chest radiograph (X-ray).jpg',alt:'Radiografía PA de tórax normal',credit:'Mikael Häggström · Wikimedia Commons',caption:'Radiografía normal de tórax en proyección posteroanterior (PA).'},
  {id:'mamo-cc-mlo',sub:'rxespecial',match:/mamograf|craneocaudal|mediolateral oblicua|microcalcificac/i,file:'Mammogram images of clustered calcifications at CC view and MLO view.png',alt:'Mamografías CC y MLO con microcalcificaciones',credit:'Cerevisae · Wikimedia Commons',caption:'Comparación de mamografías CC y MLO; el caso muestra microcalcificaciones.'},
  {id:'tc-cerebral',sub:'tc',match:/cerebr|cabeza|cr[aá]ne|unidad hounsfield|ventana de imagen|corte axial/i,file:'CT of a normal brain, axial 30.png',alt:'Tomografía computarizada axial de cerebro sin contraste',credit:'Mikael Häggström · Wikimedia Commons',caption:'Corte axial de TC cerebral: ejemplo de anatomía normal.'},
- {id:'generador-tc99',sub:'radiofarmacia',match:/generador|tecnecio|producci[oó]n de los radiof[aá]rmacos/i,file:'NM11 2.gif',alt:'Esquema didáctico de un generador de tecnecio 99m',credit:'Kieran Maher · dominio público',caption:'Esquema de los componentes del generador de tecnecio-99m.'},
+ {id:'generador-tc99',sub:'radiofarmacia',match:/generador|tecnecio|producci[oó]n de los radiof[aá]rmacos/i,file:'Nuclide Generator Schematic-de.svg',alt:'Esquema didáctico de generador de tecnecio-99m',credit:'Dirk Hünniger · Wikimedia Commons',caption:'Esquema de los componentes del generador de tecnecio-99m.'},
 
  {id:'rm-mri',sub:'rm',match:/resonancia|imán|campo magnético|equipo|seguridad|bobina|adquisición/i,
   file:'An MRI scanner.JPG',alt:'Fotografía real de un equipo de resonancia magnética de uso clínico',credit:'Walter Davies, CC BY-SA 4.0',caption:'Equipo real de resonancia magnética. Fotografía educativa.'},
@@ -57,7 +57,7 @@ const items=[
 ];
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function figure(r){
- const filepath='https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(r.file).replace(/%2F/g,'/');
+ const filepath='https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(r.file).replace(/%2F/g,'/')+'?width=960';
  const page='https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(r.file).replace(/%20/g,'_');
  return '<figure class="study-real-image"><img loading="lazy" decoding="async" src="'+filepath+'" alt="'+esc(r.alt)+'" referrerpolicy="no-referrer" onerror="this.closest(\'figure\').style.display=\'none\'"><figcaption><strong>'+esc(r.caption)+'</strong><small>Fuente: <a href="'+page+'" target="_blank" rel="noopener noreferrer">'+esc(r.credit)+' · Wikimedia Commons</a></small></figcaption></figure>';
 }

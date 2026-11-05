@@ -3,6 +3,15 @@
  * No descargar ni copiar materiales de buscadores sin licencia.
  */
 const items=[
+ {id:'cavidades',sub:'anatomia',match:/cavidades|cavidad|diafragma|mediastino/i,
+  file:'Scheme body cavities-es.svg',alt:'Cavidades del cuerpo humano en español: craneal, torácica, abdominal y pélvica',credit:'NCI, Mysid y Angelito7, dominio público',caption:'Cavidades corporales, rotuladas en español.'},
+ {id:'cultivo',sub:'forense',match:/cultivo|microbiolog|bacteri|colonias|placa/i,
+  file:'Microbial isolations on petri dish.jpg',alt:'Fotografía de un cultivo microbiológico en placa de Petri con colonias',credit:'Luis Fernando Flores LAB, CC BY-SA 4.0',caption:'Ejemplo real de colonias y aislamiento de microorganismos en una placa.'},
+ {id:'histologia',sub:'forense',match:/histolog|histoquím|histoquim|tinción|tincion|hemosiderina/i,
+  file:'Histology microscope slide.jpg',alt:'Fotografía de portaobjetos histológico con tejido teñido con hematoxilina y eosina',credit:'AdamasPudim, CC BY-SA',caption:'Preparación histológica real para observación microscópica.'},
+ {id:'radiaciones',sub:'proteccion',match:/alfa|beta|gamma|tipos de radiaci[oó]n|radiaci[oó]n corpuscular/i,
+  file:'Details of types of Radiation.png',alt:'Tabla visual de tipos de radiación, alfa, beta, gamma y neutrones, con poder de penetración',credit:'ThatOneEli, CC BY-SA',caption:'Comparación de radiaciones y sus propiedades.'},
+
  {id:'hueso',sub:'anatomia',match:/hues|óse|ose|epífisis|epifisis|diáfisis|diafisis|médula ósea|medula osea|osteoblast|osteoclast/i,
   file:'603 Anatomy of Long Bone esp.jpg',alt:'Anatomía de un hueso largo: epífisis, diáfisis, médula ósea, periostio y hueso compacto',credit:'OpenStax College, CC BY-SA 4.0',caption:'Estructura de un hueso largo con sus partes señaladas en español.'},
  {id:'cerebro',sub:'anatomia',match:/cereb|lóbulo|lobulo|encéfalo|encefalo|sistema nervioso/i,

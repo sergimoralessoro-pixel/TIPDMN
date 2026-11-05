@@ -4,6 +4,7 @@ import {subjects,lessons} from './content.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
 import {radiationTopics} from './radiation-topics.js';
+import {additionalDriveBooks} from './additional-drive-books.js';
 import {anatomyBookA} from './anatomy-book-a.js';
 import {anatomyBookB} from './anatomy-book-b.js';
 import {anatomyBookC} from './anatomy-book-c.js';
@@ -17,9 +18,9 @@ const CHARACTER={
  digital:'Byte',proyecto:'Proyecto'
 };
 const CAT=subjects.map(s=>[s[0],s[2],CHARACTER[s[0]]||'Radiolab']);
-const ACTIVE_LESSONS=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(l=>l.subject!=='proteccion'),
- ...lessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion'].includes(l.subject)),
- ...expandedLessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion'].includes(l.subject))];
+const ACTIVE_LESSONS=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(l=>l.subject!=='proteccion'),...additionalDriveBooks,
+ ...lessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject)),
+ ...expandedLessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject))];
 const BANK=ACTIVE_LESSONS.flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l.subject,q})));
 const CAT_VALID=CAT.filter(c=>BANK.filter(q=>q.sub===c[0]).length>=5);
 const palette=['#22c7db','#3979ce','#9668cd','#db8b54','#3ba88e','#d96991','#2c93b4','#bca044','#7d77c7','#4aa47b','#d67b5c','#357eab','#8d6aaf','#d29c54','#40adbc','#ba6887','#718eb4'];

@@ -23,6 +23,10 @@
 .wheel-middle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:63px;height:63px;background:#05293b;border:4px solid #d2fdff;border-radius:100%;display:grid;place-items:center;font-size:31px}
 .wheel-legend{grid-template-columns:repeat(auto-fit,minmax(125px,1fr))}
 .wheel-item{padding:8px;gap:7px}.wheel-item b{font-size:11px}.wheel-item>span{font-size:19px}
+.review-item{border:1px solid #34576c;border-radius:12px;margin:9px 0;background:#0b2335;overflow:hidden}
+.review-item summary{padding:14px;cursor:pointer;font-weight:700;line-height:1.5}
+.review-item[open] summary{border-bottom:1px solid #34576c;color:#8ce9f3}
+.review-content{padding:6px 15px 15px;line-height:1.6}
 .active-duel{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #356079}
 .active-duel p{margin:5px 0;font-size:12px}
 .result-banner{background:#15374c;border-radius:12px;padding:12px 16px}
@@ -53,7 +57,30 @@ const timeLeft=()=>room?Math.max(0,Math.ceil((new Date(room.expires_at).getTime(
 const questionLeft=()=>room?.question_started_at?Math.max(0,Math.ceil((new Date(room.question_started_at).getTime()+30000-Date.now())/1000)):0;
 const emojiOf=(cat,count)=>{const n=Math.min(3,Math.max(0,Number(count)||0));return '<span class="badge-symbol progress-emoji" style="--emoji-fill:'+(n/3*100)+'%" title="'+esc(cat.name)+': '+n+'/3 aciertos" aria-label="'+esc(cat.name)+': '+n+' de 3 aciertos"><span class="emoji-shadow" aria-hidden="true">'+cat.emoji+'</span><span class="emoji-fill" aria-hidden="true">'+cat.emoji+'</span><span class="emoji-segments" aria-hidden="true"><i></i><i></i><i></i></span></span>'};
 function status(n){gameError=n;const a=document.querySelector('#feedback');if(a){a.textContent=n;a.style.display=n?'block':'none';}else if(n)console.warn(n)}
-function show(a){el.innerHTML=a;if(gameError)status(gameError)}
+function show(a){
+ const open=new Set([...el.querySelectorAll('details[data-review][open]')].map(d=>d.dataset.review));
+ el.innerHTML=a;
+ el.querySelectorAll('details[data-review]').forEach(d=>{if(open.has(d.dataset.review))d.open=true});
+ if(gameError)status(gameError);
+}
+const reviewStorageKey=()=> 'radiolab.duel.mistakes.'+(user?.id||'guest');
+function savedMistakes(){try{const v=JSON.parse(localStorage.getItem(reviewStorageKey())||'[]');return Array.isArray(v)?v:[]}catch{return []}}
+function rememberMistake(){
+ const l=room?.last_result;
+ if(!user||!l?.question_key||l.user_id!==user.id||l.correct)return;
+ const key=room.id+':'+l.question_key;
+ const existing=savedMistakes();if(existing.some(x=>x.key===key))return;
+ const original=bank.find(x=>x.key===l.question_key);if(!original)return;
+ const q=conciseGameQuestion(varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1));
+ const chosen=Number(l.choice);
+ const row={key,room:room.id,category:names[original.sub]||original.sub,question:q[0],options:q[1],correct:q[2],choice:Number.isInteger(chosen)&&chosen>=0&&chosen<q[1].length?chosen:-1,explanation:q[3]||'Repasa la opción correcta y su relación con el enunciado.',date:new Date().toISOString()};
+ try{localStorage.setItem(reviewStorageKey(),JSON.stringify([row,...existing].slice(0,100)))}catch(e){console.warn('No se pudo guardar el historial de fallos',e)}
+}
+function mistakesReview(onlyRoom=false){
+ const entries=savedMistakes().filter(x=>!onlyRoom||x.room===room?.id);
+ const cards=entries.map(x=>'<details data-review="'+esc(x.key)+'" class="review-item"><summary>❌ '+esc(x.category)+' · '+esc(x.question)+'</summary><div class="review-content"><p><strong>Pregunta:</strong> '+esc(x.question)+'</p><p>❌ <strong>Tu respuesta:</strong> '+(x.choice>=0?esc(x.options[x.choice]):'No respondiste a tiempo')+'</p><p class="ok">✅ <strong>Respuesta correcta:</strong> '+esc(x.options[x.correct])+'</p><p>💡 <strong>Explicación:</strong> '+esc(x.explanation)+'</p><small class="muted">'+new Date(x.date).toLocaleString('es-ES')+'</small></div></details>').join('');
+ return '<section class="card review-history"><h2>📚 Mis fallos y correcciones ('+entries.length+')</h2><p class="muted">Pulsa la flechita para consultar tu respuesta, la correcta y la explicación. Los fallos se guardan en este navegador.</p>'+(cards||'<p class="muted">Todavía no has fallado ninguna pregunta'+(onlyRoom?' en esta partida':'')+'.</p>')+'</section>';
+}
 async function rpc(fn,args){if(aiRoom&&['duel_spin','duel_answer','duel_expire'].includes(fn))return localAiRpc(fn,args);const r=await supa.rpc(fn,args);if(r.error)throw Error(r.error.message);return r.data}
 function localAiRpc(fn,a){if(!room||!aiRoom)throw Error('La partida de IA no está activa');if(fn==='duel_expire'){room.status='expired';return room}if(fn==='duel_spin'){if(room.question_key)throw Error('Ya hay una pregunta activa');room.status='playing';room.current_turn=room.current_turn||user.id;room.category=a.p_category;room.question_key=a.p_question_key;room.correct_index=a.p_correct_index;room.question_started_at=new Date().toISOString();room.question_keys.push(a.p_question_key);room.revision++;return room}if(fn==='duel_answer'){if(room.question_key!==a.p_question_key)return room;const correct=a.p_choice===room.correct_index&&Date.now()<new Date(room.question_started_at).getTime()+30000;const actor=room.current_turn;if(correct){const id=String(actor),prog=room.category_progress[id]||{};prog[room.category]=(prog[room.category]||0)+1;room.category_progress[id]=prog;if(prog[room.category]>=3){room.awards[id]??={};room.awards[id][room.category]=true}}room.last_result={user_id:actor,correct,category:room.category,answer:room.correct_index,choice:a.p_choice,question_key:room.question_key};room.current_turn=correct?actor:(actor===user.id?AI_ID:user.id);room.question_key=null;room.question_started_at=null;room.correct_index=null;room.revision++;if(room.current_turn===AI_ID)scheduleAi();return room}return room}
 function beginAi(){if(matchTimer){clearTimeout(matchTimer);matchTimer=null}aiRoom=true;const chosen=AI_NAMES[randomOf(AI_NAMES.length)];profiles[AI_ID]=chosen;room={id:crypto.randomUUID(),code:'SOLOIA',host_id:user.id,guest_id:AI_ID,status:'playing',current_turn:user.id,created_at:new Date().toISOString(),expires_at:new Date(Date.now()+7200000).toISOString(),revision:0,category_progress:{},awards:{},question_keys:[],question_key:null,last_result:{},question_started_at:null};renderRoom()}
@@ -125,7 +152,7 @@ async function loadLobby(){
  const [a,b]=await Promise.all([supa.from('duel_rooms').select('*').eq('host_id',user.id).in('status',['waiting','playing']).gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(30),supa.from('duel_rooms').select('*').eq('guest_id',user.id).in('status',['waiting','playing']).gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(30)]);
  const all=[...(a.data||[]),...(b.data||[])];active=[...new Map(all.map(x=>[x.id,x])).values()].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));
  const rows=active.map(x=>'<div class="active-duel"><div><b>🎡 Sala '+esc(x.code)+'</b><p class="muted">'+(x.status==='waiting'?'Esperando al rival':x.current_turn===user.id?'🟢 Te toca jugar':'⏳ Turno del otro jugador')+' · finaliza '+new Date(x.expires_at).toLocaleString('es-ES')+'</p></div><button class="btn primary" data-resume="'+x.id+'">Continuar</button></div>').join('');
- show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 30 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas · salas eliminadas 1 h después</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2><button id="create" class="btn primary">Crear sala de 2 jugadores</button><p><button id="quickmatch" class="btn primary">🔎 Jugar contra cualquiera (30 s)</button></p><p><button id="aiMatch" class="btn">🤖 Jugar contra la IA</button></p><p class="muted">Si no aparece nadie en 30 segundos, entrarás contra un personaje aleatorio. El creador empieza.</p></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div><p id="feedback" class="error"></p>');
+ show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 30 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas · salas eliminadas 1 h después</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2><button id="create" class="btn primary">Crear sala de 2 jugadores</button><p><button id="quickmatch" class="btn primary">🔎 Jugar contra cualquiera (30 s)</button></p><p><button id="aiMatch" class="btn">🤖 Jugar contra la IA</button></p><p class="muted">Si no aparece nadie en 30 segundos, entrarás contra un personaje aleatorio. El creador empieza.</p></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div>'+mistakesReview()+'<p id="feedback" class="error"></p>');
  document.getElementById('create').onclick=create;
  document.getElementById('quickmatch').onclick=quickMatch;
  document.getElementById('aiMatch').onclick=()=>beginAi();
@@ -168,20 +195,21 @@ async function refresh(){
 }
 function renderRoom(){
  if(!room)return;
+ rememberMistake();
  const expired=timeLeft()<=0||room.status==='expired';
  if(expired||room.status==='finished'||completed()){
-  show(header()+board()+'<section class="card hero"><h1>🏁 Partida finalizada</h1><p>La duración máxima es de 2 horas.</p>'+resultBanner()+'<div id="rematch-panel"><button class="btn primary" id="rematch">🔁 Revancha</button><p id="rematch-status" class="muted">Los dos jugadores deben aceptar. Tienes 30 segundos desde la primera solicitud.</p></div><button class="btn" data-exit-game>Salir al inicio de la actividad</button></section><p id="feedback" class="error"></p>');
+  show(header()+board()+'<section class="card hero"><h1>🏁 Partida finalizada</h1><p>La duración máxima es de 2 horas.</p>'+resultBanner()+mistakesReview(true)+'<div id="rematch-panel"><button class="btn primary" id="rematch">🔁 Revancha</button><p id="rematch-status" class="muted">Los dos jugadores deben aceptar. Tienes 30 segundos desde la primera solicitud.</p></div><button class="btn" data-exit-game>Salir al inicio de la actividad</button></section><p id="feedback" class="error"></p>');
   bindExit();document.getElementById('rematch').onclick=()=>requestRematch(true);requestRematch(false);return;
  }
  if(room.status==='waiting'){
-  show(header()+'<section class="card hero"><h1>⚔️ Sala de espera</h1><h2 style="font-size:40px;letter-spacing:5px">'+esc(room.code)+'</h2><p>Comparte el código con tu rival.</p><button class="btn" id="copy">Copiar código</button><p>'+(room.guest_id?'✅ Rival conectado. Comienza el anfitrión.':'⌛ Esperando al segundo jugador…')+'</p></section>'+board()+(room.host_id===user.id&&room.guest_id?'<section class="card"><h2>🎯 Empieza tu turno</h2><button id="start" class="btn primary">🎡 Girar ruleta</button></section>':'')+wheel()+'<p id="feedback" class="error"></p>');
+  show(header()+'<section class="card hero"><h1>⚔️ Sala de espera</h1><h2 style="font-size:40px;letter-spacing:5px">'+esc(room.code)+'</h2><p>Comparte el código con tu rival.</p><button class="btn" id="copy">Copiar código</button><p>'+(room.guest_id?'✅ Rival conectado. Comienza el anfitrión.':'⌛ Esperando al segundo jugador…')+'</p></section>'+board()+mistakesReview(true)+(room.host_id===user.id&&room.guest_id?'<section class="card"><h2>🎯 Empieza tu turno</h2><button id="start" class="btn primary">🎡 Girar ruleta</button></section>':'')+wheel()+'<p id="feedback" class="error"></p>');
   bindExit();document.getElementById('copy').onclick=()=>navigator.clipboard.writeText(room.code);
   const start=document.getElementById('start');if(start)start.onclick=spin;
   return;
  }
  if(room.status!=='playing')return;
  const mine=room.current_turn===user.id;
- let display=header()+board()+resultBanner();
+ let display=header()+board()+resultBanner()+mistakesReview(true);
  if(!mine){
   if(aiRoom)scheduleAi();
   display+='<section class="card"><h2>⏳ Turno de '+esc(profiles[room.current_turn]||'tu rival')+'</h2><p>Cuando falle o se le agoten los 30 segundos, podrás girar la ruleta. Puedes cerrar esta pestaña: se guarda el turno automáticamente.</p></section>'+wheel();

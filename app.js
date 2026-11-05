@@ -8,6 +8,8 @@ import {patientPart4} from './patient-part4.js';
 import {patientPart5} from './patient-part5.js';
 import {forensicBook} from './forensic-book.js';
 import {ipe1Book} from './ipe1-book.js';
+import {protectionBookA} from './protection-book-a.js';
+import {protectionBookB} from './protection-book-b.js';
 const patientBook=[...patientPart1,...patientPart2,...patientPart3,...patientPart4,...patientPart5];
 import { SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY } from './config.js';
 const configured=Boolean(SUPABASE_URL&&SUPABASE_PUBLISHABLE_KEY);
@@ -19,7 +21,7 @@ if(!supa){state.records=getStore('radiolab.records',[]);state.mistakes=getStore(
 const ranks=['Estudiante','Auxiliar de imagen','Técnico en prácticas','Técnico de Rayos','Especialista en TC y RM','Técnico Superior de Imagen'];
 function rank(xp){return ranks[Math.min(5,Math.floor(xp/250))]};function xp(){return state.records.reduce((n,r)=>n+r.correct*10,0)};
 const average=()=>state.records.length?(state.records.reduce((n,r)=>n+r.score,0)/state.records.length).toFixed(1):'—';
-const totalErr=()=>Object.keys(state.mistakes).length;const allLessons=()=>[...ipe1Book,...forensicBook,...patientBook,...englishBook,...lessons,...expandedLessons,...state.customLessons];const getLesson=id=>allLessons().find(l=>l.id===id);const getSubject=id=>subjects.find(s=>s[0]===id);
+const totalErr=()=>Object.keys(state.mistakes).length;const allLessons=()=>[...protectionBookA,...protectionBookB,...ipe1Book,...forensicBook,...patientBook,...englishBook,...lessons,...expandedLessons,...state.customLessons];const getLesson=id=>allLessons().find(l=>l.id===id);const getSubject=id=>subjects.find(s=>s[0]===id);
 function go(page,args={}){Object.assign(state,args,{page,notice:''});history.pushState({page,sub:state.sub,lesson:state.lesson},'',`#${page}${state.sub?'/'+state.sub:''}${state.lesson?'/'+state.lesson:''}`);render();window.scrollTo(0,0)}
 window.addEventListener('popstate',ev=>{const x=ev.state||{page:'home',sub:null,lesson:null};Object.assign(state,{page:x.page,sub:x.sub,lesson:x.lesson});render()});
 function notify(msg){state.notice=msg;render()}

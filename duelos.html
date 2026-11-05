@@ -3,6 +3,7 @@
 import {subjects,lessons} from './content.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
+import {radiationTopics} from './radiation-topics.js';
 import {anatomyBookA} from './anatomy-book-a.js';
 import {anatomyBookB} from './anatomy-book-b.js';
 import {anatomyBookC} from './anatomy-book-c.js';
@@ -16,7 +17,7 @@ const CHARACTER={
  digital:'Byte',proyecto:'Proyecto'
 };
 const CAT=subjects.map(s=>[s[0],s[2],CHARACTER[s[0]]||'Radiolab']);
-const ACTIVE_LESSONS=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...classStudyBooks,
+const ACTIVE_LESSONS=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(l=>l.subject!=='proteccion'),
  ...lessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion'].includes(l.subject)),
  ...expandedLessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion'].includes(l.subject))];
 const BANK=ACTIVE_LESSONS.flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l.subject,q})));

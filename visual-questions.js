@@ -23,7 +23,17 @@ const lungsTargets=[
  {target:'rightlung',answer:'Pulmón derecho',x:177,y:175},
  {target:'leftlung',answer:'Pulmón izquierdo',x:350,y:175}
 ];
-const groups={bone:boneTargets,shield:shieldTargets,glasgow:glTargets,lungs:lungsTargets};
+const labTargets=[
+ {target:'tube',answer:'Tubo de muestra',x:114,y:153},
+ {target:'microscope',answer:'Microscopio',x:284,y:150},
+ {target:'petri',answer:'Placa de cultivo',x:434,y:205}
+];
+const englishTargets=[
+ {target:'past',answer:'Pasado',x:110,y:165},
+ {target:'present',answer:'Presente',x:270,y:165},
+ {target:'future',answer:'Futuro',x:430,y:165}
+];
+const groups={bone:boneTargets,shield:shieldTargets,glasgow:glTargets,lungs:lungsTargets,lab:labTargets,english:englishTargets};
 export function generateVisualQuestions(lesson){
  const title=String(lesson?.title||'').toLocaleLowerCase('es'),sub=lesson?.subject;
  let kind=null;
@@ -31,10 +41,12 @@ export function generateVisualQuestions(lesson){
  else if(sub==='anatomia'&&/respiratorio|pulmones|v[ií]as respiratorias/i.test(title))kind='lungs';
  else if(sub==='proteccion'&&/protecci[oó]n|blindaje|distancia|salas de radiodiagn[oó]stico|exposici[oó]n/i.test(title))kind='shield';
  else if(sub==='atencion'&&/glasgow|nivel de consciencia/i.test(title))kind='glasgow';
+ else if(sub==='forense'&&/laboratorio|muestra|microbiolog|cultivo|an[aá]lisis|forense/i.test(title))kind='lab';
+ else if(sub==='ingles'&&/pasado|presente|futuro|past|present|future|verbos|tiempos verbales/i.test(title))kind='english';
  if(!kind)return [];
  const list=groups[kind];
  return list.map((item,i)=>[
-  kind==='bone'?'¿Qué parte del hueso señala la flecha roja?':kind==='lungs'?'¿Qué estructura anatómica está señalada?':kind==='shield'?'¿Qué elemento de protección radiológica está señalado?':'¿Qué componente de la escala de Glasgow está señalado?',
+  kind==='bone'?'¿Qué parte del hueso señala la flecha roja?':kind==='lungs'?'¿Qué estructura anatómica está señalada?':kind==='shield'?'¿Qué elemento de protección radiológica está señalado?':kind==='glasgow'?'¿Qué componente de la escala de Glasgow está señalado?':kind==='lab'?'¿Qué instrumento o material de laboratorio está señalado?':'¿Qué momento de la línea temporal está señalado?',
   list.map(x=>x.answer),i,
   'La flecha señala '+item.answer.toLowerCase()+'. Observa su posición en el esquema.',
   null,{kind,target:item.target}
@@ -55,10 +67,16 @@ function glasgow(){
 function lungs(){
  return '<g><path d="M245 33H275V116L248 143M275 116L306 143" fill="none" stroke="#a9dbea" stroke-width="21" stroke-linejoin="round"/><path d="M226 102Q186 78 145 133Q121 166 118 232Q149 267 224 230Z" fill="#d887a7" stroke="#f3b1cc" stroke-width="5"/><path d="M292 102Q340 76 376 132Q409 169 403 230Q369 266 299 230Z" fill="#d887a7" stroke="#f3b1cc" stroke-width="5"/><path d="M246 141L201 174M271 141L328 173" stroke="#a9dbea" stroke-width="13" stroke-linecap="round"/></g>';
 }
+function laboratory(){
+ return '<g><rect x="73" y="80" width="83" height="155" rx="18" fill="#9fc7d6" stroke="#e1f4f7" stroke-width="5"/><path d="M83 166H146V218H83Z" fill="#cf657d"/><rect x="73" y="67" width="83" height="26" rx="6" fill="#68c4cf"/><path d="M266 60L292 60L292 129L326 157L314 171L263 139Z" fill="#88b5d5" stroke="#d3e6f8" stroke-width="5"/><rect x="281" y="143" width="67" height="25" rx="8" fill="#93c9dc"/><path d="M282 155C259 174 266 207 295 219L322 219" fill="none" stroke="#7fbed2" stroke-width="16"/><rect x="247" y="221" width="123" height="13" rx="5" fill="#d0e4ed"/><ellipse cx="435" cy="199" rx="67" ry="34" fill="#b1e2c6" stroke="#d9f3e6" stroke-width="6"/><ellipse cx="435" cy="195" rx="54" ry="25" fill="#579e7e"/><circle cx="417" cy="194" r="6" fill="#f6d27c"/><circle cx="444" cy="203" r="8" fill="#d8f0b2"/><circle cx="460" cy="188" r="5" fill="#ffd98c"/></g>';
+}
+function timeline(){
+ return '<g><path d="M58 165H490" stroke="#8abbd5" stroke-width="9" stroke-linecap="round"/><path d="M486 150L508 165L486 180" fill="none" stroke="#8abbd5" stroke-width="8" stroke-linecap="round"/><circle cx="110" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><circle cx="270" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><circle cx="430" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><text x="110" y="224" fill="#d7edf4" text-anchor="middle" font-size="16">ANTES</text><text x="270" y="224" fill="#d7edf4" text-anchor="middle" font-size="16">AHORA</text><text x="430" y="224" fill="#d7edf4" text-anchor="middle" font-size="16">DESPUÉS</text></g>';
+}
 export function visualQuestionMedia(q){
  const m=q?.[5];if(!m||!groups[m.kind])return '';
  const found=groups[m.kind].find(x=>x.target===m.target);if(!found)return '';
- const base={bone:skeleton,shield,glasgow,lungs}[m.kind]();
- const name={bone:'Esquema de hueso largo',shield:'Esquema de protección y radiación',glasgow:'Componentes de la escala de Glasgow',lungs:'Esquema del aparato respiratorio'}[m.kind];
+ const base={bone:skeleton,shield,glasgow,lungs,lab:laboratory,english:timeline}[m.kind]();
+ const name={bone:'Esquema de hueso largo',shield:'Esquema de protección y radiación',glasgow:'Componentes de la escala de Glasgow',lungs:'Esquema del aparato respiratorio',lab:'Material de laboratorio',english:'Línea temporal de gramática'}[m.kind];
  return '<figure class="quiz-visual" style="max-width:660px;margin:14px auto 24px;padding:12px;border:1px solid #3e6775;border-radius:18px;background:#092837"><svg role="img" aria-label="'+escapeHtml(name)+' con una flecha roja señalando una estructura" viewBox="0 0 540 310" style="display:block;width:100%;height:auto" xmlns="http://www.w3.org/2000/svg"><defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#ff5656"/></marker></defs>'+base+arrow(found)+'</svg><figcaption style="color:#c7e4ef;font-size:13px;text-align:center">Identifica la estructura indicada por la flecha roja.</figcaption></figure>';
 }

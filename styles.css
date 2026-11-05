@@ -131,3 +131,21 @@ select.field{appearance:auto}label{display:block;color:#a8c7d6;font-size:13px;ma
 .study-real-image figcaption small{display:block;color:#56707e;font-size:11px;margin-top:5px}
 .study-real-image figcaption a{color:#186e87;text-decoration:underline}
 @media(max-width:600px){.study-real-image{padding:9px}.study-real-image img{max-height:330px}.study-real-image figcaption{font-size:12px}}
+
+/* Acceso simplificado: elegir entre iniciar sesión y registrarse */
+.auth-choice,.auth-form-container{max-width:580px;margin:40px auto;padding:clamp(24px,4vw,40px)}
+.auth-choice h1,.auth-form-container h1{font-size:clamp(28px,4vw,40px);margin:12px 0}
+.auth-cards{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:27px 0}
+.auth-option{display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;gap:12px;padding:28px 15px;background:linear-gradient(140deg,#15455c,#123247);border:1px solid #5a99ac;border-radius:19px;color:#f1faff;cursor:pointer;min-height:165px;transition:transform .18s,border-color .18s}
+.auth-option:hover,.auth-option:focus-visible{transform:translateY(-3px);border-color:#80e2e5}
+.auth-option strong{font-size:18px}
+.auth-option span{font-size:13px;color:#add0dc}
+.auth-mode-tabs{display:flex;gap:8px;margin:24px 0;border-bottom:1px solid #2c586c;padding-bottom:10px}
+.auth-mode-button{flex:1;background:#112c3e;border:1px solid #315c6d;border-radius:12px;padding:13px 9px;color:#c4d9e3;font:inherit;font-weight:700;cursor:pointer}
+.auth-mode-button.active{background:#1d6679;color:#f0feff;border-color:#7cdee1}
+.auth-form-container form{display:flex;flex-direction:column;gap:10px}
+.auth-form-container form label{font-weight:650;margin-top:8px}
+.auth-submit{width:100%;margin-top:15px}
+.auth-help{font-size:13px;line-height:1.65;color:#a0e9d9;background:#143b45;border-left:3px solid #66d8c0;border-radius:5px;padding:13px;margin:10px 0}
+.auth-text-link{background:transparent;color:#86dfea;border:0;cursor:pointer;text-decoration:underline;font:inherit}
+@media(max-width:480px){.auth-cards{grid-template-columns:1fr}.auth-option{min-height:110px;padding:20px}.auth-choice,.auth-form-container{margin:15px auto}}

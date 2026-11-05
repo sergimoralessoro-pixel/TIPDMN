@@ -72,3 +72,19 @@ export function augmentLessons(lessons){
   return {...lesson,questions:[...(lesson.questions||[]),...extra,...generatePractice(lesson),...generateVisualQuestions(lesson)]};
  });
 }
+
+// En juegos rápidos los enunciados deben ser concisos, sin explicaciones añadidas.
+export function conciseGameQuestion(question){
+ const q=[...question];let t=String(q[0]||'').trim();
+ t=t.replace(/^En «[^»]+»,\s*/i,'').replace(/^Repaso de conceptos:\s*|^Comprueba tus conocimientos\.\s*|^Selecciona la respuesta más adecuada\.\s*/i,'');
+ t=t.replace(/^¿Qué concepto corresponde a esta descripción\?\s*/i,'Identifica el concepto: ')
+ .replace(/^¿Qué afirmación describe correctamente /i,'¿Qué describe ')
+ .replace(/^En urgencias se valora a una persona que /i,'Glasgow: ')
+ .replace(/^Durante la valoración neurológica se observa que /i,'Glasgow: ')
+ .replace(/^Un paciente presenta estas respuestas:\s*/i,'Glasgow: ')
+ .replace(/^Caso clínico:\s*/i,'Glasgow: ')
+ .replace(/\. ¿Cuál es la suma de los componentes E \+ V \+ M\?/i,'. ¿Cuánto suma E + V + M?')
+ .replace(/\. ¿Qué resultado corresponde a la escala de coma de Glasgow\?/i,'. ¿Qué Glasgow presenta?')
+ .replace(/\. ¿Qué puntuación total tiene en la escala de Glasgow\?/i,'. ¿Qué Glasgow presenta?');
+ q[0]=t;return q;
+}

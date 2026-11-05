@@ -8,6 +8,7 @@ import {patientPart4} from './patient-part4.js';
 import {patientPart5} from './patient-part5.js';
 import {forensicBook} from './forensic-book.js';
 import {ipe1Book} from './ipe1-book.js';
+import {classStudyBooks} from './class-books.js';
 import {anatomyBookA} from './anatomy-book-a.js';
 import {anatomyBookB} from './anatomy-book-b.js';
 import {anatomyBookC} from './anatomy-book-c.js';
@@ -26,7 +27,7 @@ if(!supa){state.records=getStore('radiolab.records',[]);state.mistakes=getStore(
 const ranks=['Estudiante','Auxiliar de imagen','Técnico en prácticas','Técnico de Rayos','Especialista en TC y RM','Técnico Superior de Imagen'];
 function rank(xp){return ranks[Math.min(5,Math.floor(xp/250))]};function xp(){return state.records.reduce((n,r)=>n+r.correct*10,0)};
 const average=()=>state.records.length?(state.records.reduce((n,r)=>n+r.score,0)/state.records.length).toFixed(1):'—';
-const totalErr=()=>Object.keys(state.mistakes).length;const allLessons=()=>[...anatomyBook,...protectionBookA,...protectionBookB,...ipe1Book,...forensicBook,...patientBook,...englishBook,...lessons.filter(l=>l.subject!=='anatomia'),...expandedLessons.filter(l=>l.subject!=='anatomia'),...state.customLessons.filter(l=>l.subject!=='anatomia')];const getLesson=id=>allLessons().find(l=>l.id===id);const getSubject=id=>subjects.find(s=>s[0]===id);
+const totalErr=()=>Object.keys(state.mistakes).length;const allLessons=()=>[...anatomyBook,...classStudyBooks,...state.customLessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion'].includes(l.subject))];const getLesson=id=>allLessons().find(l=>l.id===id);const getSubject=id=>subjects.find(s=>s[0]===id);
 function go(page,args={}){Object.assign(state,args,{page,notice:''});history.pushState({page,sub:state.sub,lesson:state.lesson},'',`#${page}${state.sub?'/'+state.sub:''}${state.lesson?'/'+state.lesson:''}`);render();window.scrollTo(0,0)}
 window.addEventListener('popstate',ev=>{const x=ev.state||{page:'home',sub:null,lesson:null};Object.assign(state,{page:x.page,sub:x.sub,lesson:x.lesson});render()});
 function notify(msg){state.notice=msg;render()}
@@ -121,7 +122,7 @@ function examsPage(){return `<div class="breadcrumbs"><button class="btn small g
 function refreshExamTopics(){
  const subject=document.querySelector('#examSubject'), topic=document.querySelector('#examTopic');
  if(!subject||!topic)return;
- const available=allLessons().filter(l=>l.subject===subject.value&&Array.isArray(l.questions)&&l.questions.length);
+ const available=allLessons().filter(l=>l.subject===subject.value&&Array.isArray(l.questions)&&l.questions.length>=10);
  const previous=topic.value;
  topic.innerHTML='<option value="">📚 Todos los temas ('+available.length+')</option>'+available.map(l=>'<option value="'+safe(l.id)+'" '+(l.questions.length<10?'disabled':'')+'>'+safe(l.title)+(l.questions.length<10?' · En preparación (mín. 10 preguntas)':' · '+l.questions.length+' preguntas')+'</option>').join('');
  if(available.some(l=>l.id===previous))topic.value=previous;

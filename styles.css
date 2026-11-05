@@ -166,3 +166,16 @@ select.field{appearance:auto}label{display:block;color:#a8c7d6;font-size:13px;ma
  html[data-theme="light"] .mobile-more-title button{color:#174355}
 }
 @media(min-width:931px){.mobile-more-overlay,.mobile-more-panel{display:none}}
+
+/* Foro compartido: chat en directo, sin destruir el formulario al recibir mensajes. */
+.forum-status{display:inline-flex;align-items:center;margin:8px 0 16px;padding:8px 13px;border-radius:999px;background:#1b3b4c;color:#c0e7f0;font-size:13px;font-weight:700}
+.forum-status[data-status="live"]{background:#174c3b;color:#a5f6d3}
+.forum-status[data-status="error"]{background:#553343;color:#ffd3dd}
+.forum-rooms{display:flex;gap:8px;overflow-x:auto;max-width:100%;padding:6px 0 12px;scrollbar-width:thin}
+.forum-rooms .btn{white-space:nowrap;flex-shrink:0}
+.forum-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+.forum-heading h3{margin:0}.forum-heading small{color:#98b9c8}
+#forumMessages{margin-top:22px;max-height:64vh;overflow-y:auto;padding-right:3px;scrollbar-width:thin}
+#forumMessages .post{overflow-wrap:anywhere;white-space:normal}
+#forumMessages .post p{white-space:pre-wrap}
+@media(max-width:930px){.forum-rooms{margin:0 -3px}.forum-rooms .btn{padding:10px 13px}#forumMessages{max-height:none}}

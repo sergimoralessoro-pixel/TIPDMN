@@ -1,6 +1,6 @@
 /* Lector de libros de Radiolab: hojas, navegación, fórmulas, tablas y animación didáctica. */
 import {topicFigure} from './topic-illustrations.js';
-import {topicRealMedia} from './real-media.js';
+import {topicRealMedia} from './real-media.js?v=2';
 const e=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function underlinedText(text){
   const input=String(text||'');

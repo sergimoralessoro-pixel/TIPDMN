@@ -62,8 +62,40 @@ return wrap('Identificación ante mortem y post mortem',
  '<path d="M299 146H322" stroke="#f5d48b" stroke-width="5" stroke-dasharray="6 5"/>',
  'Los hallazgos post mortem se cotejan con registros ante mortem: se buscan concordancias verificables.');
 }
+
+function subjectFigure(lesson,heading){
+const key=String(heading||lesson.title||'').toLowerCase(), sub=lesson.subject;
+let labels=[],kind='';
+if(sub==='anatomia'){
+ if(/coraz|c[aá]rdio|circulaci[oó]n|s[ií]stole|v[aá]lvula/.test(key)){labels=[['🫀','Aurículas','Reciben sangre'],['🔄','Ventrículos','Bombeo'],['🩸','Vasos','Transporte']];kind='Corazón y circulación'}
+ else if(/pulmon|respira|pleura|alveol/.test(key)){labels=[['🌬️','Vías aéreas','Conducen aire'],['🫁','Alvéolos','Intercambio'],['🩸','Capilares','Gases']];kind='Aparato respiratorio'}
+ else if(/cereb|neuro|m[eé]dula|nervio|sistema nervioso|mening/.test(key)){labels=[['🧠','Encéfalo','Procesa'],['〰️','Médula','Comunica'],['⚡','Nervios','Transmiten']];kind='Sistema nervioso'}
+ else if(/hues|[oó]se|articul|esquelet|cr[aá]neo|costillas/.test(key)){labels=[['🦴','Huesos','Sostienen'],['🦵','Articulaciones','Unen'],['💪','Músculos','Mueven']];kind='Aparato locomotor'}
+ else if(/hormon|tiroid|endocrin|p[aá]ncreas|suprarrenal/.test(key)){labels=[['🧠','Hipófisis','Regulación'],['🦋','Tiroides','Metabolismo'],['💉','Páncreas','Glucemia']];kind='Sistema endocrino'}
+ else if(/radiograf|tomograf|ecograf|resonancia|imagen/.test(key)){labels=[['🩻','Radiografía','Proyección'],['🖥️','TC','Cortes'],['🧲','RM','Magnetismo']];kind='Técnicas de imagen'}
+ else {labels=[['↕️','Sagital','Lados'],['↔️','Coronal','Frente/dorso'],['⊞','Axial','Arriba/abajo']];kind='Orientación anatómica'}
+}else if(sub==='proteccion'){
+ if(/dosis|magnitud|activid|sievert|gray/.test(key)){labels=[['⚛️','Becquerel','Actividad'],['📊','Gray','Dosis absorbida'],['🛡️','Sievert','Dosis ponderada']];kind='Magnitudes radiológicas'}
+ else if(/etapas|efectos|c[eé]lul|radiosensib|lesi[oó]n/.test(key)){labels=[['⚛️','Física','Ionización'],['🧪','Química','Radicales'],['🧬','Biológica','Respuesta']];kind='Efectos radiobiológicos'}
+ else if(/distancia|tiempo|blindaje|protecci[oó]n/.test(key)){labels=[['⏱️','Tiempo','Reducir'],['📏','Distancia','Aumentar'],['🛡️','Blindaje','Atenuar']];kind='Medidas de protección'}
+ else if(/residuos|decaimiento|transporte/.test(key)){labels=[['☢️','Actividad','Inicial'],['⏳','Semiperiodo','A/2'],['📦','Gestión','Controlada']];kind='Actividad y residuos'}
+ else {labels=[['☢️','Fuente','Radiación'],['🔎','Detección','Medición'],['📋','Registro','Control']];kind='Seguridad radiológica'}
+}else if(sub==='atencion'){
+ if(/comunicaci[oó]n|entrevista|barrera|empat[ií]a/.test(key)){labels=[['🗣️','Emisor','Habla'],['💬','Mensaje','Información'],['👂','Receptor','Comprende']];kind='Comunicación sanitaria'}
+ else if(/glasgow|constante|observaci[oó]n|pulso/.test(key)){labels=[['👀','Observación','Identificar'],['🩺','Medición','Registrar'],['📝','Aviso','Comunicar']];kind='Observación del paciente'}
+ else {labels=[['🪪','Identificación','Confirmar'],['🩻','Prueba','Preparar'],['🫶','Atención','Acompañar']];kind='Atención centrada en el paciente'}
+}else if(sub==='ingles'){
+ labels=[['⏮️','PAST','Antes'],['⏺️','PRESENT','Ahora'],['⏭️','FUTURE','Después']];kind='Línea temporal de gramática inglesa';
+}else if(sub==='ipe1'||sub==='ipe2'){
+ labels=[['🎯','Objetivo','Planificar'],['🛡️','Seguridad','Prevenir'],['💼','Trabajo','Aplicar']];kind='Competencias para el empleo';
+}else if(sub==='forense'){return '';}
+else {labels=[['🔍','Observar','Información'],['🧪','Analizar','Método'],['📋','Aplicar','Resultados']];kind='Secuencia de estudio'}
+const centers=[107,310,513],icons=labels.map((x,i)=>{let cx=centers[i];return '<circle cx="'+cx+'" cy="116" r="64" fill="'+['#13485b','#184c66','#1b5364'][i]+'" stroke="'+['#51c6d5','#8dbbe5','#7ee1bf'][i]+'" stroke-width="3"/><text x="'+cx+'" y="111" text-anchor="middle" font-size="47">'+x[0]+'</text><text x="'+cx+'" y="173" text-anchor="middle" fill="#e9fdff" font-size="16" font-weight="800">'+esc(x[1])+'</text><text x="'+cx+'" y="220" text-anchor="middle" fill="#bcdde7" font-size="15">'+esc(x[2])+'</text>'}).join('');
+const arrows='<path d="M178 116H231M381 116H433" fill="none" stroke="#75dbe8" stroke-width="7" stroke-linecap="round"/><path d="M218 104L231 116L218 128M420 104L433 116L420 128" fill="none" stroke="#75dbe8" stroke-width="5" stroke-linecap="round"/>';
+return wrap(kind,arrows+icons,'Esquema visual original del apartado. Las relaciones son didácticas y pueden simplificar el proceso.');
+}
 export function topicFigure(lesson,heading){
-if(lesson?.subject!=='forense')return '';
+if(lesson?.subject!=='forense')return subjectFigure(lesson,heading);
  const h=(heading||'').toLowerCase();
  if(/custodia|forense|recogida|recepci[oó]n|manipulaci[oó]n/.test(h))return custodia();
  if(/cromatograf|t[oó]xic|an[aá]lisi|confirmaci[oó]n/.test(h))return chromatogram();

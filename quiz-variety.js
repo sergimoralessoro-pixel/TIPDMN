@@ -11,8 +11,18 @@ export function varyQuestion(question,random=Math.random,form=0){
  const order=shuffled(q[1].map((value,i)=>({value,i})),random);
  q[1]=order.map(x=>x.value);q[2]=order.findIndex(x=>x.i===question[2]);
  if(Array.isArray(question[4]))q[4]=order.map(x=>question[4][x.i]);
- // Mantener el enunciado directo: variar las opciones, no añadir muletillas.
- q[0]=String(question[0]||'').trim();
+ // Reformular solo cuando sea inequívocamente equivalente; nunca añadir muletillas.
+ const text=String(question[0]||'').trim();
+ q[0]=text;
+ if(form%3===1){
+   if(/^¿Qué concepto corresponde a esta descripción\? «(.+)»$/s.test(text))q[0]=text.replace(/^¿Qué concepto corresponde a esta descripción\? «(.+)»$/s,'¿Qué término se define así? «$1»');
+   else if(/^¿Qué afirmación describe correctamente «(.+)»\?$/s.test(text))q[0]=text.replace(/^¿Qué afirmación describe correctamente «(.+)»\?$/s,'¿Cuál es la definición correcta de «$1»?');
+   else if(/^¿Qué significa «(.+)»\?$/s.test(text))q[0]=text.replace(/^¿Qué significa «(.+)»\?$/s,'¿A qué se refiere «$1»?');
+ }else if(form%3===2){
+   if(/^¿Qué concepto corresponde a esta descripción\? «(.+)»$/s.test(text))q[0]=text.replace(/^¿Qué concepto corresponde a esta descripción\? «(.+)»$/s,'Identifica el concepto: «$1»');
+   else if(/^¿Qué afirmación describe correctamente «(.+)»\?$/s.test(text))q[0]=text.replace(/^¿Qué afirmación describe correctamente «(.+)»\?$/s,'¿Cómo se define «$1»?');
+   else if(/^¿Qué significa «(.+)»\?$/s.test(text))q[0]=text.replace(/^¿Qué significa «(.+)»\?$/s,'¿Cuál es el significado de «$1»?');
+ }
  return q;
 }
 export function drawVaried(items,count,historyKey,options={}){
@@ -36,7 +46,7 @@ export function drawVaried(items,count,historyKey,options={}){
 export function augmentLessons(lessons){
  return lessons.map(lesson=>{
   const pts=Array.isArray(lesson.sections)&&lesson.sections.length?lesson.sections:(Array.isArray(lesson.points)?lesson.points:[]);
-  const eligible=pts.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&typeof p[1]==='string'&&p[0].trim().length>=4&&p[0].trim().length<=90&&p[1].trim().length>=20&&p[1].trim().length<=550);
+  const eligible=pts.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&typeof p[1]==='string'&&p[0].trim().length>=4&&p[0].trim().length<=90&&p[1].trim().length>=20&&p[1].trim().length<=190);
   const seen=new Set();
   const distinct=eligible.filter(p=>{const k=p[0].toLocaleLowerCase('es').trim();if(seen.has(k))return false;seen.add(k);return true});
   const extra=[];

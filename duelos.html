@@ -37,7 +37,7 @@ const bank=course.flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l
 const categories=subjects.map(x=>({id:x[0],name:x[1],emoji:x[2],pool:bank.filter(y=>y.sub===x[0])})).filter(x=>x.pool.length>=10);
 const palette=['#30c6cf','#517dde','#ad78ce','#f2a854','#4bb894','#df739f','#3c9cca','#adc15c','#c278b9','#2fc7a6','#f18b62','#728bd2','#bd78df','#ddba5b','#44b3ca','#bf80af','#92a5ca'];
 const names=Object.fromEntries(categories.map(x=>[x.id,x.name]));
-let supa,user,room=null,active=[],profiles={},busy=false,animating=false,polling=false,channel=null,chosenKey='',roomVersion=-1,seenRevision=-1,endingAt=0,gameError='',lastShownRoom=null,spinAngle=0;
+let supa,user,room=null,active=[],profiles={},busy=false,animating=false,polling=false,channel=null,gameError='',spinAngle=0;
 const byId=id=>categories.find(x=>x.id===id);
 const timeLeft=()=>room?Math.max(0,Math.ceil((new Date(room.expires_at).getTime()-Date.now())/1000)):0;
 const questionLeft=()=>room?.question_started_at?Math.max(0,Math.ceil((new Date(room.question_started_at).getTime()+20000-Date.now())/1000)):0;
@@ -73,7 +73,7 @@ async function loadProfiles(){
 }
 function header(){return '<div class="bar"><button class="btn" id="exit">← Mis duelos</button><span class="pill">Sala '+esc(room.code)+'</span><span class="pill" id="expiry">⏳ '+formatTime(timeLeft())+'</span></div>';}
 function formatTime(n){return Math.floor(n/3600)+'h '+String(Math.floor(n%3600/60)).padStart(2,'0')+'m '+String(n%60).padStart(2,'0')+'s';}
-function bindExit(){const b=document.getElementById('exit');if(b)b.onclick=()=>{disconnect();room=null;lastShownRoom=null;loadLobby();}}
+function bindExit(){const b=document.getElementById('exit');if(b)b.onclick=()=>{disconnect();room=null;loadLobby();}}
 function completed(){
  const earned=(room?.awards||{});
  return [room.host_id,room.guest_id].some(x=>x&&Object.keys(earned[x]||{}).filter(y=>earned[x][y]).length===categories.length);
@@ -110,7 +110,7 @@ async function join(){
  try{const r=await rpc('duel_join',{p_code:code});await openRoom(r)}catch(e){alert(e.message)}
 }
 async function openRoom(r){
- disconnect();room=r;roomVersion=r.revision;seenRevision=r.revision;lastShownRoom=null;await loadProfiles();renderRoom();connect();
+ disconnect();room=r;await loadProfiles();renderRoom();connect();
 }
 function disconnect(){if(channel&&supa){supa.removeChannel(channel);channel=null;}}
 function connect(){
@@ -167,7 +167,7 @@ async function spin(){
  if(room.status==='playing'&&room.question_key)return;
  animating=true;
  const cat=categories[randomOf(categories.length)],prev=room;
- const pool=cat.pool;const key=pool[randomOf(pool.length)].key;
+ const already=new Set(room.question_keys||[]);const available=cat.pool.filter(x=>!already.has(x.key));const pool=available.length?available:cat.pool;const key=pool[randomOf(pool.length)].key;
  const index=categories.indexOf(cat);
  const wedge=360/categories.length;
  spinAngle+=1440+Math.floor(360-(index+.5)*wedge);
@@ -213,7 +213,7 @@ try{
  supa=sdk.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);user=(await supa.auth.getUser()).data.user;
  await loadLobby();
  setInterval(()=>tick().catch(console.error),400);
- setInterval(()=>{if(room)refresh();else if(user&&document.visibilityState==='visible')loadLobby();},6000);
+ setInterval(()=>{if(room)refresh();},6000);
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&room)refresh()});
 }catch(e){console.error(e);show('<section class="card"><h1>Conexión no disponible</h1><p>'+esc(e.message)+'</p><a href="./">Volver a Radiolab</a></section>')}
 </script></body></html>

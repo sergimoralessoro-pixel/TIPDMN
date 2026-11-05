@@ -9,8 +9,25 @@ function underlinedText(text){
 }
 function paragraphs(p){
  const raw=String(p||'').trim();
- const chunks=raw.split(/(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ0-9])/);
- let groups=[];for(let i=0;i<chunks.length;i+=3)groups.push(chunks.slice(i,i+3).join(' '));
+ if(!raw)return '';
+ // El texto procedente de diapositivas suele traer conceptos en la forma "Término: definición".
+ // Los presentamos como puntos separados, sin fusionarlos en un párrafo interminable.
+ const matches=[...raw.matchAll(/(?:^|(?<=\\. )|(?<=\\? )|(?<=\\! ))([A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9()\/\- ]{2,43}):\\s/g)];
+ if(matches.length>=2){
+   const start=matches[0].index;
+   const intro=raw.slice(0,start).trim();
+   const lead=intro?intro.split(/(?<=[.!?])\\s+(?=[A-ZÁÉÍÓÚÑ])/).map(t=>'<p>'+underlinedText(t)+'</p>').join(''):'';
+   const bullets=matches.map((m,i)=>{
+     const valueStart=m.index+m[0].length;
+     const valueEnd=i+1<matches.length?matches[i+1].index:raw.length;
+     const value=raw.slice(valueStart,valueEnd).trim();
+     return '<li><strong class="book-underline">'+e(m[1])+':</strong> '+underlinedText(value)+'</li>';
+   }).join('');
+   return lead+'<ul class="book-study-points">'+bullets+'</ul>';
+ }
+ // Cuando el apartado es narrativo, lo dividimos por ideas en párrafos legibles.
+ const chunks=raw.split(/(?<=[.!?])\\s+(?=[A-ZÁÉÍÓÚÑ0-9])/);
+ const groups=[];for(let i=0;i<chunks.length;i+=2)groups.push(chunks.slice(i,i+2).join(' '));
  return groups.map(x=>'<p>'+underlinedText(x)+'</p>').join('');
 }
 function heartAnimation(){

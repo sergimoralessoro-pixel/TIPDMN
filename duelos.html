@@ -23,6 +23,7 @@
 @media(max-width:560px){main{padding:12px}.card{padding:14px;border-radius:16px}.scoreboard{gap:7px}.player-card{padding:10px}.badge-line{gap:2px}.badge-symbol{font-size:18px}.player-card strong{font-size:13px}.player-counter{font-size:10px}.wheel-icon{font-size:18px}}
 </style></head><body><main><div class="bar"><div class="brand">🩻 RADIO<span>LAB</span> <small style="font-weight:400;font-size:13px">ARENA</small></div><a href="./">← Volver a la academia</a></div><div id="app"><div class="card hero"><h1>🎡 Duelos con ruleta</h1><p>Cargando la arena...</p></div></div></main><script type="module">
 import {subjects,lessons} from './content.js';
+import {augmentLessons,uniqueBank} from './quiz-variety.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
 import {radiationTopics} from './radiation-topics.js';
@@ -33,7 +34,7 @@ import {anatomyBookC} from './anatomy-book-c.js';
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from './config.js';
 const el=document.getElementById('app'),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[c]));
 const course=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(x=>x.subject!=='proteccion'),...additionalDriveBooks,...lessons.filter(x=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(x.subject)),...expandedLessons.filter(x=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(x.subject))];
-const bank=course.flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l.subject,q})));
+const bank=uniqueBank(augmentLessons(course).flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l.subject,q}))));
 const categories=subjects.map(x=>({id:x[0],name:x[1],emoji:x[2],pool:bank.filter(y=>y.sub===x[0])})).filter(x=>x.pool.length>=10);
 const palette=['#30c6cf','#517dde','#ad78ce','#f2a854','#4bb894','#df739f','#3c9cca','#adc15c','#c278b9','#2fc7a6','#f18b62','#728bd2','#bd78df','#ddba5b','#44b3ca','#bf80af','#92a5ca'];
 const names=Object.fromEntries(categories.map(x=>[x.id,x.name]));

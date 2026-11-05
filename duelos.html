@@ -166,8 +166,9 @@ async function spin(){
  if(animating||busy||!room||room.current_turn&&room.current_turn!==user.id)return;
  if(room.status==='playing'&&room.question_key)return;
  animating=true;
- const cat=categories[randomOf(categories.length)],prev=room;
- const already=new Set(room.question_keys||[]);const available=cat.pool.filter(x=>!already.has(x.key));const pool=available.length?available:cat.pool;const key=pool[randomOf(pool.length)].key;
+ const prev=room,already=new Set(room.question_keys||[]),possible=categories.filter(c=>c.pool.some(x=>!already.has(x.key)));
+ if(!possible.length){animating=false;return status('Ya se han utilizado todas las preguntas de esta partida. Finaliza a las dos horas.');}
+ const cat=possible[randomOf(possible.length)],pool=cat.pool.filter(x=>!already.has(x.key)),key=pool[randomOf(pool.length)].key;
  const index=categories.indexOf(cat);
  const wedge=360/categories.length;
  spinAngle+=1440+Math.floor(360-(index+.5)*wedge);

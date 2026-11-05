@@ -1,3 +1,4 @@
+import {generatePractice} from './practice-problems.js';
 // Selección variada con corrección inalterada para los modos de Radiolab.
 export const stableHash=(s)=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
 export function rng(seed){let n=stableHash(seed)||123456789;return ()=>{n+=0x6D2B79F5;let t=n;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296}}
@@ -59,6 +60,6 @@ export function augmentLessons(lessons){
     ]);
    }
   }
-  return {...lesson,questions:[...(lesson.questions||[]),...extra]};
+  return {...lesson,questions:[...(lesson.questions||[]),...extra,...generatePractice(lesson)]};
  });
 }

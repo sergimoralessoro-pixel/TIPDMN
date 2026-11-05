@@ -1,4 +1,5 @@
 import { subjects,lessons } from './content.js';
+import {drawVaried,uniqueBank,varyQuestion,shuffled} from './quiz-variety.js';
 import {expandedLessons} from './extra-content.js';
 import {englishBook} from './english-book.js';
 import {patientPart1} from './patient-part1.js';
@@ -101,12 +102,12 @@ function lessonPage(){
  <div class="book-intro"><div><span class="tag">📚 LIBRO DE ESTUDIO · ${safe(getSubject(l.subject)[1])}</span><h1>${safe(l.title)}</h1><p>${safe(l.intro)}</p></div><div class="actions"><button class="btn primary" data-action="lessonTest">📝 Examen tipo test (${l.questions.length} preguntas)</button><button class="btn" data-action="flash">🧠 Tarjetas de repaso</button><button class="btn" data-action="timedLesson">⏱️ Contrarreloj</button></div></div>
  ${renderStudyBook(l,state.bookPage)}`;
 }
-function quiz(questions,mode='normal'){if(!questions.length)return notify('No hay preguntas disponibles todavía');state.test=questions;state.answers={};state.result=null;state.mode=mode;state.startedAt=Date.now();go('test')}
+function quiz(questions,mode='normal'){if(!questions.length)return notify('No hay preguntas disponibles todavía');state.test=shuffled(uniqueBank(questions)).map((item,i)=>({...item,q:varyQuestion(item.q,Math.random,i%4)}));state.answers={};state.result=null;state.mode=mode;state.startedAt=Date.now();go('test')}
 function getQuestion(id,i){return getLesson(id)?.questions[i]}
 function startLesson(){const l=getLesson(state.lesson);if(!l)return;if(l.questions.length<10)return notify('Este tema tiene menos de 10 preguntas y su examen está en preparación. No lo presentaré como examen completo.');quiz(l.questions.map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q}))) }
 function startSubject(){const ls=allLessons().filter(l=>l.subject===state.sub);quiz(ls.flatMap(l=>l.questions.map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q}))))}
 function selectedTest(){const ids=[...document.querySelectorAll('.topicSelect:checked')].map(x=>x.dataset.topic);if(!ids.length)return notify('Marca uno o varios temas para practicar.');const ls=allLessons().filter(l=>ids.includes(l.id));quiz(ls.flatMap(l=>l.questions.map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q}))),'selected')}
-function mixed(){const q=allLessons().flatMap(l=>l.questions.map((x,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q:x})));quiz(q.sort(()=>Math.random()-.5).slice(0,10),'mixed')}
+function mixed(){const q=allLessons().flatMap(l=>l.questions.map((x,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q:x})));quiz(drawVaried(q,10,'radiolab.history.mixed'),'mixed')}
 function errorsTest(){const q=Object.values(state.mistakes).map(x=>{let a=getQuestion(x.lesson,x.question);return a?{qid:`${x.lesson}:${x.question}`,l:x.lesson,i:x.question,q:a}:null}).filter(Boolean);if(!q.length)return notify('¡No tienes preguntas pendientes de repasar!');quiz(q,'mistakes')}
 function whyNotSelected(q,selected){
  if(selected===q[2])return '';
@@ -291,7 +292,7 @@ function dailyFinished(){return state.records.find(r=>r.lesson==='daily'&&dailyR
 function dailyStart(){
  if(dailyFinished())return notify('¡Ya has completado la misión de hoy! Vuelve mañana para una nueva.');
  const mission=dailyMission();
- const all=allLessons().filter(l=>!mission.subs||mission.subs.includes(l.subject)).flatMap(l=>l.questions.map((q,i)=>({qid:l.id+':'+i,l:l.id,i,q})));
+ const all=uniqueBank(allLessons().filter(l=>!mission.subs||mission.subs.includes(l.subject)).flatMap(l=>l.questions.map((q,i)=>({qid:l.id+':'+i,l:l.id,i,q}))));
  let seed=hashQuestion(dailyLocalDate()+mission.name,0x9e3779b9);
  const random=()=>{seed=(seed+0x6d2b79f5)|0;let a=Math.imul(seed^(seed>>>15),1|seed);a^=a+Math.imul(a^(a>>>7),61|a);return ((a^(a>>>14))>>>0)/4294967296};
  const shuffle=list=>{const a=[...list];for(let i=a.length-1;i>0;i--){let j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -335,8 +336,8 @@ function runExam(subject,count,timed=false,topicId=null){
  let all=selected.flatMap(l=>(l.questions||[]).map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q})));
  if(!all.length)return notify('Todavía no hay preguntas disponibles para este examen.');
  if(topicId&&all.length<10)return notify('Este tema todavía no tiene 10 preguntas distintas. Su examen está en preparación.');
- for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]]}
- const q=all.slice(0,Math.max(1,count));
+ const q=drawVaried(all,Math.max(1,count),'radiolab.history.exam.'+(topicId||subject||'all'));
+ if(!q.length)return notify('No hay preguntas distintas para este examen.');
  quiz(q,timed?'timed':'exam');
 }
 function arenaPage(){return `<div class="breadcrumbs"><button class="btn small ghost" data-go="home">← Inicio</button></div><div class="hero"><span class="tag">🎮 ARENA RADIO LAB</span><h1>Desafía a tus<br><span class="highlight">compañeros.</span></h1><p>Compite en duelos por turnos o en Kahoot simultáneo y continúa tus partidas guardadas.</p></div><section class="section panel"><h2>🎡 Duelos con ruleta · 1 contra 1</h2><p>Gira por turnos, consigue emojis al acertar tres preguntas por asignatura y continúa la partida más tarde (hasta 2 horas). Cada pregunta dura 20 segundos.</p><a class="btn primary" href="./duelos.html">Entrar a Duelos con Ruleta →</a></section><section class="section panel"><h2>🎯 Kahoot Radiolab · Grupos</h2><p>Elige una asignatura o preguntas aleatorias, crea una sala por código y competid en directo con clasificación y podio.</p><a class="btn primary" href="./kahoot.html">Entrar a Kahoot en directo →</a></section><section class="section grid"><div class="panel"><h2>🏁 Crear desafío asíncrono</h2><form id="challengeCreate"><label>Asignatura</label><select class="field" name="subject">${subjects.map(x=>`<option value="${x[0]}">${safe(x[1])}</option>`).join('')}</select><button class="btn primary" ${!state.user?'disabled':''}>Crear código</button></form></div><div class="panel"><h2>🎟️ Unirse</h2><form id="challengeJoin"><label>Código de 6 caracteres</label><input class="field" name="code" maxlength="6" minlength="6" required placeholder="AB12CD"><button class="btn primary" ${!state.user?'disabled':''}>Entrar al reto</button></form></div></section>${!state.user?'<p class="muted">Necesitas una cuenta para guardar los desafíos compartidos. En modo demo usa los tests individuales.</p>':''}<section class="section panel"><h2>💡 Cómo funciona</h2><p>Esta modalidad es asíncrona: cada jugador responde cuando entra, y los resultados se guardan. No se presenta falsamente como Kahoot en directo.</p>${state.challenge?`<p class="tag">Código o identificador: ${safe(state.challenge)}</p><button class="btn" data-action="refreshChallenge">Ver estado</button>`:''}${state.challenges.length?state.challenges.map(x=>`<div class="rowitem"><span>${safe(x.username||'Alumno')}: ${x.score}/${x.total}</span></div>`).join(''):''}</section>`}

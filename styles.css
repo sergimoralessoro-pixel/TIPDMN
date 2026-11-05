@@ -13,3 +13,16 @@ select.field{appearance:auto}label{display:block;color:#a8c7d6;font-size:13px;ma
 .english-tip{background:linear-gradient(120deg,#223b3c,#14333a);border-color:#5c9e92;margin:18px 0}
 .english-tip strong{color:#a7edbd}
 .english-tip p{color:#e5f7eb}
+
+/* Atención al Paciente: esquemas visuales por tema */
+.patient-visual{margin:19px 0 25px;padding:20px;background:linear-gradient(125deg,#0d3343,#153b47);border:1px solid #438f9f;border-radius:21px;overflow:hidden}
+.patient-visual .meta{color:#8feaf1;font-weight:800;font-size:12px;letter-spacing:1.2px}
+.patient-flow{display:flex;align-items:center;justify-content:space-around;gap:9px;margin:24px 0 4px}
+.patient-step{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;flex:1;min-width:0}
+.patient-step b{font-size:clamp(11px,1.8vw,15px);color:#edfaff}
+.patient-emoji{display:grid;place-items:center;width:clamp(55px,12vw,94px);height:clamp(55px,12vw,94px);border-radius:22px;background:#11475a;border:1px solid #49aec1;font-size:clamp(25px,5vw,43px);animation:patientFloat 3.5s ease-in-out infinite}
+.patient-arrow{color:#67dfea;font-weight:900;font-size:clamp(17px,3vw,30px)}
+.patient-pulse{opacity:.7;max-width:550px;margin:4px auto 0}
+@keyframes patientFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media(max-width:540px){.patient-visual{padding:13px}.patient-flow{gap:3px}.patient-step b{line-height:1.15}.patient-emoji{border-radius:16px}}
+@media(prefers-reduced-motion:reduce){.patient-emoji,.eng-dot{animation:none}}

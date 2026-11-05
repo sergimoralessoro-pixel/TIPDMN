@@ -3,6 +3,21 @@
  * No descargar ni copiar materiales de buscadores sin licencia.
  */
 const items=[
+ {id:'rm-mri',sub:'rm',match:/resonancia|imán|campo magnético|equipo|seguridad|bobina|adquisición/i,
+  file:'An MRI scanner.JPG',alt:'Fotografía real de un equipo de resonancia magnética de uso clínico',credit:'Walter Davies, CC BY-SA 4.0',caption:'Equipo real de resonancia magnética. Fotografía educativa.'},
+ {id:'tc-scanner',sub:'tc',match:/tomograf|gantry|detector|tubo|equipos|adquisición|reconstrucción|protocolo/i,
+  file:'CAT scanner.jpg',alt:'Fotografía de un tomógrafo computarizado GE LightSpeed y su mesa',credit:'liz west, CC BY 2.0',caption:'Equipo de tomografía computarizada con gantry y camilla.'},
+ {id:'nuclear-camara',sub:'nuclear',match:/gammac[aá]mara|SPECT|colimador|equipos|detector|adquisición|mantenimiento/i,
+  file:'Gamma camera.jpg',alt:'Fotografía de cámara gamma SPECT y profesional de medicina nuclear',credit:'Brendaicm, CC BY-SA 3.0',caption:'Gammacámara SPECT utilizada en medicina nuclear.'},
+ {id:'mamografia',sub:'rxespecial',match:/mamograf|mama|compresi[oó]n|craneocaudal|oblicua/i,
+  file:'Mammography machine.jpg',alt:'Fotografía real de equipo de mamografía',credit:'Bill Branson / National Cancer Institute, dominio público',caption:'Equipo de mamografía para adquisición radiográfica de mama.'},
+ {id:'rx-torax',sub:'rxsimple',match:/t[oó]rax|radiograf|proyecci[oó]n PA|pulmon|costal|estern[oó]n/i,
+  file:'Chest X-Ray.jpg',alt:'Radiografía de tórax con pulmón, tráquea y arcos costales',credit:'US Army, dominio público',caption:'Radiografía de tórax. Se observan campos pulmonares y estructuras mediastínicas.'},
+ {id:'rx-posicion',sub:'rxsimple',match:/posicionamiento|colimaci[oó]n|preparaci[oó]n|estudio|recepci[oó]n/i,
+  file:'Radiographic positioning of a chest x-ray.jpg',alt:'Profesional posicionando un paciente para radiografía de tórax',credit:'AndyThesis, CC0',caption:'Posicionamiento radiográfico real y ajuste de la exploración.'},
+ {id:'eco-real',sub:'tc',match:/ecograf|ultrason|transductor|doppler/i,
+  file:'Medical ultrasound.jpg',alt:'Profesional realizando ecografía clínica a un paciente',credit:'US Navy, dominio público',caption:'Exploración clínica con ultrasonidos y transductor.'},
+
  {id:'cavidades',sub:'anatomia',match:/cavidades|cavidad|diafragma|mediastino/i,
   file:'Scheme body cavities-es.svg',alt:'Cavidades del cuerpo humano en español: craneal, torácica, abdominal y pélvica',credit:'NCI, Mysid y Angelito7, dominio público',caption:'Cavidades corporales, rotuladas en español.'},
  {id:'cultivo',sub:'forense',match:/cultivo|microbiolog|bacteri|colonias|placa/i,

@@ -98,8 +98,8 @@ export function topicFigure(lesson,heading){
 if(lesson?.subject!=='forense')return subjectFigure(lesson,heading);
  const h=(heading||'').toLowerCase();
  if(/custodia|forense|recogida|recepci[oó]n|manipulaci[oó]n/.test(h))return custodia();
- if(/cromatograf|t[oó]xic|an[aá]lisi|confirmaci[oó]n/.test(h))return chromatogram();
- if(/muestras|intoxicaci[oó]n|sangre|orina|etanol/.test(h))return toxins();
+ if(/cromatograf|t[eé]cnicas de an[aá]lisis|confirmaci[oó]n/.test(h))return chromatogram();
+ if(/muestras|intoxicaci[oó]n|t[oó]xic|toxicocin[eé]tica|sangre|orina|etanol/.test(h))return toxins();
  if(/gen[eé]tic|adn|pcr|parentesco/.test(h))return dna();
  if(/microbi|cultivo|bacteri/.test(h))return bacteria();
  if(/histolog|histoqu[ií]m|tinci[oó]n/.test(h))return histology();

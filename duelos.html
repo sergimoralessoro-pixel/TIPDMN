@@ -1,5 +1,27 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Radiolab · Duelos con ruleta</title><meta name="theme-color" content="#071320"><style>
-:root{font-family:system-ui,-apple-system,sans-serif;background:#071320;color:#edfaff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,#16435a,#071320 55%);min-height:100vh}main{max-width:960px;margin:auto;padding:22px}.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.brand{font-size:24px;font-weight:850;color:#f0fdff}.brand span{color:#3adef0}a{color:#5bdfef}.card{border:1px solid #285266;background:#10283a;border-radius:22px;padding:24px;margin:18px 0}.hero{background:linear-gradient(120deg,#135370,#11273d);padding:32px}.muted{color:#a4c5d6}.btn{border:1px solid #37647a;background:#173b50;color:#edfaff;border-radius:13px;font-weight:700;padding:12px 17px;cursor:pointer}.btn.primary{background:#36d7e9;color:#062131;border-color:#36d7e9}.btn:disabled{opacity:.42;cursor:not-allowed}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.field{width:100%;border:1px solid #3d6175;background:#081d2d;color:white;padding:12px;border-radius:11px;margin:10px 0 16px;font:inherit}.pill{display:inline-block;background:#1b4b60;color:#8df0f0;padding:8px 13px;border-radius:20px}.wheel{width:min(320px,75vw);aspect-ratio:1;border-radius:50%;border:10px solid #32637a;margin:24px auto;box-shadow:0 0 0 6px #10374b,0 0 50px #09adc933;background:conic-gradient(#22c7db 0 36deg,#2f81c7 36deg 72deg,#9c73d6 72deg 108deg,#ec9f4b 108deg 144deg,#46b797 144deg 180deg,#d96888 180deg 216deg,#248ba1 216deg 252deg,#a0b345 252deg 288deg,#a86ca8 288deg 324deg,#2eaa84 324deg 360deg);display:grid;place-items:center;transition:transform 2.3s cubic-bezier(.17,.8,.18,1)}.wheel:before{content:'🩻';background:#092333;border:5px solid white;border-radius:50%;font-size:40px;width:90px;height:90px;display:grid;place-items:center}.wheel-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:25px}.wheel-item{display:flex;align-items:center;gap:10px;background:#102e42;padding:10px;border-radius:12px;border:1px solid #2e5267}.wheel-item>span{font-size:27px}.wheel-item b{display:block;font-size:13px}.wheel-item small{display:block;font-size:11px;color:#95c9d6;margin-top:3px}.wheel-item.locked{opacity:.5}.wheelouter{text-align:center}.pointer{font-size:33px;margin-bottom:-22px;position:relative;z-index:1}.options{display:grid;gap:10px}.option{text-align:left;padding:15px;border:1px solid #36596b;color:#eef9ff;background:#122f41;border-radius:13px;font-size:16px;cursor:pointer}.option.selected{border-color:#43e4f0;background:#18566b}.head{font-size:30px;margin:0 0 8px}.figure{font-size:50px}.count{font-size:45px;font-weight:900;color:#63e9ef}.ok{color:#87efa7}.error{color:#ffb2b2}.hidden{display:none}.notice{background:#3e2b22;padding:14px;border-radius:12px;color:#ffcfad}.collection{display:flex;gap:9px;flex-wrap:wrap}.figurecard{border:1px solid #366375;padding:16px;border-radius:15px;text-align:center;min-width:110px;background:#102c40}.figures{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}label{font-weight:700}p{line-height:1.55}@media(max-width:600px){.card{padding:17px}.hero{padding:21px}.head{font-size:25px}}</style></head><body><main><div class="bar"><div class="brand">🩻 RADIO<span>LAB</span> <small style="font-weight:400;font-size:13px">ARENA</small></div><a href="./">← Volver a la academia</a></div><div id="app"><div class="card hero"><h1>🎡 Duelos con ruleta</h1><p>Cargando la arena...</p></div></div></main><script type="module">
+:root{font-family:system-ui,-apple-system,sans-serif;background:#071320;color:#edfaff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,#16435a,#071320 55%);min-height:100vh}main{max-width:960px;margin:auto;padding:22px}.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.brand{font-size:24px;font-weight:850;color:#f0fdff}.brand span{color:#3adef0}a{color:#5bdfef}.card{border:1px solid #285266;background:#10283a;border-radius:22px;padding:24px;margin:18px 0}.hero{background:linear-gradient(120deg,#135370,#11273d);padding:32px}.muted{color:#a4c5d6}.btn{border:1px solid #37647a;background:#173b50;color:#edfaff;border-radius:13px;font-weight:700;padding:12px 17px;cursor:pointer}.btn.primary{background:#36d7e9;color:#062131;border-color:#36d7e9}.btn:disabled{opacity:.42;cursor:not-allowed}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.field{width:100%;border:1px solid #3d6175;background:#081d2d;color:white;padding:12px;border-radius:11px;margin:10px 0 16px;font:inherit}.pill{display:inline-block;background:#1b4b60;color:#8df0f0;padding:8px 13px;border-radius:20px}.wheel{width:min(320px,75vw);aspect-ratio:1;border-radius:50%;border:10px solid #32637a;margin:24px auto;box-shadow:0 0 0 6px #10374b,0 0 50px #09adc933;background:conic-gradient(#22c7db 0 36deg,#2f81c7 36deg 72deg,#9c73d6 72deg 108deg,#ec9f4b 108deg 144deg,#46b797 144deg 180deg,#d96888 180deg 216deg,#248ba1 216deg 252deg,#a0b345 252deg 288deg,#a86ca8 288deg 324deg,#2eaa84 324deg 360deg);display:grid;place-items:center;transition:transform 2.3s cubic-bezier(.17,.8,.18,1)}.wheel:before{content:'🩻';background:#092333;border:5px solid white;border-radius:50%;font-size:40px;width:90px;height:90px;display:grid;place-items:center}.wheel-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:25px}.wheel-item{display:flex;align-items:center;gap:10px;background:#102e42;padding:10px;border-radius:12px;border:1px solid #2e5267}.wheel-item>span{font-size:27px}.wheel-item b{display:block;font-size:13px}.wheel-item small{display:block;font-size:11px;color:#95c9d6;margin-top:3px}.wheel-item.locked{opacity:.5}.wheelouter{text-align:center}.pointer{font-size:33px;margin-bottom:-22px;position:relative;z-index:1}.options{display:grid;gap:10px}.option{text-align:left;padding:15px;border:1px solid #36596b;color:#eef9ff;background:#122f41;border-radius:13px;font-size:16px;cursor:pointer}.option.selected{border-color:#43e4f0;background:#18566b}.head{font-size:30px;margin:0 0 8px}.figure{font-size:50px}.count{font-size:45px;font-weight:900;color:#63e9ef}.ok{color:#87efa7}.error{color:#ffb2b2}.hidden{display:none}.notice{background:#3e2b22;padding:14px;border-radius:12px;color:#ffcfad}.collection{display:flex;gap:9px;flex-wrap:wrap}.figurecard{border:1px solid #366375;padding:16px;border-radius:15px;text-align:center;min-width:110px;background:#102c40}.figures{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}label{font-weight:700}p{line-height:1.55}@media(max-width:600px){.card{padding:17px}.hero{padding:21px}.head{font-size:25px}}</style>
+<style>
+.scoreboard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.player-card{border:1px solid #32627c;padding:13px;background:#0a2332;border-radius:16px;min-width:0}
+.player-card.now-playing{border-color:#50dcbb;box-shadow:0 0 0 2px #50dcbb33}
+.player-title{font-size:12px;color:#9dc3d4;margin-bottom:5px}.player-card strong{font-size:17px;overflow-wrap:anywhere}
+.player-counter{font-size:11px;color:#8eb1c2;padding:7px 0}
+.badge-line{display:flex;gap:5px;flex-wrap:wrap;padding-top:7px}
+.badge-symbol{font-size:23px;line-height:1.25;display:inline-block;transition:filter .3s,opacity .3s}
+.badge-symbol.unearned{filter:brightness(0) grayscale(1);opacity:.45;text-shadow:0 0 1px #9eabb3}
+.badge-symbol.earned{filter:none;opacity:1}
+.wheel{width:min(320px,80vw);height:min(320px,80vw);position:relative;display:block;transition:transform 1.8s cubic-bezier(.18,.82,.18,1);overflow:hidden}
+.wheel:before{display:none}
+.wheel-icons{position:absolute;inset:0;display:grid;place-items:center}
+.wheel-icon{position:absolute;top:calc(50% - 12px);left:calc(50% - 12px);font-size:22px;line-height:24px;filter:drop-shadow(0 1px 2px #001)}
+.wheel-middle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:63px;height:63px;background:#05293b;border:4px solid #d2fdff;border-radius:100%;display:grid;place-items:center;font-size:31px}
+.wheel-legend{grid-template-columns:repeat(auto-fit,minmax(125px,1fr))}
+.wheel-item{padding:8px;gap:7px}.wheel-item b{font-size:11px}.wheel-item>span{font-size:19px}
+.active-duel{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #356079}
+.active-duel p{margin:5px 0;font-size:12px}
+.result-banner{background:#15374c;border-radius:12px;padding:12px 16px}
+@media(max-width:560px){main{padding:12px}.card{padding:14px;border-radius:16px}.scoreboard{gap:7px}.player-card{padding:10px}.badge-line{gap:2px}.badge-symbol{font-size:18px}.player-card strong{font-size:13px}.player-counter{font-size:10px}.wheel-icon{font-size:18px}}
+</style></head><body><main><div class="bar"><div class="brand">🩻 RADIO<span>LAB</span> <small style="font-weight:400;font-size:13px">ARENA</small></div><a href="./">← Volver a la academia</a></div><div id="app"><div class="card hero"><h1>🎡 Duelos con ruleta</h1><p>Cargando la arena...</p></div></div></main><script type="module">
 import {subjects,lessons} from './content.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
@@ -9,44 +31,189 @@ import {anatomyBookA} from './anatomy-book-a.js';
 import {anatomyBookB} from './anatomy-book-b.js';
 import {anatomyBookC} from './anatomy-book-c.js';
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from './config.js';
-const box=document.getElementById('app');const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;','\'':'&#39;'}[c]));
-let supa=null,user=null,room=null,answers={},lastQuestion=-1,submitted=false,results=[],timer=null,chars=[],animation=0,spinner=false,warning='';
-const CHARACTER={
- anatomia:'Osteón',proteccion:'Fotón',atencion:'Cora',forense:'Detective ADN',ingles:'Lingua',
- ipe1:'Currículum',ipe2:'Emprende',fundamentos:'Voltio',rxsimple:'Rayo',rxespecial:'Contraste',
- tc:'Voxel',rm:'Magneto',nuclear:'Isótopo',radiofarmacia:'Radiofármaco',sostenibilidad:'Eco',
- digital:'Byte',proyecto:'Proyecto'
-};
-const CAT=subjects.map(s=>[s[0],s[2],CHARACTER[s[0]]||'Radiolab']);
-const ACTIVE_LESSONS=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(l=>l.subject!=='proteccion'),...additionalDriveBooks,
- ...lessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject)),
- ...expandedLessons.filter(l=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject))];
-const BANK=ACTIVE_LESSONS.flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l.subject,q})));
-const CAT_VALID=CAT.filter(c=>BANK.filter(q=>q.sub===c[0]).length>=5);
-const palette=['#22c7db','#3979ce','#9668cd','#db8b54','#3ba88e','#d96991','#2c93b4','#bca044','#7d77c7','#4aa47b','#d67b5c','#357eab','#8d6aaf','#d29c54','#40adbc','#ba6887','#718eb4'];
-function wheelMarkup(){
- const wedge=360/CAT_VALID.length;
- const gradient='conic-gradient('+CAT_VALID.map((c,i)=>palette[i%palette.length]+' '+(i*wedge)+'deg '+((i+1)*wedge)+'deg').join(',')+')';
- return '<div class="wheelouter"><div class="pointer">▼</div><div class="wheel" id="wheel" style="background:'+gradient+'"></div></div>'+
- '<div class="wheel-legend">'+CAT.map(c=>'<div class="wheel-item '+(CAT_VALID.some(a=>a[0]===c[0])?'':'locked')+'"><span>'+c[1]+'</span><div><b>'+esc(subjects.find(s=>s[0]===c[0])?.[1])+'</b><small>'+(CAT_VALID.some(a=>a[0]===c[0])?'Disponible para jugar':'Preguntas en preparación')+'</small></div></div>').join('')+'</div>';
+const el=document.getElementById('app'),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[c]));
+const course=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(x=>x.subject!=='proteccion'),...additionalDriveBooks,...lessons.filter(x=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(x.subject)),...expandedLessons.filter(x=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(x.subject))];
+const bank=course.flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l.subject,q})));
+const categories=subjects.map(x=>({id:x[0],name:x[1],emoji:x[2],pool:bank.filter(y=>y.sub===x[0])})).filter(x=>x.pool.length>=10);
+const palette=['#30c6cf','#517dde','#ad78ce','#f2a854','#4bb894','#df739f','#3c9cca','#adc15c','#c278b9','#2fc7a6','#f18b62','#728bd2','#bd78df','#ddba5b','#44b3ca','#bf80af','#92a5ca'];
+const names=Object.fromEntries(categories.map(x=>[x.id,x.name]));
+let supa,user,room=null,active=[],profiles={},busy=false,animating=false,polling=false,channel=null,chosenKey='',roomVersion=-1,seenRevision=-1,endingAt=0,gameError='',lastShownRoom=null,spinAngle=0;
+const byId=id=>categories.find(x=>x.id===id);
+const timeLeft=()=>room?Math.max(0,Math.ceil((new Date(room.expires_at).getTime()-Date.now())/1000)):0;
+const questionLeft=()=>room?.question_started_at?Math.max(0,Math.ceil((new Date(room.question_started_at).getTime()+20000-Date.now())/1000)):0;
+const emojiOf=(cat,earned)=>'<span class="badge-symbol '+(earned?'earned':'unearned')+'" title="'+esc(cat.name)+'">'+cat.emoji+'</span>';
+function status(n){gameError=n;const a=document.querySelector('#feedback');if(a){a.textContent=n;a.style.display=n?'block':'none';}else if(n)console.warn(n)}
+function show(a){el.innerHTML=a;if(gameError)status(gameError)}
+async function rpc(fn,args){const r=await supa.rpc(fn,args);if(r.error)throw Error(r.error.message);return r.data}
+function wheel(){
+ const slice=360/categories.length;
+ const gradient='conic-gradient('+categories.map((c,i)=>palette[i%palette.length]+' '+i*slice+'deg '+(i+1)*slice+'deg').join(',')+')';
+ const icons=categories.map((c,i)=>{let deg=(i+.5)*slice;return '<span class="wheel-icon" title="'+esc(c.name)+'" style="transform:rotate('+deg+'deg) translateY(-112px) rotate(-'+deg+'deg)">'+c.emoji+'</span>'}).join('');
+ return '<div class="wheelouter"><div class="pointer">▼</div><div class="wheel" id="wheel" style="background:'+gradient+';transform:rotate('+spinAngle+'deg)"><div class="wheel-icons">'+icons+'</div><div class="wheel-middle">🩻</div></div></div><div class="wheel-legend">'+categories.map(x=>'<div class="wheel-item"><span>'+x.emoji+'</span><div><b>'+esc(x.name)+'</b></div></div>').join('')+'</div>';
 }
-function show(s){box.innerHTML=s}function msg(t){warning=t;const n=document.getElementById('notice');if(n){n.textContent=t;n.classList.remove('hidden')}else alert(t)}
-function basic(){show('<div class="card hero"><h1 class="head">🎡 Preguntados Radiolab</h1><p>Duelo 1 contra 1 con ruleta de categorías, preguntas con 20 segundos por respuesta y personajes coleccionables.</p><span class="pill">Para jugar necesitas una cuenta Radiolab</span></div><div class="card"><h2>Inicia sesión desde la academia</h2><p>Para registrar el duelo y tus personajes, entra con tu usuario y vuelve aquí.</p><a class="btn primary" href="./#auth">Abrir academia</a></div>')}
-function lobby(){let list=CAT_VALID.map(c=>'<option value="'+c[0]+'">'+c[1]+' '+esc(subjects.find(s=>s[0]===c[0])?.[1])+'</option>').join('');show('<div class="card hero"><h1 class="head">🎡 Arena de Radiolab</h1><p>Crea una sala, envía el código y consigue personajes al dominar las categorías.</p><span class="pill">👤 '+esc(user?.email?.split('@')[0])+'</span></div><div class="grid"><section class="card"><h2>⚔️ Crear duelo</h2><p class="muted">El anfitrión girará la ruleta cuando los dos estén dentro.</p><button class="btn primary" id="create">Crear sala 1 vs 1</button></section><section class="card"><h2>🎟️ Unirme con código</h2><input class="field" id="code" maxlength="6" placeholder="ABC123"><button class="btn primary" id="join">Unirse al duelo</button></section></div><div class="card"><h2>🏅 Mis personajes</h2><div class="collection">'+(chars.length?chars.map(c=>'<div class="figurecard"><div class="figure">'+(CAT.find(x=>x[0]===c.category)?.[1]||'🏅')+'</div><b>'+esc(c.character_name)+'</b></div>').join(''):'Gana al menos 3 de 5 preguntas de una categoría para desbloquear su personaje.')+'</div></div>');document.getElementById('create').onclick=create;document.getElementById('join').onclick=join}
-async function fetchRoom(){if(!room)return;const r=await supa.from('duel_rooms').select('*').eq('id',room.id).maybeSingle();if(r.data)room=r.data;}
-async function getResults(){if(!room)return;const r=await supa.from('duel_results').select('*').eq('room_id',room.id);results=r.data||[]}
-async function create(){const code=Array.from(crypto.getRandomValues(new Uint8Array(6)),v=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[v%32]).join('');const r=await supa.from('duel_rooms').insert({code,host_id:user.id}).select().single();if(r.error)return msg(r.error.message);room=r.data;answers={};submitted=false;await displayRoom()}
-async function join(){const code=document.getElementById('code').value.trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(code))return msg('Introduce un código de 6 caracteres');const r=await supa.from('duel_rooms').select('*').eq('code',code).maybeSingle();if(!r.data)return msg('No encuentro esa sala');if(r.data.host_id===user.id||r.data.guest_id===user.id){room=r.data;return displayRoom()}if(r.data.guest_id||r.data.status!=='waiting')return msg('La sala ya está completa o comenzó');const u=await supa.from('duel_rooms').update({guest_id:user.id}).eq('id',r.data.id).is('guest_id',null).eq('status','waiting').select().single();if(u.error)return msg('No ha sido posible unirse: '+u.error.message);room=u.data;answers={};submitted=false;await displayRoom()}
-function titles(){return '<div class="bar"><button class="btn" id="exit">← Salir</button><span class="pill">SALA '+esc(room.code)+'</span></div>'}
-async function displayRoom(){await fetchRoom();await getResults();if(room.status==='waiting'){show('<div class="card">'+titles()+'<h1>⚔️ Duelo privado</h1><p>Código para compartir:</p><h1 style="font-size:48px;color:#6ce6ef;letter-spacing:6px">'+esc(room.code)+'</h1><button class="btn" id="copy">📋 Copiar código</button><div class="grid"><div class="card">👑 Anfitrión<br><b>'+room.host_id.slice(0,8)+'</b></div><div class="card">'+(room.guest_id?'✅ Rival conectado':'⌛ Esperando rival…')+'</div></div>'+(room.host_id===user.id?'<button class="btn primary" id="spin" '+(!room.guest_id?'disabled':'')+'>🎡 Girar ruleta y empezar</button>':'<p>El anfitrión girará la ruleta para elegir la categoría.</p>')+'</div><div class="card">'+wheelMarkup()+'<p style="text-align:center">La ruleta elige entre las asignaturas con preguntas suficientes. Las demás están visibles y se activarán al añadir el temario.</p></div>');document.getElementById('copy').onclick=()=>navigator.clipboard?.writeText(room.code).then(()=>msg('Código copiado'));const sp=document.getElementById('spin');if(sp)sp.onclick=spin;document.getElementById('exit').onclick=exit;return}if(room.status==='playing'){await play();return}if(room.status==='finished')return final();}
-function keysFor(cat){const q=BANK.filter(x=>x.sub===cat);for(let i=q.length-1;i>0;i--){const j=crypto.getRandomValues(new Uint32Array(1))[0]%(i+1);[q[i],q[j]]=[q[j],q[i]]}return q.slice(0,5).map(x=>x.key)}
-async function spin(){if(room.host_id!==user.id||!room.guest_id||spinner)return;spinner=true;const cats=CAT_VALID;const idx=crypto.getRandomValues(new Uint32Array(1))[0]%cats.length;let angle=1800-(idx+0.5)*360/cats.length;const w=document.getElementById('wheel');if(w)w.style.transform='rotate('+angle+'deg)';const cat=cats[idx][0],keys=keysFor(cat);await new Promise(r=>setTimeout(r,2350));const x=await supa.from('duel_rooms').update({status:'playing',category:cat,spin_value:idx,question_keys:keys,started_at:new Date().toISOString()}).eq('id',room.id).eq('status','waiting').select().single();spinner=false;if(x.error)return msg(x.error.message);room=x.data;answers={};lastQuestion=-1;await displayRoom()}
-function questions(){return (room.question_keys||[]).map(k=>BANK.find(x=>x.key===k)).filter(Boolean)}
-function questionIndex(){return Math.floor((Date.now()-new Date(room.started_at).getTime())/20000)}
-async function play(){let q=questions();if(!q.length){show('<div class="card">Las preguntas de esta sala no están disponibles en esta versión. <button class="btn" id="exit">Salir</button></div>');document.getElementById('exit').onclick=exit;return}if(results.some(x=>x.user_id===user.id)){submitted=true;return final()}let ix=questionIndex();if(ix>=q.length){await submit();return}if(ix<0)ix=0;let sec=Math.max(0,20-Math.floor((Date.now()-new Date(room.started_at).getTime())/1000)%20);lastQuestion=ix;let cat=CAT.find(x=>x[0]===room.category);show('<div class="card">'+titles()+'<span class="pill">🎡 '+esc(cat?.[2]||room.category)+'</span><h1>Pregunta '+(ix+1)+' / '+q.length+'</h1><div class="count" id="seconds">'+sec+'s</div><h2>'+esc(q[ix].q[0])+'</h2><div class="options">'+q[ix].q[1].map((o,j)=>'<button class="option '+(answers[ix]?.choice===j?'selected':'')+'" data-choice="'+j+'">'+String.fromCharCode(65+j)+'. '+esc(o)+'</button>').join('')+'</div><p class="muted">El tiempo avanza para ambos jugadores. Cada pregunta dura 20 segundos.</p></div>');document.getElementById('exit').onclick=exit;document.querySelectorAll('[data-choice]').forEach(x=>x.onclick=()=>{answers[ix]={choice:Number(x.dataset.choice),remaining:Math.max(0,20-Math.floor((Date.now()-new Date(room.started_at).getTime())/1000)%20)};document.querySelectorAll('[data-choice]').forEach(b=>b.classList.remove('selected'));x.classList.add('selected')})}
-async function submit(){if(submitted)return;submitted=true;let q=questions();let correct=q.filter((v,i)=>answers[i]?.choice===v.q[2]).length;let elapsed=Math.max(0,Math.min(600,Math.round((Date.now()-new Date(room.started_at).getTime())/1000)));let score=q.reduce((sum,v,i)=>sum+(answers[i]?.choice===v.q[2]?1000+Math.floor((answers[i]?.remaining||0)*25):0),0);const r=await supa.from('duel_results').upsert({room_id:room.id,user_id:user.id,correct,elapsed_seconds:elapsed,score},{onConflict:'room_id,user_id'});if(r.error){submitted=false;return msg('No se pudo guardar la puntuación: '+r.error.message)}if(correct>=3){const c=CAT.find(x=>x[0]===room.category);await supa.from('duel_collectibles').upsert({user_id:user.id,category:room.category,character_name:c?.[2]||'Personaje'},{onConflict:'user_id,category',ignoreDuplicates:true})}await getResults();final()}
-function final(){const me=results.find(x=>x.user_id===user.id),other=results.find(x=>x.user_id!==user.id),cat=CAT.find(x=>x[0]===room.category);let note=!me?'Recuperando puntuación…':!other?'Tu rival todavía está jugando.':'¡Partida terminada!';show('<div class="card">'+titles()+'<h1>🏆 Resultado del duelo</h1><p class="pill">Categoría: '+esc(cat?.[2]||room.category)+'</p><div class="grid"><div class="card"><h2>👤 Tú</h2><h1>'+(me?.correct??'—')+'/5</h1><b>'+(me?.score??'—')+' puntos</b></div><div class="card"><h2>⚔️ Rival</h2><h1>'+(other?.correct??'—')+'/5</h1><b>'+(other?.score??'—')+' puntos</b></div></div><p>'+note+'</p>'+(me?.correct>=3?'<div class="card"><div class="figure">'+esc(cat?.[1]||'🏅')+'</div>🎉 ¡Has desbloqueado '+esc(cat?.[2]||'tu personaje')+'!</div>':'<p class="muted">Con 3 aciertos o más desbloqueas el personaje de esta categoría.</p>')+'<button class="btn primary" id="home">Volver a Arena</button></div>');document.getElementById('home').onclick=exit;document.getElementById('exit').onclick=exit}
-function exit(){room=null;answers={};submitted=false;lastQuestion=-1;lobby()}
-async function tick(){if(!room)return;await fetchRoom();if(room.status==='playing'){const ix=questionIndex();if(ix>=questions().length){if(!submitted)await submit();else{await getResults();final()}}else if(ix!==lastQuestion){await play()}else {const e=document.getElementById('seconds');if(e)e.textContent=Math.max(0,20-Math.floor((Date.now()-new Date(room.started_at).getTime())/1000)%20)+'s'}}else if(room.status==='waiting'){const e=document.getElementById('spin');if((room.guest_id&&!e)||(e&&e.disabled)){await displayRoom()}}else{await getResults();final()}}
-try{const lib=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.10/+esm');supa=lib.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const u=await supa.auth.getUser();user=u.data.user;if(!user)basic();else{const r=await supa.from('duel_collectibles').select('category,character_name').eq('user_id',user.id);chars=r.data||[];lobby()}setInterval(()=>tick().catch(console.error),2300)}catch(e){console.error(e);show('<div class="card"><h1>Servicio temporalmente no disponible</h1><p>No se ha podido conectar con Supabase. Abre este enlace en Safari e inténtalo de nuevo.</p><a href="./">Volver al inicio</a></div>')}
+function badgeLine(id){
+ const earned=room?.awards?.[id]||{};
+ return '<div class="badge-line">'+categories.map(cat=>emojiOf(cat,!!earned[cat.id])).join('')+'</div>';
+}
+function scoreCard(id,title){
+ const progress=room?.category_progress?.[id]||{};
+ const total=Object.values(progress).reduce((a,b)=>a+Number(b||0),0);
+ const acquired=Object.values(room?.awards?.[id]||{}).filter(Boolean).length;
+ return '<div class="player-card '+(room?.current_turn===id&&room?.status==='playing'?'now-playing':'')+'"><div class="player-title">'+esc(title)+' '+(room?.current_turn===id&&room?.status==='playing'?'🎯':'')+'</div><strong>'+esc(profiles[id]||id?.slice(0,8)||'Esperando rival')+'</strong><div class="player-counter">'+acquired+' / '+categories.length+' emojis · '+total+' aciertos</div>'+badgeLine(id)+'</div>';
+}
+function board(){
+ if(!room)return '';
+ return '<div class="scoreboard">'+scoreCard(room.host_id,'Anfitrión')+scoreCard(room.guest_id,'Rival')+'</div>';
+}
+async function loadProfiles(){
+ if(!room)return;
+ const ids=[room.host_id,room.guest_id].filter(Boolean);
+ const r=await supa.from('profiles').select('id,username').in('id',ids);
+ if(r.data)for(const v of r.data)profiles[v.id]=v.username;
+}
+function header(){return '<div class="bar"><button class="btn" id="exit">← Mis duelos</button><span class="pill">Sala '+esc(room.code)+'</span><span class="pill" id="expiry">⏳ '+formatTime(timeLeft())+'</span></div>';}
+function formatTime(n){return Math.floor(n/3600)+'h '+String(Math.floor(n%3600/60)).padStart(2,'0')+'m '+String(n%60).padStart(2,'0')+'s';}
+function bindExit(){const b=document.getElementById('exit');if(b)b.onclick=()=>{disconnect();room=null;lastShownRoom=null;loadLobby();}}
+function completed(){
+ const earned=(room?.awards||{});
+ return [room.host_id,room.guest_id].some(x=>x&&Object.keys(earned[x]||{}).filter(y=>earned[x][y]).length===categories.length);
+}
+function resultBanner(){
+ const l=room?.last_result;
+ if(!l?.question_key)return '';
+ const good=l.correct;
+ const owner=l.user_id===user.id?'Has':(profiles[l.user_id]||'El rival')+' ha';
+ return '<p class="result-banner '+(good?'ok':'error')+'">'+(good?'✅ ':'❌ ')+esc(owner)+(l.user_id===user.id?' respondido':' respondido')+(good?' correctamente.':' incorrectamente o se quedó sin tiempo.')+'</p>';
+}
+async function loadLobby(){
+ if(!user){show('<section class="card hero"><h1>🎡 Duelo individual Radiolab</h1><p>Primero juega uno y luego el otro. Necesitas cuenta para conservar partidas.</p><a class="btn primary" href="./#auth">Acceder o registrarme</a></section>');return;}
+ if(busy)return;
+ const [a,b]=await Promise.all([supa.from('duel_rooms').select('*').eq('host_id',user.id).in('status',['waiting','playing']).order('created_at',{ascending:false}).limit(30),supa.from('duel_rooms').select('*').eq('guest_id',user.id).in('status',['waiting','playing']).order('created_at',{ascending:false}).limit(30)]);
+ const all=[...(a.data||[]),...(b.data||[])];active=[...new Map(all.map(x=>[x.id,x])).values()].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));
+ const rows=active.map(x=>'<div class="active-duel"><div><b>🎡 Sala '+esc(x.code)+'</b><p class="muted">'+(x.status==='waiting'?'Esperando al rival':x.current_turn===user.id?'🟢 Te toca jugar':'⏳ Turno del otro jugador')+' · finaliza '+new Date(x.expires_at).toLocaleString('es-ES')+'</p></div><button class="btn primary" data-resume="'+x.id+'">Continuar</button></div>').join('');
+ show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 20 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2><button id="create" class="btn primary">Crear sala de 2 jugadores</button></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div><p id="feedback" class="error"></p>');
+ document.getElementById('create').onclick=create;
+ document.getElementById('join').onclick=join;
+ document.querySelectorAll('[data-resume]').forEach(x=>x.onclick=()=>openRoom(active.find(y=>y.id===x.dataset.resume)));
+}
+async function create(){
+ if(busy)return;busy=true;try{
+  const bytes=crypto.getRandomValues(new Uint8Array(6)),chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const code=Array.from(bytes,x=>chars[x%chars.length]).join('');
+  const r=await supa.from('duel_rooms').insert({code,host_id:user.id}).select().single();
+  if(r.error)throw Error(r.error.message);await openRoom(r.data);
+ }catch(e){alert('No se pudo crear: '+e.message)}finally{busy=false}
+}
+async function join(){
+ const code=document.getElementById('code')?.value?.trim()?.toUpperCase();
+ if(!/^[A-Z0-9]{6}$/.test(code||''))return alert('Escribe el código de seis caracteres');
+ try{const r=await rpc('duel_join',{p_code:code});await openRoom(r)}catch(e){alert(e.message)}
+}
+async function openRoom(r){
+ disconnect();room=r;roomVersion=r.revision;seenRevision=r.revision;lastShownRoom=null;await loadProfiles();renderRoom();connect();
+}
+function disconnect(){if(channel&&supa){supa.removeChannel(channel);channel=null;}}
+function connect(){
+ if(!room)return;const id=room.id;
+ channel=supa.channel('duel-'+id+'-'+Date.now()).on('postgres_changes',{event:'UPDATE',schema:'public',table:'duel_rooms',filter:'id=eq.'+id},()=>refresh()).subscribe();
+}
+async function refresh(){
+ if(!room||polling)return;polling=true;
+ try{
+  const id=room.id;
+  const r=await supa.from('duel_rooms').select('*').eq('id',id).maybeSingle();
+  if(room?.id!==id)return;
+  if(r.data){
+   const changed=r.data.revision!==room.revision||r.data.guest_id!==room.guest_id||r.data.status!==room.status;
+   room=r.data;
+   if(changed){await loadProfiles();renderRoom();}
+  }
+ }catch(e){status('No se ha podido sincronizar la partida. '+e.message)}finally{polling=false}
+}
+function renderRoom(){
+ if(!room)return;
+ const expired=timeLeft()<=0||room.status==='expired';
+ if(expired||room.status==='finished'||completed()){
+  show(header()+board()+'<section class="card hero"><h1>🏁 Partida finalizada</h1><p>La duración máxima es de 2 horas. Los emojis conseguidos y el historial de la partida permanecen registrados.</p>'+resultBanner()+'<button class="btn primary" id="exit">Volver a mis duelos</button></section><p id="feedback" class="error"></p>');
+  bindExit();return;
+ }
+ if(room.status==='waiting'){
+  show(header()+'<section class="card hero"><h1>⚔️ Sala de espera</h1><h2 style="font-size:40px;letter-spacing:5px">'+esc(room.code)+'</h2><p>Comparte el código con tu rival.</p><button class="btn" id="copy">Copiar código</button><p>'+(room.guest_id?'✅ Rival conectado. Comienza el anfitrión.':'⌛ Esperando al segundo jugador…')+'</p></section>'+board()+(room.host_id===user.id&&room.guest_id?'<section class="card"><h2>🎯 Empieza tu turno</h2><button id="start" class="btn primary">🎡 Girar ruleta</button></section>':'')+wheel()+'<p id="feedback" class="error"></p>');
+  bindExit();document.getElementById('copy').onclick=()=>navigator.clipboard.writeText(room.code);
+  const start=document.getElementById('start');if(start)start.onclick=spin;
+  return;
+ }
+ if(room.status!=='playing')return;
+ const mine=room.current_turn===user.id;
+ let display=header()+board()+resultBanner();
+ if(!mine){
+  display+='<section class="card"><h2>⏳ Turno de '+esc(profiles[room.current_turn]||'tu rival')+'</h2><p>Cuando falle o se le agoten los 20 segundos, podrás girar la ruleta. Puedes cerrar esta pestaña: se guarda el turno automáticamente.</p></section>'+wheel();
+ }else if(!room.question_key){
+  display+='<section class="card hero"><h2>🎯 ¡Te toca!</h2><p>Gira la ruleta para elegir asignatura. Si aciertas, podrás volver a girar. Si fallas, jugará tu rival.</p><button class="btn primary" id="spin">🎡 Girar ruleta</button></section>'+wheel();
+ }else{
+  const found=bank.find(x=>x.key===room.question_key),cat=byId(room.category);
+  display+='<section class="card"><span class="pill">'+esc(cat?.emoji||'🎡')+' '+esc(cat?.name||room.category)+'</span><h2>Pregunta para '+esc(profiles[user.id]||'ti')+'</h2><div class="count" id="seconds">'+questionLeft()+'s</div>';
+  if(!found)display+='<p class="error">La pregunta no está en tu versión. Actualiza la aplicación.</p>';
+  else display+='<h2>'+esc(found.q[0])+'</h2><div class="options">'+found.q[1].map((o,i)=>'<button class="option" data-answer="'+i+'">'+String.fromCharCode(65+i)+'. '+esc(o)+'</button>').join('')+'</div><p class="muted">Solo responde el jugador que tiene el turno. ⏱️ 20 segundos.</p>';
+  display+='</section>';
+ }
+ display+='<p id="feedback" class="error"></p>';show(display);bindExit();
+ const spinEl=document.getElementById('spin');if(spinEl)spinEl.onclick=spin;
+ document.querySelectorAll('[data-answer]').forEach(x=>x.onclick=()=>answer(Number(x.dataset.answer)));
+}
+function randomOf(n){return crypto.getRandomValues(new Uint32Array(1))[0]%n;}
+async function spin(){
+ if(animating||busy||!room||room.current_turn&&room.current_turn!==user.id)return;
+ if(room.status==='playing'&&room.question_key)return;
+ animating=true;
+ const cat=categories[randomOf(categories.length)],prev=room;
+ const pool=cat.pool;const key=pool[randomOf(pool.length)].key;
+ const index=categories.indexOf(cat);
+ const wedge=360/categories.length;
+ spinAngle+=1440+Math.floor(360-(index+.5)*wedge);
+ const wheelNode=document.getElementById('wheel'),start=document.getElementById('spin');
+ if(start)start.disabled=true;
+ if(wheelNode){wheelNode.style.transition='transform 1.8s cubic-bezier(.18,.82,.18,1)';wheelNode.style.transform='rotate('+spinAngle+'deg)';}
+ try{
+  // La pregunta comienza al completar el giro; solo el servidor decide el turno activo.
+  await new Promise(r=>setTimeout(r,1850));
+  const next=await rpc('duel_spin',{p_room:prev.id,p_category:cat.id,p_question_key:key});
+  if(room?.id!==prev.id)return;
+  room=next;renderRoom();
+ }catch(e){status('No ha sido posible girar: '+e.message);await refresh()}finally{animating=false}
+}
+async function answer(choice){
+ if(busy||!room||room.current_turn!==user.id||!room.question_key)return;
+ busy=true;const old=room,question=bank.find(x=>x.key===old.question_key);
+ if(!question){busy=false;return}
+ document.querySelectorAll('[data-answer]').forEach(x=>x.disabled=true);
+ try{
+  const r=await rpc('duel_answer',{p_room:old.id,p_choice:choice,p_correct_index:question.q[2],p_question_key:old.question_key});
+  if(room?.id!==old.id)return;
+  room=r;renderRoom();
+ }catch(e){status('Error al responder: '+e.message);await refresh()}finally{busy=false}
+}
+async function tick(){
+ if(!room)return;
+ const exp=document.getElementById('expiry');if(exp)exp.textContent='⏳ '+formatTime(timeLeft());
+ if(timeLeft()<=0&&room.status!=='expired'&&room.status!=='finished'){
+  try{room=await rpc('duel_expire',{p_room:room.id});renderRoom()}catch(e){console.warn(e)}return;
+ }
+ if(room.status==='playing'&&room.question_key&&questionLeft()<=0&&!busy){
+  // Cualquier participante puede dar paso al siguiente turno si se acaba el tiempo.
+  const found=bank.find(x=>x.key===room.question_key);
+  if(!found)return;
+  busy=true;const id=room.id,key=room.question_key;
+  try{const next=await rpc('duel_answer',{p_room:id,p_choice:-1,p_correct_index:found.q[2],p_question_key:key});if(room?.id===id){room=next;renderRoom()}}catch(e){console.warn(e)}finally{busy=false}
+ }
+ const seconds=document.getElementById('seconds');if(seconds)seconds.textContent=questionLeft()+'s';
+}
+try{
+ const sdk=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.10/+esm');
+ supa=sdk.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);user=(await supa.auth.getUser()).data.user;
+ await loadLobby();
+ setInterval(()=>tick().catch(console.error),400);
+ setInterval(()=>{if(room)refresh();else if(user&&document.visibilityState==='visible')loadLobby();},6000);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&room)refresh()});
+}catch(e){console.error(e);show('<section class="card"><h1>Conexión no disponible</h1><p>'+esc(e.message)+'</p><a href="./">Volver a Radiolab</a></section>')}
 </script></body></html>

@@ -217,7 +217,7 @@ function renderRoom(){
   if(aiRoom)scheduleAi();
   display+='<section class="card"><h2>⏳ Turno de '+esc(profiles[room.current_turn]||'tu rival')+'</h2><p>Cuando falle o se le agoten los 45 segundos, podrás girar la ruleta. Puedes cerrar esta pestaña: se guarda el turno automáticamente.</p></section>'+wheel();
  }else if(!room.question_key){
-  display+='<section class="card hero"><h2>🎯 ¡Te toca!</h2><p>Gira la ruleta para elegir asignatura. Si aciertas, podrás volver a girar. Si fallas, jugará tu rival.</p><p class="muted">Pulsa GIRAR en el centro de la ruleta.</p></section>'+wheel();
+  display+='<section class="card hero"><h2>🎯 ¡Te toca!</h2><p>Gira la ruleta para elegir asignatura. Si aciertas, podrás volver a girar. Si fallas, jugará tu rival.</p><p class="muted">Pulsa GIRAR en el centro de la ruleta.</p></section>'+wheel(true);
  }else{
   const original=bank.find(x=>x.key===room.question_key),found=original&&{...original,q:conciseGameQuestion(varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1))},cat=byId(room.category);
   display+='<section class="card"><span class="pill">'+esc(cat?.emoji||'🎡')+' '+esc(cat?.name||room.category)+'</span><h2>Pregunta para '+esc(profiles[user.id]||'ti')+'</h2><div class="count" id="seconds">'+questionLeft()+'s</div>';

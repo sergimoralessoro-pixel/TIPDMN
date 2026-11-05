@@ -292,8 +292,16 @@ function dailyStart(){
  if(dailyFinished())return notify('¡Ya has completado la misión de hoy! Vuelve mañana para una nueva.');
  const mission=dailyMission();
  const all=allLessons().filter(l=>!mission.subs||mission.subs.includes(l.subject)).flatMap(l=>l.questions.map((q,i)=>({qid:l.id+':'+i,l:l.id,i,q})));
- const shuffled=[...all].sort((a,b)=>hashQuestion(a.qid,mission.seed)-hashQuestion(b.qid,mission.seed));
- quiz(shuffled.slice(0,mission.count),'daily');
+ let seed=hashQuestion(dailyLocalDate()+mission.name,0x9e3779b9);
+ const random=()=>{seed=(seed+0x6d2b79f5)|0;let a=Math.imul(seed^(seed>>>15),1|seed);a^=a+Math.imul(a^(a>>>7),61|a);return ((a^(a>>>14))>>>0)/4294967296};
+ const shuffle=list=>{const a=[...list];for(let i=a.length-1;i>0;i--){let j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+ const distinct=new Map();for(const item of shuffle(all)){const key=String(item.q[0]||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');if(key&&!distinct.has(key))distinct.set(key,item)}
+ const history=getStore('radiolab.dailyHistory',[]).filter(x=>x.date!==dailyLocalDate()&&x.date>=dailyLocalDate(new Date(Date.now()-7*86400000)));
+ const used=new Set(history.flatMap(x=>x.ids));const items=shuffle([...distinct.values()]);const ordered=[...items.filter(x=>!used.has(x.qid)),...items.filter(x=>used.has(x.qid))];const chosen=[];const lessons=new Set();
+ for(const x of ordered){if(!lessons.has(x.l)){chosen.push(x);lessons.add(x.l)}if(chosen.length>=mission.count)break}for(const x of ordered){if(chosen.length>=mission.count)break;if(!chosen.includes(x))chosen.push(x)}
+ const positions=shuffle([0,1,2,3]);const questions=chosen.map((x,i)=>{const q=x.q,correct=q[1][q[2]],wrong=shuffle(q[1].map((v,j)=>({v,j})).filter(o=>o.j!==q[2])).map(o=>o.v),position=positions[i%4];wrong.splice(position,0,correct);return {...x,q:[q[0],wrong,position,q[3]]}});
+ history.push({date:dailyLocalDate(),ids:chosen.map(x=>x.qid)});localStorage.setItem('radiolab.dailyHistory',JSON.stringify(history));
+ quiz(questions,'daily');
 }
 function dailyPage(){
  const today=dailyLocalDate(),mission=dailyMission(),finished=dailyFinished();

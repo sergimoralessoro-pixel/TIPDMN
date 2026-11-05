@@ -65,9 +65,18 @@ function badgeLine(id){
 }
 function scoreCard(id,title){
  const progress=room?.category_progress?.[id]||{};
+ const awards=room?.awards?.[id]||{};
  const total=Object.values(progress).reduce((a,b)=>a+Number(b||0),0);
- const acquired=Object.values(room?.awards?.[id]||{}).filter(Boolean).length;
- return '<div class="player-card '+(room?.current_turn===id&&room?.status==='playing'?'now-playing':'')+'"><div class="player-title">'+esc(title)+' '+(room?.current_turn===id&&room?.status==='playing'?'🎯':'')+'</div><strong>'+esc(profiles[id]||id?.slice(0,8)||'Esperando rival')+'</strong><div class="player-counter">'+acquired+' / '+categories.length+' emojis · '+total+' aciertos</div>'+badgeLine(id)+'</div>';
+ const acquired=categories.filter(cat=>awards[cat.id]||Number(progress[cat.id]||0)>=3).length;
+ const ordered=[...categories].sort((a,b)=>Number(progress[b.id]||0)-Number(progress[a.id]||0)||a.name.localeCompare(b.name,'es'));
+ const cells=ordered.map(cat=>{
+  const count=Math.max(0,Number(progress[cat.id]||0)),earned=Boolean(awards[cat.id]||count>=3);
+  const dots=Array.from({length:3},(_,i)=>'<span style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;background:'+(i<Math.min(count,3)?'#65d8af':'#435767')+'"></span>').join('');
+  return '<div style="padding:9px 0;border-bottom:1px solid #54718245"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>'+esc(cat.emoji)+' '+esc(cat.name)+'</span><strong style="white-space:nowrap">'+count+' acierto'+(count===1?'':'s')+' '+(earned?'🏅':'')+'</strong></div><div style="display:flex;align-items:center;gap:8px;margin-top:5px">'+dots+'<small>'+(earned?'Emoji conseguido':'Faltan '+Math.max(0,3-count)+' para el emoji')+'</small></div></div>';
+ }).join('');
+ const top=ordered.filter(cat=>Number(progress[cat.id]||0)>0).slice(0,3).map(cat=>esc(cat.emoji)+' '+Number(progress[cat.id]||0)).join(' · ');
+ const expanded=id===user?.id?' open':'';
+ return '<div class="player-card '+(room?.current_turn===id&&room?.status==='playing'?'now-playing':'')+'"><div class="player-title">'+esc(title)+' '+(room?.current_turn===id&&room?.status==='playing'?'🎯':'')+'</div><strong>'+esc(profiles[id]||id?.slice(0,8)||'Esperando rival')+'</strong><div class="player-counter">'+acquired+' / '+categories.length+' emojis · '+total+' aciertos</div>'+badgeLine(id)+'<details'+expanded+' style="margin-top:12px"><summary style="cursor:pointer;font-weight:750">📊 Aciertos por asignatura'+(top?' · '+top:'')+'</summary><p style="font-size:12px;opacity:.85;margin:7px 0">Cada 3 aciertos en la misma asignatura consigues su emoji. Ordenadas de mayor a menor puntuación.</p>'+cells+'</details></div>';
 }
 function board(){
  if(!room)return '';

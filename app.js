@@ -108,6 +108,29 @@ function errorsTest(){const q=Object.values(state.mistakes).map(x=>{let a=getQue
 function whyNotSelected(q,selected){
  if(selected===q[2])return '';
  if(Array.isArray(q[4])&&q[4][selected])return q[4][selected];
+ const known={
+ 'tricúspide':'es la válvula entre aurícula derecha y ventrículo derecho',
+ 'mitral':'es la válvula entre aurícula izquierda y ventrículo izquierdo',
+ 'aórtica':'controla la salida desde el ventrículo izquierdo a la aorta',
+ 'pulmonar':'controla la salida del ventrículo derecho al tronco pulmonar',
+ 'sagital':'es el plano que separa derecha e izquierda',
+ 'coronal':'es el plano que divide anterior y posterior',
+ 'axial':'es el plano que separa superior e inferior',
+ 'supino':'describe a una persona tumbada boca arriba',
+ 'prono':'describe a una persona tumbada boca abajo',
+ 'cúbito':'es el hueso medial del antebrazo en posición anatómica',
+ 'radio':'es el hueso lateral del antebrazo en posición anatómica',
+ 'gray':'es la unidad de dosis absorbida',
+ 'sievert':'es la unidad de dosis equivalente o efectiva',
+ 'becquerel':'es la unidad de actividad radiactiva',
+ 'fotoeléctrico':'es la interacción en que el fotón se absorbe por completo',
+ 'compton':'es la dispersión de un fotón con transferencia parcial de energía',
+ 'pcr':'amplifica fragmentos específicos de ácido nucleico',
+ 'cultivo':'permite el crecimiento de microorganismos viables',
+ 'histoquímica':'identifica sustancias mediante reacciones en tejidos',
+ 'histología':'estudia la estructura microscópica de los tejidos'
+};
+ const candidate=String(q[1]?.[selected]||'').trim().toLowerCase();if(known[candidate])return 'La opción «'+q[1][selected]+'» '+known[candidate]+'. La pregunta exige otra estructura o proceso, cuya función se explica en la respuesta correcta.';
  const chosen=String(q[1]?.[selected]||'');
  const question=String(q[0]||'');
  const concept=question.match(/[«"]([^»"]+)[»"]/);

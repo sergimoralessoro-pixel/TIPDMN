@@ -24,6 +24,7 @@
 </style></head><body><main><div class="bar"><div class="brand">🩻 RADIO<span>LAB</span> <small style="font-weight:400;font-size:13px">ARENA</small></div><a href="./">← Volver a la academia</a></div><div id="app"><div class="card hero"><h1>🎡 Duelos con ruleta</h1><p>Cargando la arena...</p></div></div></main><script type="module">
 import {subjects,lessons} from './content.js';
 import {augmentLessons,uniqueBank,drawVaried,varyQuestion,rng} from './quiz-variety.js';
+import {visualQuestionMedia} from './visual-questions.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
 import {radiationTopics} from './radiation-topics.js';
@@ -165,7 +166,7 @@ function renderRoom(){
   const original=bank.find(x=>x.key===room.question_key),found=original&&{...original,q:varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1)},cat=byId(room.category);
   display+='<section class="card"><span class="pill">'+esc(cat?.emoji||'🎡')+' '+esc(cat?.name||room.category)+'</span><h2>Pregunta para '+esc(profiles[user.id]||'ti')+'</h2><div class="count" id="seconds">'+questionLeft()+'s</div>';
   if(!found)display+='<p class="error">La pregunta no está en tu versión. Actualiza la aplicación.</p>';
-  else display+='<h2>'+esc(found.q[0])+'</h2><div class="options">'+found.q[1].map((o,i)=>'<button class="option" data-answer="'+i+'">'+String.fromCharCode(65+i)+'. '+esc(o)+'</button>').join('')+'</div><p class="muted">Solo responde el jugador que tiene el turno. ⏱️ 20 segundos.</p>';
+  else display+='<h2>'+esc(found.q[0])+'</h2>'+visualQuestionMedia(found.q)+'<div class="options">'+found.q[1].map((o,i)=>'<button class="option" data-answer="'+i+'">'+String.fromCharCode(65+i)+'. '+esc(o)+'</button>').join('')+'</div><p class="muted">Solo responde el jugador que tiene el turno. ⏱️ 20 segundos.</p>';
   display+='</section>';
  }
  display+='<p id="feedback" class="error"></p>';show(display);bindExit();

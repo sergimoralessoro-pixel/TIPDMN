@@ -109,5 +109,12 @@ async function tick(){
   }
  }finally{ticking=false}
 }
-try{const lib=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.10/+esm');db=lib.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const x=await db.auth.getUser();user=x.data.user;if(!user)show('<div class="card hero"><h1>Inicia sesión para jugar</h1><p>Los juegos en directo usan tu cuenta de Radiolab.</p><a class="btn primary" href="./#auth">Entrar a Radiolab</a></div>');else{const p=await db.from('profiles').select('username,avatar').eq('id',user.id).maybeSingle();profile=p.data;homepage();setInterval(()=>tick().catch(console.error),300)}}catch(e){console.error(e);show('<div class="card"><h2>No se pudo conectar el juego</h2><p>Ábrelo en Safari y vuelve a probar.</p><a href="./">Volver</a></div>')}
+try{const lib=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.10/+esm');db=lib.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const x=await db.auth.getUser();user=x.data.user;if(!user)show('<div class="card hero"><h1>Inicia sesión para jugar</h1><p>Los juegos en directo usan tu cuenta de Radiolab.</p><a class="btn primary" href="./#auth">Entrar a Radiolab</a></div>');else{const p=await db.from('profiles').select('username,avatar').eq('id',user.id).maybeSingle();profile=p.data;homepage();setInterval(()=>tick().catch(console.error),1400);
+ setInterval(()=>{
+  if(!room||room.status!=='playing')return;
+  const i=index(),phase=revealPhase();
+  if(i!==lastIndex||(phase&&!document.querySelector('.option.is-correct'))){play();return;}
+  const circle=document.getElementById('clock');
+  if(circle){circle.style.setProperty('--progress',Math.max(0,remaining()/room.seconds_per_question*100)+'%');circle.setAttribute('aria-valuenow',remaining());circle.classList.toggle('reveal',phase);}
+ },150)}}catch(e){console.error(e);show('<div class="card"><h2>No se pudo conectar el juego</h2><p>Ábrelo en Safari y vuelve a probar.</p><a href="./">Volver</a></div>')}
 </script></body></html>

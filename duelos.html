@@ -10,6 +10,12 @@
 .badge-symbol{font-size:23px;line-height:1.25;display:inline-block;transition:filter .3s,opacity .3s}
 .badge-symbol.unearned{filter:brightness(0) grayscale(1);opacity:.45;text-shadow:0 0 1px #9eabb3}
 .badge-symbol.earned{filter:none;opacity:1}
+.badge-symbol.progress-emoji{position:relative;display:inline-block;line-height:1.25;font-size:23px;filter:none;opacity:1;vertical-align:middle}
+.progress-emoji .emoji-shadow{display:block;filter:grayscale(1) brightness(.15);opacity:.6}
+.progress-emoji .emoji-fill{position:absolute;inset:0;display:block;white-space:nowrap;clip-path:inset(0 calc(100% - var(--emoji-fill,0%)) 0 0);filter:none;opacity:1}
+.progress-emoji .emoji-segments{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);pointer-events:none}
+.progress-emoji .emoji-segments i{border-right:1px solid #061d2bbf}
+.progress-emoji .emoji-segments i:last-child{border-right:0}
 .wheel{width:min(320px,80vw);height:min(320px,80vw);position:relative;display:block;transition:transform 1.8s cubic-bezier(.18,.82,.18,1);overflow:hidden}
 .wheel:before{display:none}
 .wheel-icons{position:absolute;inset:0;display:grid;place-items:center}
@@ -45,7 +51,7 @@ const AI_NAMES=['🦊 Vega Rad','🤖 Dr. Pixel','🐙 Neutrón','🦉 Rayito','
 const byId=id=>categories.find(x=>x.id===id);
 const timeLeft=()=>room?Math.max(0,Math.ceil((new Date(room.expires_at).getTime()-Date.now())/1000)):0;
 const questionLeft=()=>room?.question_started_at?Math.max(0,Math.ceil((new Date(room.question_started_at).getTime()+30000-Date.now())/1000)):0;
-const emojiOf=(cat,earned)=>'<span class="badge-symbol '+(earned?'earned':'unearned')+'" title="'+esc(cat.name)+'">'+cat.emoji+'</span>';
+const emojiOf=(cat,count)=>{const n=Math.min(3,Math.max(0,Number(count)||0));return '<span class="badge-symbol progress-emoji" style="--emoji-fill:'+(n/3*100)+'%" title="'+esc(cat.name)+': '+n+'/3 aciertos" aria-label="'+esc(cat.name)+': '+n+' de 3 aciertos"><span class="emoji-shadow" aria-hidden="true">'+cat.emoji+'</span><span class="emoji-fill" aria-hidden="true">'+cat.emoji+'</span><span class="emoji-segments" aria-hidden="true"><i></i><i></i><i></i></span></span>'};
 function status(n){gameError=n;const a=document.querySelector('#feedback');if(a){a.textContent=n;a.style.display=n?'block':'none';}else if(n)console.warn(n)}
 function show(a){el.innerHTML=a;if(gameError)status(gameError)}
 async function rpc(fn,args){if(aiRoom&&['duel_spin','duel_answer','duel_expire'].includes(fn))return localAiRpc(fn,args);const r=await supa.rpc(fn,args);if(r.error)throw Error(r.error.message);return r.data}
@@ -60,8 +66,8 @@ function wheel(){
  return '<div class="wheelouter"><div class="pointer">▼</div><div class="wheel" id="wheel" style="background:'+gradient+';transform:rotate('+spinAngle+'deg)"><div class="wheel-icons">'+icons+'</div><div class="wheel-middle">🩻</div></div></div><div class="wheel-legend">'+categories.map(x=>'<div class="wheel-item"><span>'+x.emoji+'</span><div><b>'+esc(x.name)+'</b></div></div>').join('')+'</div>';
 }
 function badgeLine(id){
- const earned=room?.awards?.[id]||{};
- return '<div class="badge-line">'+categories.map(cat=>emojiOf(cat,!!earned[cat.id])).join('')+'</div>';
+ const progress=room?.category_progress?.[id]||{};
+ return '<div class="badge-line">'+categories.map(cat=>emojiOf(cat,progress[cat.id]||((room?.awards?.[id]||{})[cat.id]?3:0))).join('')+'</div>';
 }
 function scoreCard(id,title){
  const progress=room?.category_progress?.[id]||{};
@@ -76,7 +82,7 @@ function scoreCard(id,title){
  }).join('');
  const top=ordered.filter(cat=>Number(progress[cat.id]||0)>0).slice(0,3).map(cat=>esc(cat.emoji)+' '+Number(progress[cat.id]||0)).join(' · ');
  const expanded=id===user?.id?' open':'';
- return '<div class="player-card '+(room?.current_turn===id&&room?.status==='playing'?'now-playing':'')+'"><div class="player-title">'+esc(title)+' '+(room?.current_turn===id&&room?.status==='playing'?'🎯':'')+'</div><strong>'+esc(profiles[id]||id?.slice(0,8)||'Esperando rival')+'</strong><div class="player-counter">'+acquired+' / '+categories.length+' emojis · '+total+' aciertos</div>'+badgeLine(id)+'<details'+expanded+' style="margin-top:12px"><summary style="cursor:pointer;font-weight:750">📊 Aciertos por asignatura'+(top?' · '+top:'')+'</summary><p style="font-size:12px;opacity:.85;margin:7px 0">Cada 3 aciertos en la misma asignatura consigues su emoji. Ordenadas de mayor a menor puntuación.</p>'+cells+'</details></div>';
+ return '<div class="player-card '+(room?.current_turn===id&&room?.status==='playing'?'now-playing':'')+'"><div class="player-title">'+esc(title)+' '+(room?.current_turn===id&&room?.status==='playing'?'🎯':'')+'</div><strong>'+esc(profiles[id]||(id===user?.id?(user?.user_metadata?.username||user?.user_metadata?.display_name||user?.email?.split('@')[0]):null)||(id?'Alumno':'Esperando rival'))+'</strong><div class="player-counter">'+acquired+' / '+categories.length+' emojis · '+total+' aciertos</div>'+badgeLine(id)+'<details'+expanded+' style="margin-top:12px"><summary style="cursor:pointer;font-weight:750">📊 Aciertos por asignatura'+(top?' · '+top:'')+'</summary><p style="font-size:12px;opacity:.85;margin:7px 0">Cada 3 aciertos en la misma asignatura consigues su emoji. Ordenadas de mayor a menor puntuación.</p>'+cells+'</details></div>';
 }
 function board(){
  if(!room)return '';
@@ -86,7 +92,8 @@ async function loadProfiles(){
  if(!room)return;
  const ids=[room.host_id,room.guest_id].filter(x=>x&&x!==AI_ID);
  const r=await supa.from('profiles').select('id,username').in('id',ids);
- if(r.data)for(const v of r.data)profiles[v.id]=v.username;
+ if(r.data)for(const v of r.data)if(v.username)profiles[v.id]=v.username;
+ if(user?.id&&!profiles[user.id])profiles[user.id]=user.user_metadata?.username||user.user_metadata?.display_name||user.email?.split('@')[0]||'Alumno';
 }
 function header(){return '<div class="bar"><button class="btn" data-exit-game>← Mis duelos</button><span class="pill">Sala '+esc(room.code)+'</span><span class="pill" id="expiry">⏳ '+formatTime(timeLeft())+'</span></div>';}
 function formatTime(n){return Math.floor(n/3600)+'h '+String(Math.floor(n%3600/60)).padStart(2,'0')+'m '+String(n%60).padStart(2,'0')+'s';}

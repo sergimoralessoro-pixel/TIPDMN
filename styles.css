@@ -122,3 +122,12 @@ select.field{appearance:auto}label{display:block;color:#a8c7d6;font-size:13px;ma
 .book-study-points li strong{font-family:system-ui,sans-serif;font-size:.94em}
 .book-paper .book-reading>p{margin-bottom:1.45em}
 @media(max-width:600px){.book-study-points{padding-left:1.4rem;gap:12px}.book-study-points li{font-size:16px;line-height:1.7}}
+
+/* Fotografías y diagramas reales con autoría, sustituyen los emojis didácticos cuando hay material apropiado */
+.study-real-image{margin:24px auto 28px;max-width:680px;background:#fff;color:#233d4c;padding:16px;border:1px solid #cadbe2;border-radius:15px;box-shadow:0 8px 22px #0a26341b;text-align:center}
+.study-real-image img{max-width:100%;max-height:440px;width:auto;height:auto;object-fit:contain;display:block;margin:0 auto;border-radius:8px}
+.study-real-image figcaption{margin-top:14px;line-height:1.55;font-size:14px}
+.study-real-image figcaption strong{display:block}
+.study-real-image figcaption small{display:block;color:#56707e;font-size:11px;margin-top:5px}
+.study-real-image figcaption a{color:#186e87;text-decoration:underline}
+@media(max-width:600px){.study-real-image{padding:9px}.study-real-image img{max-height:330px}.study-real-image figcaption{font-size:12px}}

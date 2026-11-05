@@ -265,7 +265,7 @@ async function post(form){
  form.reset();await loadPosts();
 }
 
-const dailyLocalDate=(d=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+const dailyLocalDate=(d=new Date())=>{const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);const get=t=>parts.find(p=>p.type===t)?.value||'';return get('year')+'-'+get('month')+'-'+get('day')};
 const dayNumber=()=>Number(dailyLocalDate().replaceAll('-',''));
 function hashQuestion(s,seed){for(const c of s)seed=(Math.imul(seed,31)+c.charCodeAt(0))|0;return seed>>>0}
 const dailyMissions=[
@@ -281,7 +281,7 @@ const dailyMissions=[
  {name:'🏆 Gran mezcla Radiolab',subtitle:'Un recorrido variado por todas las asignaturas del ciclo.',subs:null,count:10,target:8}
 ];
 function dailyMission(){
- const seed=dayNumber(),index=hashQuestion('mision-radiolab',seed)%dailyMissions.length;
+ const seed=dayNumber(),index=(Math.floor(Date.UTC(Number(String(seed).slice(0,4)),Number(String(seed).slice(4,6))-1,Number(String(seed).slice(6,8)))/86400000))%dailyMissions.length;
  return {...dailyMissions[index],seed};
 }
 function dailyRecordDate(r){return dailyLocalDate(new Date(r.date))}
@@ -301,7 +301,7 @@ function dailyPage(){
  while(days.includes(dailyLocalDate(cursor))){streak++;cursor.setDate(cursor.getDate()-1)}
  const completed=finished&&finished.correct>=mission.target;
  return '<div class="breadcrumbs"><button class="btn small ghost" data-go="home">← Inicio</button></div>'+
- '<div class="hero"><span class="tag">⚡ MISIÓN QUE CAMBIA CADA DÍA</span><h1>'+safe(mission.name)+'</h1><p>'+safe(mission.subtitle)+'</p><p class="muted">Nueva misión todos los días a las 00:00 (hora de España). Las preguntas y la asignatura se seleccionan automáticamente.</p><div class="actions"><span class="pill">🔥 '+streak+' días de racha</span><span class="pill">📅 '+today+'</span><span class="pill">🎯 '+mission.target+' de '+mission.count+' aciertos para superar la misión</span></div></div>'+
+ '<div class="hero"><span class="tag">⚡ MISIÓN QUE CAMBIA CADA DÍA</span><h1>'+safe(mission.name)+'</h1><p>'+safe(mission.subtitle)+'</p><p class="muted">Nueva misión cada día a las 00:00 (hora peninsular española). Las preguntas y la asignatura se seleccionan automáticamente.</p><div class="actions"><span class="pill">🔥 '+streak+' días de racha</span><span class="pill">📅 '+today+'</span><span class="pill">🎯 '+mission.target+' de '+mission.count+' aciertos para superar la misión</span></div></div>'+
  '<section class="section panel"><h2>'+(finished?(completed?'🏆 ¡Misión superada!':'📘 Misión realizada'):'¿Preparado para la misión de hoy?')+'</h2>'+
  '<p class="muted">'+(finished?'Aciertos: '+finished.correct+'/'+finished.total+' · Nota '+finished.score.toFixed(1)+'/10. La misión de mañana será diferente.':'Tienes '+mission.count+' preguntas seleccionadas para hoy. Completarla registra un día en tu racha; conseguir el objetivo te da el reconocimiento de misión superada.')+'</p>'+
  '<button class="btn primary" data-action="daily" '+(finished?'disabled':'')+'>'+(finished?'Completada · vuelve mañana':'Empezar misión de hoy')+'</button></section>';

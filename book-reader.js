@@ -28,7 +28,7 @@ function radiationVisual(l,page){if(l.subject!=='proteccion')return '';const sli
 function extras(l){
  let h='<div class="book-paper extras"><div class="book-eyebrow">ÚLTIMA HOJA · FÓRMULAS, TABLAS Y REPASO</div><h2>📐 Fórmulas y tablas para estudiar</h2>';
  if(l.formulas?.length){h+='<h3>Fórmulas esenciales</h3>'+l.formulas.map(f=>'<section class="book-equation"><b>'+e(f[0])+'</b><div class="equation">'+e(f[1])+'</div><p>'+e(f[2])+'</p></section>').join('')}
- if(l.tables?.length){h+='<h3>Tablas de comparación</h3>'+l.tables.map(t=>'<div class="book-table-scroll"><table class="book-table"><thead><tr>'+t[0].map(c=>'<th>'+e(c)+'</th>').join('')+'</tr></thead><tbody>'+t.slice(1).map(row=>'<tr>'+row.map(c=>'<td>'+e(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>').join('')}
+ if(l.tables?.length){const datasets=Array.isArray(l.tables[0]?.[0])?l.tables:[l.tables];h+='<h3>Tablas de comparación</h3>'+datasets.map(t=>'<div class="book-table-scroll"><table class="book-table"><thead><tr>'+t[0].map(c=>'<th>'+e(c)+'</th>').join('')+'</tr></thead><tbody>'+t.slice(1).map(row=>'<tr>'+row.map(c=>'<td>'+e(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>').join('')}
  if(!l.formulas?.length&&!l.tables?.length)h+='<p>Repasa los conceptos principales y pon a prueba tu comprensión.</p>';
  h+='<div class="book-recall"><strong>💡 Recuerda para el examen</strong><p>'+e(l.tip||l.summary||'Repasa los términos clave.')+'</p></div></div>';return h;
 }

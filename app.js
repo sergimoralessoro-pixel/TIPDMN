@@ -123,7 +123,7 @@ function refreshExamTopics(){
  if(!subject||!topic)return;
  const available=allLessons().filter(l=>l.subject===subject.value&&Array.isArray(l.questions)&&l.questions.length);
  const previous=topic.value;
- topic.innerHTML='<option value="">📚 Todos los temas ('+available.length+')</option>'+available.map(l=>'<option value="'+safe(l.id)+'">'+safe(l.title)+' · '+l.questions.length+' preguntas</option>').join('');
+ topic.innerHTML='<option value="">📚 Todos los temas ('+available.length+')</option>'+available.map(l=>'<option value="'+safe(l.id)+'" '+(l.questions.length<10?'disabled':'')+'>'+safe(l.title)+(l.questions.length<10?' · En preparación (mín. 10 preguntas)':' · '+l.questions.length+' preguntas')+'</option>').join('');
  if(available.some(l=>l.id===previous))topic.value=previous;
  const info=document.querySelector('#examTopicInfo');
  if(info)info.textContent=available.length?'Selecciona un tema o deja «Todos los temas» para mezclar sus preguntas.':'Aún no hay preguntas en esta asignatura.';
@@ -133,6 +133,7 @@ function runExam(subject,count,timed=false,topicId=null){
  if(topicId&&!selected.length)return notify('Ese tema no está disponible en la asignatura seleccionada.');
  let all=selected.flatMap(l=>(l.questions||[]).map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q})));
  if(!all.length)return notify('Todavía no hay preguntas disponibles para este examen.');
+ if(topicId&&all.length<10)return notify('Este tema todavía no tiene 10 preguntas distintas. Su examen está en preparación.');
  for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]]}
  const q=all.slice(0,Math.max(1,count));
  quiz(q,timed?'timed':'exam');

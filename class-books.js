@@ -8,6 +8,7 @@ import {patientPart3} from './patient-part3.js';
 import {patientPart4} from './patient-part4.js';
 import {patientPart5} from './patient-part5.js';
 import {forensicBook} from './forensic-book.js';
+import {forensicExamSets} from './forensic-exams.js';
 import {ipe1Book} from './ipe1-book.js';
 import {protectionBookA} from './protection-book-a.js';
 import {protectionBookB} from './protection-book-b.js';
@@ -61,6 +62,9 @@ chapter('forense-vt-1-full','forense','TEMA 1 · Tóxicos y muestras de interés
 chapter('forense-vt-2-full','forense','TEMA 2 · Técnicas genéticas, microbiológicas, bioquímicas e histoquímicas','ADN y PCR, filiación, cultivos y detección de microorganismos, cambios post mortem, tanatoquimia, histopatología y tinciones.',f2,'VT4, VT5 y VT6 de Laboratorio de Ciencias Forenses'),
 chapter('forense-vt-3-full','forense','TEMA 3 · Necroidentificación y sucesos con múltiples víctimas','Procedimientos forenses de identificación en catástrofes, comparación de datos ante mortem y post mortem, odontología, antropología y genética.',f3,'VT7 de Laboratorio de Ciencias Forenses')
 ];
+/* Replace the basic dictionary-only tests with varied exams that ask about methods,
+ * sample handling, real decision-making, interpretation and identification. */
+forensic.forEach((book,index)=>{book.questions=forensicExamSets[index];});
 const disasterQuestions=[
 ['¿Cuál es la finalidad central de la necroidentificación?',['Establecer identidad de una persona fallecida','Averiguar únicamente la fecha de nacimiento','Detectar exclusivamente intoxicaciones','Determinar siempre una causa penal'],0,'La identidad se establece mediante métodos científicos y comparaciones verificables.'],
 ['En una investigación de víctimas de catástrofe, ¿qué significa DVI?',['Document Visual Inspection','Disaster Victim Identification','Data Verification Initiative','Disease Vector Imaging'],1,'DVI describe procedimientos de identificación de víctimas de desastres.'],
@@ -71,7 +75,7 @@ const disasterQuestions=[
 ['¿Qué debe preservarse al trasladar restos o muestras en una catástrofe?',['La apariencia de la bolsa exclusivamente','La cadena de custodia y trazabilidad','El anonimato de todo operador incluso en registros','Solo la temperatura ambiente'],1,'Los registros permiten asegurar correspondencia entre muestra, resultado y persona.'],
 ['¿Qué especialidad es útil para estudiar restos esqueléticos?',['Antropología forense','Optometría clínica','Cardiología','Audiología'],0,'La antropología forense estudia restos óseos en el contexto legal.']
 ];
-forensic[2].questions.push(...disasterQuestions);
+/* Legacy definition-based questions intentionally excluded from chapter exams. */
 const ipe1=[
 chapter('ipe1-book-1','ipe1','TEMA 1 · Características del sector productivo y perfil profesional','Conoce dónde puede trabajar un técnico de Imagen para el Diagnóstico, qué perfiles se exigen y las diferencias entre oferta pública y privada.',ipe1Book.filter(l=>l.title.startsWith('Tema 1')),'Material de IPE1: Tema 1 · sector productivo'),
 chapter('ipe1-book-2','ipe1','TEMA 2 · Prevención de riesgos laborales','Identifica peligros, riesgos, consecuencias y medidas de prevención. Estudia riesgos físicos, químicos, biológicos, psicosociales, protección y emergencias.',ipe1Book.filter(l=>l.title.startsWith('Tema 2')),'VT3–VT5 de IPE1: Prevención de riesgos laborales'),

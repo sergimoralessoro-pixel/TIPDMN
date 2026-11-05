@@ -23,7 +23,7 @@
 @media(prefers-reduced-motion:reduce){.option.is-correct,.timer-icon{animation:none}}
 .vote-count{margin-left:auto;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:38px;padding:5px 9px;border:1px solid #ffffff55;border-radius:999px;background:#081c2b88;color:#fff;font-size:15px;font-weight:850}.vote-count::before{content:"👥";margin-right:5px;font-size:13px}.vote-summary{margin-top:13px;color:#b9dce4;font-weight:750}</style></head><body><main><header class="top"><strong class="brand">🩻 RADIO<span style="color:#52d9ea">LAB</span> LIVE</strong><a href="./">← Academia</a></header><div id="app"><section class="card"><h1>Cargando sala de juego…</h1></section></div></main><script type="module">
 import {subjects,lessons} from './content.js';
-import {uniqueBank,augmentLessons,varyQuestion,rng,drawVaried} from './quiz-variety.js';
+import {uniqueBank,augmentLessons,varyQuestion,rng,drawVaried,conciseGameQuestion} from './quiz-variety.js';
 import {visualQuestionMedia} from './visual-questions.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
@@ -35,10 +35,10 @@ import {additionalDriveBooks} from './additional-drive-books.js?v=2';
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from './config.js';
 const app=document.getElementById('app');const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const study=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(l=>l.subject!=='proteccion'),...additionalDriveBooks,...lessons.filter(l=>!['anatomia','proteccion','ingles','atencion','forense','ipe1',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject)),...expandedLessons.filter(l=>!['anatomia','proteccion','ingles','atencion','forense','ipe1',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject))];const all=uniqueBank(augmentLessons(study).flatMap(l=>l.questions.map((q,i)=>({key:l.id+':'+i,subject:l.subject,q}))));
-let db=null,user=null,profile=null,room=null,players=[],answers=[],lastIndex=-1,lastAnswered=-1,finished=false,ticking=false,pendingAnswer=false,soloAi=false,matchTimer=null,aiVoteAt=0,aiVoteQuestion=-1;
+let db=null,user=null,profile=null,room=null,players=[],answers=[],lastIndex=-1,lastAnswered=-1,finished=false,ticking=false,pendingAnswer=false,soloAi=false,matchTimer=null,aiVoteAt=0,aiVoteQuestion=-1,rematchPollBusy=false,lastRematchPoll=0,finalRenderedRoom=null;
 const AI_ID='00000000-0000-4000-8000-000000000001';const AI_NAMES=['🦊 Vega Rad','🤖 Dr. Pixel','🐙 Neutrón','🦉 Rayito','🐼 La Doctora','👾 Tecno-X','🦋 Nébula','🐸 Profe Gamma'];
 const show=x=>app.innerHTML=x;const err=x=>alert(x);
-const pool=()=>room.question_keys.map(key=>all.find(q=>q.key===key)).filter(Boolean).map((x,i)=>({...x,q:varyQuestion(x.q,rng('kahoot|'+room.code+'|'+x.key),i%4)}));
+const pool=()=>room.question_keys.map(key=>all.find(q=>q.key===key)).filter(Boolean).map((x,i)=>({...x,q:conciseGameQuestion(varyQuestion(x.q,rng('kahoot|'+room.code+'|'+x.key),i%4))}));
 const REVEAL_SECONDS=5;
 const FINAL_SYNC_SECONDS=3; // Pausa final para sincronizar los votos antes del podio
 const totalGameSeconds=()=>room.question_keys.length*cycleLength();
@@ -51,13 +51,13 @@ const revealPhase=()=>cycleSeconds()>=room.seconds_per_question;
 const remaining=()=>Math.max(0,Math.ceil(room.seconds_per_question-cycleSeconds()));
 const clockHtml=()=>'<div class="timer-circle" id="clock" role="progressbar" aria-label="Tiempo restante" aria-valuemax="27" aria-valuemin="0" aria-valuenow="'+remaining()+'" style="--progress:'+Math.max(0,remaining()/room.seconds_per_question*100)+'%"><div class="timer-ring-inner"><span class="timer-icon">⌛</span></div></div>';
 function homepage(){soloAi=false;show('<div class="card hero"><h1>🎯 Kahoot Radiolab</h1><p>Partidas en directo con código. Elige asignatura o preguntas aleatorias, comparte el código y competid por velocidad.</p><span class="pill">🩻 27 segundos por pregunta</span></div><div class="grid"><div class="card"><h2>🎤 Crear partida</h2><label>Banco de preguntas</label><select id="sub" class="field"><option value="random">🎲 Todas las asignaturas</option>'+subjects.map(s=>'<option value="'+s[0]+'">'+safe(s[1])+'</option>').join('')+'</select><button class="btn primary" id="create">Crear código</button></div><div class="card"><h2>🎫 Unirse a sala</h2><input id="code" class="field" maxlength="6" placeholder="CÓDIGO"><button class="btn primary" id="join">Entrar</button></div></div><div class="card"><h2>🎮 Partidas rápidas</h2><p>Busca a cualquier compañero durante 30 segundos. Si no hay otro jugador, competirás contra una IA que también puede fallar.</p><button class="btn primary" id="quickmatch">🔎 Jugar contra cualquiera</button> <button class="btn" id="soloai">🤖 Jugar contra la IA</button></div><div class="card"><h2>¿Cómo funciona?</h2><p>El anfitrión crea la sala, tus compañeros se unen y empiezan juntos. Cada pregunta dura 27 segundos. Los aciertos rápidos puntúan más.</p><p class="muted">Modalidad de práctica entre compañeros; los puntos no son una calificación oficial y no incluyen sistema antifraude.</p></div>');document.getElementById('create').onclick=create;document.getElementById('join').onclick=join;document.getElementById('quickmatch').onclick=quickMatch;document.getElementById('soloai').onclick=beginAi}
-async function load(){if(!room||soloAi)return;let rs=await Promise.all([db.from('kahoot_rooms').select('*').eq('id',room.id).maybeSingle(),db.from('kahoot_players').select('*').eq('room_id',room.id),db.from('kahoot_answers').select('*').eq('room_id',room.id)]);if(rs[0].data)room=rs[0].data;players=rs[1].data||[];answers=rs[2].data||[]}
+async function load(){if(!room||soloAi)return;const id=room.id;let rs=await Promise.all([db.from('kahoot_rooms').select('*').eq('id',id).maybeSingle(),db.from('kahoot_players').select('*').eq('room_id',id),db.from('kahoot_answers').select('*').eq('room_id',id)]);if(!room||room.id!==id)return;if(rs[0].data)room=rs[0].data;players=rs[1].data||[];answers=rs[2].data||[]}
 function beginAi(){if(matchTimer)clearTimeout(matchTimer);matchTimer=null;soloAi=true;const ai=AI_NAMES[Math.floor(Math.random()*AI_NAMES.length)];let src=[...all];for(let i=src.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[src[i],src[j]]=[src[j],src[i]]}room={id:crypto.randomUUID(),code:'SOLOIA',host_id:user.id,subject_id:'random',status:'playing',seconds_per_question:27,started_at:new Date().toISOString(),question_keys:drawVaried(src,Math.min(10,src.length),'radiolab.kahoot.history').map(x=>x.key)};players=[{user_id:user.id,display_name:profile?.username||'Tú',avatar:profile?.avatar||'🩻'},{user_id:AI_ID,display_name:ai,avatar:'🤖'}];answers=[];lastIndex=-1;lastAnswered=-1;aiVoteQuestion=-1;play()}
 async function quickMatch(){try{soloAi=false;const r=await db.rpc('kahoot_quickmatch',{p_name:profile?.username||'Alumno',p_avatar:profile?.avatar||'🩻'});if(r.error)return err('Error buscando rival: '+r.error.message);room=r.data;await display();if(players.length>=2)return;matchTimer=setTimeout(async()=>{if(!room||room.id!==r.data.id||room.status!=='waiting'||soloAi)return;await load();if(players.length>=2){if(room.host_id===user.id)await start();else await display();return}const cancel=await db.rpc('kahoot_cancel_quickmatch',{p_room:room.id});if(cancel.error){err('No se pudo cerrar la búsqueda: '+cancel.error.message);return}await load();if(players.length>=2){if(room.host_id===user.id)await start();else await display();return}beginAi()},30000)}catch(e){err('Error buscando rival: '+e.message)}}
 async function create(){const sub=document.getElementById('sub').value;const available=all.filter(x=>sub==='random'||x.subject===sub);if(available.length<3)return err('Esa asignatura necesita más preguntas');const code=Array.from(crypto.getRandomValues(new Uint8Array(6)),v=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[v%32]).join('');const r=await db.from('kahoot_rooms').insert({code,subject_id:sub,host_id:user.id,seconds_per_question:27}).select().single();if(r.error)return err(r.error.message);room=r.data;const p=await db.from('kahoot_players').insert({room_id:room.id,user_id:user.id,display_name:profile?.username||'Anfitrión',avatar:profile?.avatar||'🩻'});if(p.error)return err(p.error.message);await display()}
 async function join(){let code=document.getElementById('code').value.trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(code))return err('Introduce los seis caracteres');const r=await db.from('kahoot_rooms').select('*').eq('code',code).maybeSingle();if(!r.data)return err('No existe esa sala');room=r.data;if(room.status!=='waiting')return err('La partida ya ha comenzado');const p=await db.from('kahoot_players').upsert({room_id:room.id,user_id:user.id,display_name:profile?.username||'Alumno',avatar:profile?.avatar||'🩻'},{onConflict:'room_id,user_id',ignoreDuplicates:true});if(p.error)return err(p.error.message);await display()}
 function nav(){return '<div class="row"><button id="leave" class="btn">← Salir</button><span class="pill">SALA '+safe(room.code)+'</span></div>'}
-function leave(){if(matchTimer)clearTimeout(matchTimer);matchTimer=null;soloAi=false;room=null;players=[];answers=[];lastIndex=-1;lastAnswered=-1;pendingAnswer=false;homepage()}
+function leave(){if(matchTimer)clearTimeout(matchTimer);matchTimer=null;soloAi=false;room=null;players=[];answers=[];lastIndex=-1;lastAnswered=-1;pendingAnswer=false;finalRenderedRoom=null;lastRematchPoll=0;homepage()}
 async function display(){await load();if(room.status==='waiting'){show('<div class="card">'+nav()+'<h1>🎯 Sala de Kahoot</h1><p>Comparte este código con tus compañeros:</p><div class="big">'+safe(room.code)+'</div><button class="btn" id="copy">📋 Copiar</button><h2>Jugadores ('+players.length+')</h2><div class="grid">'+players.map(p=>'<div class="score">'+safe(p.avatar)+' '+safe(p.display_name)+'</div>').join('')+'</div>'+(room.host_id===user.id?'<button class="btn primary" id="start" '+(players.length<2?'disabled':'')+'>▶️ Empezar partida</button>':'<p>Esperando a que el anfitrión inicie la partida.</p>')+'</div>');document.getElementById('copy').onclick=()=>navigator.clipboard?.writeText(room.code);const s=document.getElementById('start');if(s)s.onclick=start;document.getElementById('leave').onclick=leave;return}if(room.status==='playing'){play();return}}
 async function start(){const sub=room.subject_id;const source=all.filter(x=>sub==='random'||sub==='quickmatch'||x.subject===sub);let array=[...source];for(let i=array.length-1;i>0;i--){let j=crypto.getRandomValues(new Uint32Array(1))[0]%(i+1);[array[i],array[j]]=[array[j],array[i]]}const keys=drawVaried(array,Math.min(10,array.length),'radiolab.kahoot.history').map(q=>q.key);const r=await db.from('kahoot_rooms').update({status:'playing',question_keys:keys,seconds_per_question:27,started_at:new Date().toISOString()}).eq('id',room.id).eq('status','waiting').select().single();if(r.error)return err(r.error.message);room=r.data;lastIndex=-1;await display()}
 function play(){
@@ -87,11 +87,40 @@ async function answer(i,choice){
  if(st)st.textContent='✅ Respuesta registrada. Espera al final de los 27 segundos para ver la solución.';
  const chosen=document.querySelector('[data-choice="'+choice+'"]');if(chosen)chosen.classList.add('is-selected');
 }
-function finish(){const scores=players.map(p=>({p,score:answers.filter(a=>a.user_id===p.user_id).reduce((n,a)=>n+a.points,0),correct:answers.filter(a=>a.user_id===p.user_id&&a.correct).length})).sort((a,b)=>b.score-a.score);show('<div class="card">'+nav()+'<h1>🏆 Podio Radiolab</h1><p>¡Partida terminada! '+pool().length+' preguntas.</p>'+scores.map((x,i)=>'<div class="score"><span class="pill">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span> '+safe(x.p.avatar)+' <b>'+safe(x.p.display_name)+'</b> — '+x.score+' puntos · '+x.correct+' aciertos</div>').join('')+'<button class="btn primary" id="new">Nueva partida</button></div>');document.getElementById('leave').onclick=leave;document.getElementById('new').onclick=leave}
+async function requestRematch(vote=false){
+ if(!room||!document.getElementById('rematch-panel')||rematchPollBusy)return;
+ if(soloAi){if(vote)beginAi();return;}
+ const old=room.id;rematchPollBusy=true;
+ try{
+  const {data,error}=await db.rpc('game_rematch',{p_kind:'kahoot',p_room:old,p_vote:vote});
+  if(!room||room.id!==old)return;
+  const button=document.getElementById('rematch'),label=document.getElementById('rematch-status');
+  if(error){if(label)label.textContent='No se pudo gestionar la revancha: '+error.message;return;}
+  if(data.state==='ready'){
+   const r=await db.from('kahoot_rooms').select('*').eq('id',data.new_room).maybeSingle();
+   if(room?.id!==old)return;
+   if(r.data){room=r.data;finalRenderedRoom=null;lastIndex=-1;lastAnswered=-1;pendingAnswer=false;finished=false;await display();return}
+  }
+  if(button){button.disabled=data.state==='expired'||data.voted;button.style.display=data.state==='expired'?'none':'';button.textContent=data.voted?'✅ Revancha solicitada':'🔁 Revancha';}
+  if(label)label.textContent=data.state==='expired'?'Tiempo agotado. Pulsa Salir.':data.state==='waiting'?'Esperando al otro jugador: '+data.seconds+' s.':'Ambos debéis aceptar: 30 segundos desde la primera solicitud.';
+ }finally{rematchPollBusy=false}
+}
+function finish(){
+ if(!room||finalRenderedRoom===room.id&&document.getElementById('rematch-panel'))return;
+ finalRenderedRoom=room.id;
+ const scores=players.map(p=>({p,score:answers.filter(a=>a.user_id===p.user_id).reduce((n,a)=>n+a.points,0),correct:answers.filter(a=>a.user_id===p.user_id&&a.correct).length})).sort((a,b)=>b.score-a.score);
+ show('<div class="card">'+nav()+'<h1>🏆 Podio Radiolab</h1><p>¡Partida terminada! '+pool().length+' preguntas.</p>'+scores.map((x,i)=>'<div class="score"><span class="pill">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</span> '+safe(x.p.avatar)+' <b>'+safe(x.p.display_name)+'</b> — '+x.score+' puntos · '+x.correct+' aciertos</div>').join('')+'<div id="rematch-panel"><button class="btn primary" id="rematch">🔁 Revancha</button><p class="muted" id="rematch-status">Ambos jugadores deben aceptar en 30 segundos.</p></div><button class="btn" id="new">Salir al inicio de Kahoot</button></div>');
+ document.getElementById('leave').onclick=leave;
+ document.getElementById('new').onclick=leave;
+ document.getElementById('rematch').onclick=()=>requestRematch(true);
+ if(!soloAi)requestRematch(false).catch(console.error);
+}
 async function tick(){
  if(!room||ticking)return;ticking=true;
  try{
   await load();
+  if(!room)return;
+  if(document.getElementById('rematch-panel')&&Date.now()-lastRematchPoll>1800){lastRematchPoll=Date.now();requestRematch(false).catch(console.error)}
   if(room.status==='waiting'){
    if(room.subject_id==='quickmatch'&&players.length>=2&&room.host_id===user.id){if(matchTimer)clearTimeout(matchTimer);matchTimer=null;await start();return}
    const badge=document.querySelector('.big');

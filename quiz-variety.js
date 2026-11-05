@@ -35,7 +35,7 @@ export function drawVaried(items,count,historyKey,options={}){
  */
 export function augmentLessons(lessons){
  return lessons.map(lesson=>{
-  const pts=Array.isArray(lesson.points)?lesson.points:[];
+  const pts=Array.isArray(lesson.sections)&&lesson.sections.length?lesson.sections:(Array.isArray(lesson.points)?lesson.points:[]);
   const eligible=pts.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&typeof p[1]==='string'&&p[0].trim().length>=4&&p[0].trim().length<=90&&p[1].trim().length>=20&&p[1].trim().length<=550);
   const seen=new Set();
   const distinct=eligible.filter(p=>{const k=p[0].toLocaleLowerCase('es').trim();if(seen.has(k))return false;seen.add(k);return true});

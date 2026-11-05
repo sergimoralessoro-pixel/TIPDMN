@@ -10,10 +10,8 @@ export function varyQuestion(question,random=Math.random,form=0){
  const order=shuffled(q[1].map((value,i)=>({value,i})),random);
  q[1]=order.map(x=>x.value);q[2]=order.findIndex(x=>x.i===question[2]);
  if(Array.isArray(question[4]))q[4]=order.map(x=>question[4][x.i]);
- const text=String(question[0]||'').trim();
- if(form===1&&text.includes('?'))q[0]='Repaso de conceptos: '+text;
- else if(form===2)q[0]='Comprueba tus conocimientos. '+text;
- else if(form===3)q[0]='Selecciona la respuesta más adecuada. '+text;
+ // Mantener el enunciado directo: variar las opciones, no añadir muletillas.
+ q[0]=String(question[0]||'').trim();
  return q;
 }
 export function drawVaried(items,count,historyKey,options={}){
@@ -49,12 +47,12 @@ export function augmentLessons(lessons){
     const answerOptions=[item,...idxs].map(x=>x[1].trim());
     const description=item[1].trim();
     extra.push([
-      'En «'+lesson.title+'», ¿qué concepto corresponde a esta explicación: «'+description+'»?',
+      '¿Qué concepto corresponde a esta descripción? «'+description+'»',
       conceptOptions,0,
       'El concepto correcto es «'+item[0].trim()+'»: '+description
     ]);
     extra.push([
-      'En «'+lesson.title+'», ¿qué afirmación describe correctamente «'+item[0].trim()+'»?',
+      '¿Qué afirmación describe correctamente «'+item[0].trim()+'»?',
       answerOptions,0,
       description
     ]);

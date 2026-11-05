@@ -104,7 +104,7 @@ function scoreCard(id,title){
  const ordered=[...categories].sort((a,b)=>Number(progress[b.id]||0)-Number(progress[a.id]||0)||a.name.localeCompare(b.name,'es'));
  const cells=ordered.map(cat=>{
   const count=Math.max(0,Number(progress[cat.id]||0)),earned=Boolean(awards[cat.id]||count>=3);
-  return '<div style="padding:9px 0;border-bottom:1px solid #54718245"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>'+esc(cat.emoji)+' '+esc(cat.name)+'</span><strong style="white-space:nowrap">'+count+' acierto'+(count===1?'':'s')+' '+(earned?'🏅':'')+'</strong></div><div style="display:flex;align-items:center;gap:8px;margin-top:5px">'<small>'+(earned?'Emoji conseguido':'Faltan '+Math.max(0,3-count)+' para el emoji')+'</small></div></div>';
+  return '<div style="padding:9px 0;border-bottom:1px solid #54718245"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="display:inline-flex;align-items:center;gap:8px">'+emojiOf(cat,count)+' '+esc(cat.name)+'</span><strong style="white-space:nowrap">'+count+' acierto'+(count===1?'':'s')+' '+(earned?'🏅':'')+'</strong></div><div style="display:flex;align-items:center;gap:8px;margin-top:5px"><small>'+(earned?'Emoji conseguido':'Faltan '+Math.max(0,3-count)+' para el emoji')+'</small></div></div>';
  }).join('');
  const top=ordered.filter(cat=>Number(progress[cat.id]||0)>0).slice(0,3).map(cat=>esc(cat.emoji)+' '+Number(progress[cat.id]||0)).join(' · ');
  const expanded=id===user?.id?' open':'';

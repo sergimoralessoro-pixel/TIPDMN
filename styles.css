@@ -104,3 +104,13 @@ select.field{appearance:auto}label{display:block;color:#a8c7d6;font-size:13px;ma
 .feedback-bad strong{color:#ffb5bc}
 @media(max-width:650px){.book-paper{padding:24px 22px;min-height:480px;box-shadow:5px 8px 0 #153b4e,7px 11px 18px #010b1766;border-radius:6px 18px 18px 6px}.book-paper:before{left:6px}.book-controls .btn{flex:1;min-width:105px;padding:11px 8px;font-size:12px}.book-reading p{line-height:1.8}.heart-chart{padding:8px}.heart-chart svg text{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.hb-heart,.flow-blue,.flow-red{animation:none}}
+
+/* Ilustraciones contextuales de Ciencias Forenses */
+.forensic-figure{margin:24px 0 29px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#0a2d42,#164a59);border:1px solid #4399a7;box-shadow:0 8px 22px #07131f16;color:#d8f5fa}
+.forensic-figure-title{font-family:system-ui,sans-serif;font-size:12px;letter-spacing:.07em;font-weight:850;color:#9cebf5;margin-bottom:12px}
+.forensic-figure svg{display:block;width:100%;height:auto;max-height:285px}
+.forensic-figure figcaption{margin:12px 2px 0;color:#c3e6ed;font-size:13px;line-height:1.5;text-align:center}
+.forensic-dash{animation:forensicFlow 2.5s linear infinite}
+@keyframes forensicFlow{to{stroke-dashoffset:-58}}
+@media(max-width:600px){.forensic-figure{padding:9px;margin:15px 0}.forensic-figure-title{font-size:10px}.forensic-figure figcaption{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.forensic-dash{animation:none}}

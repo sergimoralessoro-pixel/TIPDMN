@@ -23,7 +23,7 @@
 @media(max-width:560px){main{padding:12px}.card{padding:14px;border-radius:16px}.scoreboard{gap:7px}.player-card{padding:10px}.badge-line{gap:2px}.badge-symbol{font-size:18px}.player-card strong{font-size:13px}.player-counter{font-size:10px}.wheel-icon{font-size:18px}}
 </style></head><body><main><div class="bar"><div class="brand">🩻 RADIO<span>LAB</span> <small style="font-weight:400;font-size:13px">ARENA</small></div><a href="./">← Volver a la academia</a></div><div id="app"><div class="card hero"><h1>🎡 Duelos con ruleta</h1><p>Cargando la arena...</p></div></div></main><script type="module">
 import {subjects,lessons} from './content.js';
-import {augmentLessons,uniqueBank} from './quiz-variety.js';
+import {augmentLessons,uniqueBank,drawVaried,varyQuestion,rng} from './quiz-variety.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
 import {radiationTopics} from './radiation-topics.js';
@@ -162,7 +162,7 @@ function renderRoom(){
  }else if(!room.question_key){
   display+='<section class="card hero"><h2>🎯 ¡Te toca!</h2><p>Gira la ruleta para elegir asignatura. Si aciertas, podrás volver a girar. Si fallas, jugará tu rival.</p><button class="btn primary" id="spin">🎡 Girar ruleta</button></section>'+wheel();
  }else{
-  const found=bank.find(x=>x.key===room.question_key),cat=byId(room.category);
+  const original=bank.find(x=>x.key===room.question_key),found=original&&{...original,q:varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1)},cat=byId(room.category);
   display+='<section class="card"><span class="pill">'+esc(cat?.emoji||'🎡')+' '+esc(cat?.name||room.category)+'</span><h2>Pregunta para '+esc(profiles[user.id]||'ti')+'</h2><div class="count" id="seconds">'+questionLeft()+'s</div>';
   if(!found)display+='<p class="error">La pregunta no está en tu versión. Actualiza la aplicación.</p>';
   else display+='<h2>'+esc(found.q[0])+'</h2><div class="options">'+found.q[1].map((o,i)=>'<button class="option" data-answer="'+i+'">'+String.fromCharCode(65+i)+'. '+esc(o)+'</button>').join('')+'</div><p class="muted">Solo responde el jugador que tiene el turno. ⏱️ 20 segundos.</p>';
@@ -179,7 +179,7 @@ async function spin(){
  animating=true;
  const prev=room,already=new Set(room.question_keys||[]),possible=categories.filter(c=>c.pool.some(x=>!already.has(x.key)));
  if(!possible.length){animating=false;return status('Ya se han utilizado todas las preguntas de esta partida. Finaliza a las dos horas.');}
- const cat=possible[randomOf(possible.length)],pool=cat.pool.filter(x=>!already.has(x.key)),key=pool[randomOf(pool.length)].key;
+ const cat=possible[randomOf(possible.length)],pool=cat.pool.filter(x=>!already.has(x.key)),next=drawVaried(pool,1,'radiolab.duel.history.'+cat.id),key=(next[0]||pool[randomOf(pool.length)]).key;
  const index=categories.indexOf(cat);
  const wedge=360/categories.length;
  spinAngle=Math.ceil(spinAngle/360)*360+1440+Math.floor(360-(index+.5)*wedge);
@@ -196,7 +196,7 @@ async function spin(){
 }
 async function answer(choice){
  if(busy||!room||room.current_turn!==user.id||!room.question_key)return;
- busy=true;const old=room,question=bank.find(x=>x.key===old.question_key);
+ busy=true;const old=room,original=bank.find(x=>x.key===old.question_key),question=original&&{...original,q:varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1)};
  if(!question){busy=false;return}
  document.querySelectorAll('[data-answer]').forEach(x=>x.disabled=true);
  try{

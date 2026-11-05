@@ -58,10 +58,15 @@ const questionLeft=()=>room?.question_started_at?Math.max(0,Math.ceil((new Date(
 const emojiOf=(cat,count)=>{const n=Math.min(3,Math.max(0,Number(count)||0));return '<span class="badge-symbol progress-emoji" style="--emoji-fill:'+(n/3*100)+'%" title="'+esc(cat.name)+': '+n+'/3 aciertos" aria-label="'+esc(cat.name)+': '+n+' de 3 aciertos"><span class="emoji-shadow" aria-hidden="true">'+cat.emoji+'</span><span class="emoji-fill" aria-hidden="true">'+cat.emoji+'</span><span class="emoji-segments" aria-hidden="true"><i></i><i></i><i></i></span></span>'};
 function status(n){gameError=n;const a=document.querySelector('#feedback');if(a){a.textContent=n;a.style.display=n?'block':'none';}else if(n)console.warn(n)}
 function show(a){
- const open=new Set([...el.querySelectorAll('details[data-review][open]')].map(d=>d.dataset.review));
+ const oldScroll=window.scrollY;
+ const openReviews=new Set([...el.querySelectorAll('details[data-review][open]')].map(d=>d.dataset.review));
+ const openScores=new Set([...el.querySelectorAll('details[data-score][open]')].map(d=>d.dataset.score));
  el.innerHTML=a;
- el.querySelectorAll('details[data-review]').forEach(d=>{if(open.has(d.dataset.review))d.open=true});
+ el.querySelectorAll('details[data-review]').forEach(d=>{if(openReviews.has(d.dataset.review))d.open=true});
+ el.querySelectorAll('details[data-score]').forEach(d=>{if(openScores.has(d.dataset.score))d.open=true});
  if(gameError)status(gameError);
+ // Mantener la posición al redibujar el turno, sin desplazar al jugador arriba.
+ window.scrollTo({top:oldScroll,behavior:'instant'});
 }
 const reviewStorageKey=()=> 'radiolab.duel.mistakes.'+(user?.id||'guest');
 function savedMistakes(){try{const v=JSON.parse(localStorage.getItem(reviewStorageKey())||'[]');return Array.isArray(v)?v:[]}catch{return []}}
@@ -107,8 +112,7 @@ function scoreCard(id,title){
   return '<div style="padding:9px 0;border-bottom:1px solid #54718245"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="display:inline-flex;align-items:center;gap:8px">'+emojiOf(cat,count)+' '+esc(cat.name)+'</span><strong style="white-space:nowrap">'+count+' acierto'+(count===1?'':'s')+' '+(earned?'🏅':'')+'</strong></div><div style="display:flex;align-items:center;gap:8px;margin-top:5px"><small>'+(earned?'Emoji conseguido':'Faltan '+Math.max(0,3-count)+' para el emoji')+'</small></div></div>';
  }).join('');
  const top=ordered.filter(cat=>Number(progress[cat.id]||0)>0).slice(0,3).map(cat=>esc(cat.emoji)+' '+Number(progress[cat.id]||0)).join(' · ');
- const expanded=id===user?.id?' open':'';
- return '<div class="player-card '+(room?.current_turn===id&&room?.status==='playing'?'now-playing':'')+'"><div class="player-title">'+esc(title)+' '+(room?.current_turn===id&&room?.status==='playing'?'🎯':'')+'</div><strong>'+esc(profiles[id]||(id===user?.id?(user?.user_metadata?.username||user?.user_metadata?.display_name||user?.email?.split('@')[0]):null)||(id?'Alumno':'Esperando rival'))+'</strong><div class="player-counter">'+acquired+' / '+categories.length+' emojis · '+total+' aciertos</div>'+badgeLine(id)+'<details'+expanded+' style="margin-top:12px"><summary style="cursor:pointer;font-weight:750">📊 Aciertos por asignatura'+(top?' · '+top:'')+'</summary><p style="font-size:12px;opacity:.85;margin:7px 0">Cada 3 aciertos en la misma asignatura consigues su emoji. Ordenadas de mayor a menor puntuación.</p>'+cells+'</details></div>';
+ return '<div class="player-card '+(room?.current_turn===id&&room?.status==='playing'?'now-playing':'')+'"><div class="player-title">'+esc(title)+' '+(room?.current_turn===id&&room?.status==='playing'?'🎯':'')+'</div><strong>'+esc(profiles[id]||(id===user?.id?(user?.user_metadata?.username||user?.user_metadata?.display_name||user?.email?.split('@')[0]):null)||(id?'Alumno':'Esperando rival'))+'</strong><div class="player-counter">'+acquired+' / '+categories.length+' emojis · '+total+' aciertos</div>'+badgeLine(id)+'<details data-score="'+esc(id||'pending')+'" style="margin-top:12px"><summary style="cursor:pointer;font-weight:750">📊 Aciertos por asignatura'+(top?' · '+top:'')+'</summary><p style="font-size:12px;opacity:.85;margin:7px 0">Cada 3 aciertos en la misma asignatura consigues su emoji. Ordenadas de mayor a menor puntuación.</p>'+cells+'</details></div>';
 }
 function board(){
  if(!room)return '';

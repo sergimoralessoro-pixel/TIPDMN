@@ -103,7 +103,7 @@ function lessonPage(){
  ${renderStudyBook(l,state.bookPage)}`;
 }
 function quiz(questions,mode='normal'){if(!questions.length)return notify('No hay preguntas disponibles todavía');const key='radiolab.history.'+(mode==='daily'?'daily':mode==='normal'||mode==='selected'?('lesson.'+(state.lesson||state.sub||'all')):mode);
- const picked=mode==='mistakes'?shuffled(uniqueBank(questions)):drawVaried(questions,Math.min(questions.length,mode==='normal'||mode==='selected'||mode==='exam'?Math.max(10,Math.min(20,questions.length)):questions.length),key);
+ const picked=mode==='mistakes'?shuffled(uniqueBank(questions)):drawVaried(questions,Math.min(questions.length,mode==='normal'||mode==='selected'?Math.max(10,Math.min(20,questions.length)):questions.length),key);
  state.test=picked.map((item,i)=>({...item,q:varyQuestion(item.q,Math.random,i%4)}));state.answers={};state.result=null;state.mode=mode;state.startedAt=Date.now();go('test')}
 function getQuestion(id,i){return getLesson(id)?.questions[i]}
 function startLesson(){const l=getLesson(state.lesson);if(!l)return;if(l.questions.length<10)return notify('Este tema tiene menos de 10 preguntas y su examen está en preparación. No lo presentaré como examen completo.');quiz(l.questions.map((q,i)=>({qid:`${l.id}:${i}`,l:l.id,i,q}))) }

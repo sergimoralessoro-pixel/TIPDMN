@@ -3,6 +3,17 @@
  * No descargar ni copiar materiales de buscadores sin licencia.
  */
 const items=[
+ // Láminas y exploraciones verificadas en Wikimedia Commons (con enlace de autoría).
+ {id:'esqueleto-es',sub:'anatomia',match:/esquel[eé]t|huesos del cuerpo|aparato locomotor|sistema [oó]seo/i,file:'Sistema esquelético.png',alt:'Esqueleto humano con huesos identificados en español',credit:'Kazukiokumura · CC BY 4.0',caption:'Principales huesos del esqueleto humano identificados en español.'},
+ {id:'planos',sub:'anatomia',match:/plano|corte sagital|corte coronal|corte transversal|posici[oó]n anat[oó]mica/i,file:'Human anatomy planes, labeled.svg',alt:'Planos sagital, coronal y transversal en el cuerpo humano',credit:'Cmglee · CC BY-SA 4.0',caption:'Planos anatómicos: sagital, frontal/coronal y transversal/axial.'},
+ {id:'alfa-beta-gamma',sub:'proteccion',match:/alfa|beta|gamma|penetraci[oó]n|tipos de radiaci[oó]n/i,file:'Alfa beta gamma radiation penetration.svg',alt:'Poder de penetración de partículas alfa beta y radiación gamma',credit:'Ehamberg y Stannered · CC BY-SA 3.0',caption:'Protección frente a radiación alfa, beta y gamma según el blindaje.'},
+ {id:'ley-inverso',sub:'proteccion',match:/invers[oa] del cuadrado|distancia|alejamiento de la fuente/i,file:'Inverse-square law.png',alt:'Ley del inverso del cuadrado: al duplicar distancia la intensidad es un cuarto',credit:'Imagen educativa · CC BY 4.0',caption:'Distancia y radiación dispersa: I proporcional a 1/d² para una fuente puntual ideal.'},
+ {id:'tubo-fundamentos',sub:'fundamentos',match:/rayos X|c[aá]todo|[aá]nodo|producci[oó]n|bremsstrahlung|radiaci[oó]n caracter[ií]stica/i,file:'X-ray tube schematic.png',alt:'Esquema de tubo radiológico con cátodo, ánodo y generación de rayos X',credit:'Daniel W. Rickey · CC BY-SA 3.0',caption:'Tubo radiológico: emisión de electrones y producción de rayos X.'},
+ {id:'torax-pa',sub:'rxsimple',match:/t[oó]rax|pulm[oó]n|par[eé]nquima pulmonar|posteroanterior|proyecci[oó]n PA/i,file:'Normal posteroanterior (PA) chest radiograph (X-ray).jpg',alt:'Radiografía PA de tórax normal',credit:'Mikael Häggström · Wikimedia Commons',caption:'Radiografía normal de tórax en proyección posteroanterior (PA).'},
+ {id:'mamo-cc-mlo',sub:'rxespecial',match:/mamograf|craneocaudal|mediolateral oblicua|microcalcificac/i,file:'Mammogram images of clustered calcifications at CC view and MLO view.png',alt:'Mamografías CC y MLO con microcalcificaciones',credit:'Cerevisae · Wikimedia Commons',caption:'Comparación de mamografías CC y MLO; el caso muestra microcalcificaciones.'},
+ {id:'tc-cerebral',sub:'tc',match:/cerebr|cabeza|cr[aá]ne|unidad hounsfield|ventana de imagen|corte axial/i,file:'CT of a normal brain, axial 30.png',alt:'Tomografía computarizada axial de cerebro sin contraste',credit:'Mikael Häggström · Wikimedia Commons',caption:'Corte axial de TC cerebral: ejemplo de anatomía normal.'},
+ {id:'generador-tc99',sub:'radiofarmacia',match:/generador|tecnecio|producci[oó]n de los radiof[aá]rmacos/i,file:'NM11 2.gif',alt:'Esquema didáctico de un generador de tecnecio 99m',credit:'Kieran Maher · dominio público',caption:'Esquema de los componentes del generador de tecnecio-99m.'},
+
  {id:'rm-mri',sub:'rm',match:/resonancia|imán|campo magnético|equipo|seguridad|bobina|adquisición/i,
   file:'An MRI scanner.JPG',alt:'Fotografía real de un equipo de resonancia magnética de uso clínico',credit:'Walter Davies, CC BY-SA 4.0',caption:'Equipo real de resonancia magnética. Fotografía educativa.'},
  {id:'tc-scanner',sub:'tc',match:/tomograf|gantry|detector|tubo|equipos|adquisición|reconstrucción|protocolo/i,
@@ -51,7 +62,7 @@ function figure(r){
  return '<figure class="study-real-image"><img loading="lazy" decoding="async" src="'+filepath+'" alt="'+esc(r.alt)+'" referrerpolicy="no-referrer" onerror="this.closest(\'figure\').style.display=\'none\'"><figcaption><strong>'+esc(r.caption)+'</strong><small>Fuente: <a href="'+page+'" target="_blank" rel="noopener noreferrer">'+esc(r.credit)+' · Wikimedia Commons</a></small></figcaption></figure>';
 }
 export function topicRealMedia(lesson,heading){
- const text=String(heading||'')+' '+String(lesson?.title||'');
+ const text=String(heading||'');
  const sub=lesson?.subject||'';
  let matches=items.filter(x=>x.sub===sub&&x.match.test(text));
  // Priorizar especificidad del apartado, no solo el título del tema.

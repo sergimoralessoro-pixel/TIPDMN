@@ -37,14 +37,20 @@ const bank=course.flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l
 const categories=subjects.map(x=>({id:x[0],name:x[1],emoji:x[2],pool:bank.filter(y=>y.sub===x[0])})).filter(x=>x.pool.length>=10);
 const palette=['#30c6cf','#517dde','#ad78ce','#f2a854','#4bb894','#df739f','#3c9cca','#adc15c','#c278b9','#2fc7a6','#f18b62','#728bd2','#bd78df','#ddba5b','#44b3ca','#bf80af','#92a5ca'];
 const names=Object.fromEntries(categories.map(x=>[x.id,x.name]));
-let supa,user,room=null,active=[],profiles={},busy=false,animating=false,polling=false,channel=null,gameError='',spinAngle=0;
+let supa,user,room=null,active=[],profiles={},busy=false,animating=false,polling=false,channel=null,gameError='',spinAngle=0,aiRoom=false,matchTimer=null,aiBusy=false;
+const AI_ID='00000000-0000-4000-8000-000000000001';
+const AI_NAMES=['🦊 Vega Rad','🤖 Dr. Pixel','🐙 Neutrón','🦉 Rayito','🐼 La Doctora','👾 Tecno-X','🦋 Nébula','🐸 Profe Gamma'];
 const byId=id=>categories.find(x=>x.id===id);
 const timeLeft=()=>room?Math.max(0,Math.ceil((new Date(room.expires_at).getTime()-Date.now())/1000)):0;
 const questionLeft=()=>room?.question_started_at?Math.max(0,Math.ceil((new Date(room.question_started_at).getTime()+20000-Date.now())/1000)):0;
 const emojiOf=(cat,earned)=>'<span class="badge-symbol '+(earned?'earned':'unearned')+'" title="'+esc(cat.name)+'">'+cat.emoji+'</span>';
 function status(n){gameError=n;const a=document.querySelector('#feedback');if(a){a.textContent=n;a.style.display=n?'block':'none';}else if(n)console.warn(n)}
 function show(a){el.innerHTML=a;if(gameError)status(gameError)}
-async function rpc(fn,args){const r=await supa.rpc(fn,args);if(r.error)throw Error(r.error.message);return r.data}
+async function rpc(fn,args){if(aiRoom&&['duel_spin','duel_answer','duel_expire'].includes(fn))return localAiRpc(fn,args);const r=await supa.rpc(fn,args);if(r.error)throw Error(r.error.message);return r.data}
+function localAiRpc(fn,a){if(!room||!aiRoom)throw Error('La partida de IA no está activa');if(fn==='duel_expire'){room.status='expired';return room}if(fn==='duel_spin'){if(room.question_key)throw Error('Ya hay una pregunta activa');room.status='playing';room.current_turn=room.current_turn||user.id;room.category=a.p_category;room.question_key=a.p_question_key;room.correct_index=a.p_correct_index;room.question_started_at=new Date().toISOString();room.question_keys.push(a.p_question_key);room.revision++;return room}if(fn==='duel_answer'){if(room.question_key!==a.p_question_key)return room;const correct=a.p_choice===room.correct_index&&Date.now()<new Date(room.question_started_at).getTime()+20000;const actor=room.current_turn;if(correct){const id=String(actor),prog=room.category_progress[id]||{};prog[room.category]=(prog[room.category]||0)+1;room.category_progress[id]=prog;if(prog[room.category]>=3){room.awards[id]??={};room.awards[id][room.category]=true}}room.last_result={user_id:actor,correct,category:room.category,answer:room.correct_index,question_key:room.question_key};room.current_turn=correct?actor:(actor===user.id?AI_ID:user.id);room.question_key=null;room.question_started_at=null;room.correct_index=null;room.revision++;if(room.current_turn===AI_ID)scheduleAi();return room}return room}
+function beginAi(){if(matchTimer){clearTimeout(matchTimer);matchTimer=null}aiRoom=true;const chosen=AI_NAMES[randomOf(AI_NAMES.length)];profiles[AI_ID]=chosen;room={id:crypto.randomUUID(),code:'SOLOIA',host_id:user.id,guest_id:AI_ID,status:'playing',current_turn:user.id,created_at:new Date().toISOString(),expires_at:new Date(Date.now()+7200000).toISOString(),revision:0,category_progress:{},awards:{},question_keys:[],question_key:null,last_result:{},question_started_at:null};renderRoom()}
+function scheduleAi(){if(!aiRoom||aiBusy||room?.current_turn!==AI_ID)return;aiBusy=true;setTimeout(()=>{try{if(!aiRoom||!room||room.current_turn!==AI_ID||room.status!=='playing')return;const used=new Set(room.question_keys||[]),cats=categories.filter(c=>c.pool.some(q=>!used.has(q.key)));if(!cats.length){room.status='finished';renderRoom();return}const cat=cats[randomOf(cats.length)],pool=cat.pool.filter(q=>!used.has(q.key)),q=pool[randomOf(pool.length)];localAiRpc('duel_spin',{p_category:cat.id,p_question_key:q.key,p_correct_index:q.q[2]});renderRoom();const delay=2500+randomOf(8500);setTimeout(()=>{if(!aiRoom||!room||room.current_turn!==AI_ID||room.question_key!==q.key)return;const hits=Math.random()<.63,choice=hits?q.q[2]:(q.q[2]+1+randomOf(3))%4;localAiRpc('duel_answer',{p_choice:choice,p_question_key:q.key});renderRoom()},delay)}finally{aiBusy=false}},850+randomOf(1550))}
+async function quickMatch(){if(busy)return;busy=true;try{aiRoom=false;const found=await rpc('duel_quickmatch',{});await openRoom(found);if(found.guest_id){status('✅ Rival encontrado. Comienza el creador de la sala.');return}matchTimer=setTimeout(async()=>{if(!room||room.id!==found.id||room.guest_id||room.status!=='waiting')return;try{const result=await rpc('duel_cancel_quickmatch',{p_room:found.id});if(room?.id!==found.id)return;if(result.guest_id){await openRoom(result);return}beginAi();status('🤖 No apareció otro jugador en 30 segundos: juegas contra la IA.')}catch(e){status('No se pudo completar la búsqueda: '+e.message)}},30000);status('🔎 Buscando a otro alumno durante 30 segundos…') }catch(e){alert('No se pudo buscar rival: '+e.message)}finally{busy=false}}
 function wheel(){
  const slice=360/categories.length;
  const gradient='conic-gradient('+categories.map((c,i)=>palette[i%palette.length]+' '+i*slice+'deg '+(i+1)*slice+'deg').join(',')+')';
@@ -67,13 +73,13 @@ function board(){
 }
 async function loadProfiles(){
  if(!room)return;
- const ids=[room.host_id,room.guest_id].filter(Boolean);
+ const ids=[room.host_id,room.guest_id].filter(x=>x&&x!==AI_ID);
  const r=await supa.from('profiles').select('id,username').in('id',ids);
  if(r.data)for(const v of r.data)profiles[v.id]=v.username;
 }
 function header(){return '<div class="bar"><button class="btn" id="exit">← Mis duelos</button><span class="pill">Sala '+esc(room.code)+'</span><span class="pill" id="expiry">⏳ '+formatTime(timeLeft())+'</span></div>';}
 function formatTime(n){return Math.floor(n/3600)+'h '+String(Math.floor(n%3600/60)).padStart(2,'0')+'m '+String(n%60).padStart(2,'0')+'s';}
-function bindExit(){const b=document.getElementById('exit');if(b)b.onclick=()=>{disconnect();room=null;loadLobby();}}
+function bindExit(){const b=document.getElementById('exit');if(b)b.onclick=()=>{disconnect();if(matchTimer)clearTimeout(matchTimer);matchTimer=null;room=null;aiRoom=false;loadLobby();}}
 function completed(){
  const earned=(room?.awards||{});
  return [room.host_id,room.guest_id].some(x=>x&&Object.keys(earned[x]||{}).filter(y=>earned[x][y]).length===categories.length);
@@ -88,11 +94,14 @@ function resultBanner(){
 async function loadLobby(){
  if(!user){show('<section class="card hero"><h1>🎡 Duelo individual Radiolab</h1><p>Primero juega uno y luego el otro. Necesitas cuenta para conservar partidas.</p><a class="btn primary" href="./#auth">Acceder o registrarme</a></section>');return;}
  if(busy)return;
+ aiRoom=false;
  const [a,b]=await Promise.all([supa.from('duel_rooms').select('*').eq('host_id',user.id).in('status',['waiting','playing']).gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(30),supa.from('duel_rooms').select('*').eq('guest_id',user.id).in('status',['waiting','playing']).gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(30)]);
  const all=[...(a.data||[]),...(b.data||[])];active=[...new Map(all.map(x=>[x.id,x])).values()].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));
  const rows=active.map(x=>'<div class="active-duel"><div><b>🎡 Sala '+esc(x.code)+'</b><p class="muted">'+(x.status==='waiting'?'Esperando al rival':x.current_turn===user.id?'🟢 Te toca jugar':'⏳ Turno del otro jugador')+' · finaliza '+new Date(x.expires_at).toLocaleString('es-ES')+'</p></div><button class="btn primary" data-resume="'+x.id+'">Continuar</button></div>').join('');
- show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 20 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2><button id="create" class="btn primary">Crear sala de 2 jugadores</button></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div><p id="feedback" class="error"></p>');
+ show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 20 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas · salas eliminadas 1 h después</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2><button id="create" class="btn primary">Crear sala de 2 jugadores</button><p><button id="quickmatch" class="btn primary">🔎 Jugar contra cualquiera (30 s)</button></p><p><button id="aiMatch" class="btn">🤖 Jugar contra la IA</button></p><p class="muted">Si no aparece nadie en 30 segundos, entrarás contra un personaje aleatorio. El creador empieza.</p></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div><p id="feedback" class="error"></p>');
  document.getElementById('create').onclick=create;
+ document.getElementById('quickmatch').onclick=quickMatch;
+ document.getElementById('aiMatch').onclick=()=>beginAi();
  document.getElementById('join').onclick=join;
  document.querySelectorAll('[data-resume]').forEach(x=>x.onclick=()=>openRoom(active.find(y=>y.id===x.dataset.resume)));
 }
@@ -114,11 +123,11 @@ async function openRoom(r){
 }
 function disconnect(){if(channel&&supa){supa.removeChannel(channel);channel=null;}}
 function connect(){
- if(!room)return;const id=room.id;
+ if(!room||aiRoom)return;const id=room.id;
  channel=supa.channel('duel-'+id+'-'+Date.now()).on('postgres_changes',{event:'UPDATE',schema:'public',table:'duel_rooms',filter:'id=eq.'+id},()=>refresh()).subscribe();
 }
 async function refresh(){
- if(!room||polling)return;polling=true;
+ if(!room||polling||aiRoom)return;polling=true;
  try{
   const id=room.id;
   const r=await supa.from('duel_rooms').select('*').eq('id',id).maybeSingle();
@@ -147,6 +156,7 @@ function renderRoom(){
  const mine=room.current_turn===user.id;
  let display=header()+board()+resultBanner();
  if(!mine){
+  if(aiRoom)scheduleAi();
   display+='<section class="card"><h2>⏳ Turno de '+esc(profiles[room.current_turn]||'tu rival')+'</h2><p>Cuando falle o se le agoten los 20 segundos, podrás girar la ruleta. Puedes cerrar esta pestaña: se guarda el turno automáticamente.</p></section>'+wheel();
  }else if(!room.question_key){
   display+='<section class="card hero"><h2>🎯 ¡Te toca!</h2><p>Gira la ruleta para elegir asignatura. Si aciertas, podrás volver a girar. Si fallas, jugará tu rival.</p><button class="btn primary" id="spin">🎡 Girar ruleta</button></section>'+wheel();
@@ -171,7 +181,7 @@ async function spin(){
  const cat=possible[randomOf(possible.length)],pool=cat.pool.filter(x=>!already.has(x.key)),key=pool[randomOf(pool.length)].key;
  const index=categories.indexOf(cat);
  const wedge=360/categories.length;
- spinAngle+=1440+Math.floor(360-(index+.5)*wedge);
+ spinAngle=Math.ceil(spinAngle/360)*360+1440+Math.floor(360-(index+.5)*wedge);
  const wheelNode=document.getElementById('wheel'),start=document.getElementById('spin');
  if(start)start.disabled=true;
  if(wheelNode){wheelNode.style.transition='transform 1.8s cubic-bezier(.18,.82,.18,1)';wheelNode.style.transform='rotate('+spinAngle+'deg)';}
@@ -196,6 +206,7 @@ async function answer(choice){
 }
 async function tick(){
  if(!room)return;
+ if(aiRoom&&room.current_turn===AI_ID&&room.status==='playing'&&!room.question_key)scheduleAi();
  const exp=document.getElementById('expiry');if(exp)exp.textContent='⏳ '+formatTime(timeLeft());
  if(timeLeft()<=0&&room.status!=='expired'&&room.status!=='finished'){
   try{room=await rpc('duel_expire',{p_room:room.id});renderRoom()}catch(e){console.warn(e)}return;

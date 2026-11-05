@@ -179,3 +179,9 @@ select.field{appearance:auto}label{display:block;color:#a8c7d6;font-size:13px;ma
 #forumMessages .post{overflow-wrap:anywhere;white-space:normal}
 #forumMessages .post p{white-space:pre-wrap}
 @media(max-width:930px){.forum-rooms{margin:0 -3px}.forum-rooms .btn{padding:10px 13px}#forumMessages{max-height:none}}
+
+/* Selector de categoría del foro: compacto en móvil */
+.forum-room-picker{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:13px 15px;border-radius:14px;border:1px solid #345b70;background:#122d41;max-width:100%;margin:12px 0}
+.forum-room-picker label{font-size:14px;font-weight:750;white-space:nowrap}
+.forum-room-picker select.field{flex:1;min-width:180px;max-width:100%;margin:0;cursor:pointer;padding:12px 38px 12px 12px}
+@media(max-width:650px){.forum-room-picker{display:block;padding:12px}.forum-room-picker label{display:block;margin-bottom:9px}.forum-room-picker select.field{display:block;width:100%;min-width:0}.forum-heading{align-items:flex-start}#forumMessages{overflow-wrap:anywhere}}

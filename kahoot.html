@@ -7,7 +7,7 @@ import {anatomyBookA} from './anatomy-book-a.js';
 import {anatomyBookB} from './anatomy-book-b.js';
 import {anatomyBookC} from './anatomy-book-c.js';
 import {radiationTopics} from './radiation-topics.js';
-import {additionalDriveBooks} from './additional-drive-books.js';
+import {additionalDriveBooks} from './additional-drive-books.js?v=2';
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from './config.js';
 const app=document.getElementById('app');const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const study=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(l=>l.subject!=='proteccion'),...additionalDriveBooks,...lessons.filter(l=>!['anatomia','proteccion','ingles','atencion','forense','ipe1',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject)),...expandedLessons.filter(l=>!['anatomia','proteccion','ingles','atencion','forense','ipe1',...additionalDriveBooks.map(b=>b.subject)].includes(l.subject))];const all=study.flatMap(l=>l.questions.map((q,i)=>({key:l.id+':'+i,subject:l.subject,q})));

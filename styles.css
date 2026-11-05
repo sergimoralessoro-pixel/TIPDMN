@@ -26,3 +26,19 @@ select.field{appearance:auto}label{display:block;color:#a8c7d6;font-size:13px;ma
 @keyframes patientFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @media(max-width:540px){.patient-visual{padding:13px}.patient-flow{gap:3px}.patient-step b{line-height:1.15}.patient-emoji{border-radius:16px}}
 @media(prefers-reduced-motion:reduce){.patient-emoji,.eng-dot{animation:none}}
+
+/* Libros de estudio de anatomía: tipografía legible y jerarquía por tema */
+.anatomy-illustration{background:linear-gradient(135deg,#0d2b3e,#123c50);border:1px solid #356981;border-radius:22px;padding:18px;margin:22px 0;overflow:hidden}
+.anatomy-illustration .meta{font-size:12px;color:#83dce8;letter-spacing:.08em;font-weight:800;margin-bottom:8px}
+.anatomy-illustration svg{width:100%;max-height:295px;display:block;margin:auto}
+.anatomy-illustration figcaption{font-size:12px;line-height:1.55;color:#94bccc;text-align:center;margin:8px auto 0}
+.book-index{padding:22px;border-radius:20px;background:rgba(30,85,106,.17);border:1px solid #31566a}
+.book-index h2{margin:0 0 16px}
+.book-index-links{display:flex;gap:9px;flex-wrap:wrap}
+.book-index-links .btn{font-size:13px;font-weight:600;white-space:normal;text-align:left;max-width:360px}
+.note.book-section{padding:24px 25px;border-radius:17px;border:1px solid #2c5164;margin:14px 0;background:linear-gradient(130deg,#102f42,#0c2535);scroll-margin-top:24px}
+.note.book-section strong{display:block;font-size:19px;color:#85e9ee;margin-bottom:12px;letter-spacing:-.2px}
+.note.book-section p{font-size:16px;line-height:1.82;margin:0;color:#e0edf4}
+.book-example{margin-top:15px;background:#183b47;padding:14px 17px;border-left:3px solid #7be4b3;border-radius:7px;line-height:1.65;color:#d6eee2}
+.book-example b{color:#8ceaba}
+@media(max-width:600px){.anatomy-illustration{padding:9px}.book-index{padding:14px}.book-index-links .btn{max-width:100%;width:100%}.note.book-section{padding:19px 16px}.note.book-section strong{font-size:17px}.note.book-section p{font-size:15px;line-height:1.7}}

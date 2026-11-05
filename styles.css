@@ -42,3 +42,65 @@ select.field{appearance:auto}label{display:block;color:#a8c7d6;font-size:13px;ma
 .book-example{margin-top:15px;background:#183b47;padding:14px 17px;border-left:3px solid #7be4b3;border-radius:7px;line-height:1.65;color:#d6eee2}
 .book-example b{color:#8ceaba}
 @media(max-width:600px){.anatomy-illustration{padding:9px}.book-index{padding:14px}.book-index-links .btn{max-width:100%;width:100%}.note.book-section{padding:19px 16px}.note.book-section strong{font-size:17px}.note.book-section p{font-size:15px;line-height:1.7}}
+
+/* Libro digital Radiolab: páginas separadas, subrayados y fórmulas */
+.book-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:20px 5px 16px}
+.book-intro h1{font-size:clamp(26px,4vw,42px);margin:10px 0;color:var(--text,#eef8ff)}
+.book-intro p{max-width:800px;line-height:1.65;color:var(--muted,#a7c6d6)}
+.book-intro .actions{display:flex;gap:9px;flex-wrap:wrap}
+.book-shell{max-width:920px;margin:18px auto 48px}
+.book-topline{display:flex;justify-content:space-between;gap:12px;align-items:center;text-transform:uppercase;font-weight:800;letter-spacing:.1em;color:#71bfcf;font-size:12px}
+.book-track{height:7px;background:#1c4557;border-radius:12px;overflow:hidden;margin:12px 0 20px}
+.book-track>div{background:linear-gradient(90deg,#40afbc,#a4f1dd);height:100%;border-radius:12px;transition:width .3s}
+.book-paper{min-height:550px;background:#f9f7ef;color:#182c3b;border:1px solid #d8ddde;border-radius:8px 24px 24px 8px;padding:clamp(22px,5vw,60px);box-shadow:8px 12px 0 #153b4e,12px 17px 30px #010b1770;position:relative;overflow:hidden}
+.book-paper:before{content:'';position:absolute;left:11px;top:18px;bottom:18px;width:2px;background:#c9d3d7}
+.book-paper h1{font-family:Georgia,serif;color:#13384b;font-size:clamp(29px,5vw,49px);line-height:1.18;margin:20px 0}
+.book-paper h2{font-family:Georgia,serif;color:#143f56;font-size:clamp(25px,4vw,36px);line-height:1.22;margin:16px 0 26px}
+.book-paper h3{color:#17425b;font-size:20px;margin:30px 0 14px}
+.book-eyebrow{color:#1f7c9b;font-weight:900;letter-spacing:.1em;font-size:11px;text-transform:uppercase}
+.book-paper .book-lede{font-size:clamp(16px,2vw,20px);line-height:1.75;color:#3b4e5e}
+.book-cover-mark{font-size:48px;line-height:1.3;color:#2a8a98;margin-top:25px}
+.book-reading p{font-family:Georgia,'Times New Roman',serif;font-size:clamp(17px,2.1vw,20px);line-height:1.92;margin:0 0 24px;color:#213747}
+.book-underline{text-decoration-line:underline;text-decoration-color:#b3e6e6;text-decoration-thickness:4px;text-underline-offset:4px;font-weight:700;color:#173b52;background:linear-gradient(transparent 68%,#f9e4a2 68%)}
+.book-recall{border-left:5px solid #12a1aa;border-radius:3px 12px 12px 3px;background:#e4f5ee;padding:20px 23px;margin:26px 0;color:#174c46}
+.book-recall strong{color:#126e72}
+.book-recall p{font-family:system-ui,sans-serif;line-height:1.7;margin:8px 0 0;font-size:15px}
+.book-small{color:#6b7d84;margin-top:26px;font-size:12px;line-height:1.5}
+.book-toc{margin-top:38px;border-top:2px solid #cddce0;padding-top:12px}
+.book-toc-link{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:14px;border:0;border-bottom:1px solid #dce3e3;background:transparent;padding:13px 5px;color:#174b62;font:inherit;cursor:pointer;width:100%}
+.book-toc-link:hover{background:#e9f3f3}
+.book-toc-link b{white-space:nowrap;color:#488194}
+.book-controls{display:flex;justify-content:space-between;gap:10px;margin:23px 0;flex-wrap:wrap}
+.book-controls .btn{flex:1;min-width:160px;white-space:normal}
+.book-controls .btn:disabled{opacity:.38}
+.book-bottom-note{text-align:center;color:#8db4c1;font-size:12px;line-height:1.6}
+.book-equation{margin:20px 0;background:#ecf4f4;padding:19px 24px;border-left:4px solid #2197af;border-radius:6px;color:#24485a}
+.book-equation b{display:block;color:#245671}
+.book-equation .equation{font-family:Georgia,serif;font-size:clamp(23px,3vw,32px);color:#155a75;font-weight:800;margin:10px 0}
+.book-equation p{line-height:1.65;font-size:14px}
+.book-table-scroll{overflow-x:auto;margin:16px 0 28px;border-radius:9px;border:1px solid #ccdade}
+.book-table{width:100%;border-collapse:collapse;font-size:14px;min-width:460px}
+.book-table th{background:#164961;color:#fff;padding:13px 12px;text-align:left}
+.book-table td{padding:13px 12px;border-top:1px solid #cadbdc;line-height:1.5}
+.book-table tr:nth-child(even){background:#edf5f3}
+.book-info-chip{background:#dcedef;padding:10px 15px;border-radius:12px;color:#236179;display:inline-block;margin:15px 0}
+.heart-chart{padding:16px 15px 24px;background:#0d2d44;border-radius:20px;border:1px solid #3e8da9;margin:20px 0;color:#e9faff}
+.heart-chart .meta{font-weight:800;letter-spacing:.08em;color:#a8eefa;font-size:11px}
+.heart-chart svg{display:block;width:100%;height:auto;margin:7px auto 0}
+.hb-heart{transform-origin:320px 174px;animation:heartbeatBook .9s ease-in-out infinite}
+.flow-blue,.flow-red{animation:travelBook 1.5s linear infinite}
+.heart-legend{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;margin:0 5px 8px}
+.heart-legend span{max-width:300px;font-size:12px;line-height:1.5}
+.blue-dot,.red-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;background:#62baff}
+.red-dot{background:#ff8f9b}
+.heart-chart figcaption{color:#9ec9d6;font-size:12px;line-height:1.5}
+@keyframes travelBook{to{stroke-dashoffset:-54}}
+@keyframes heartbeatBook{0%,100%{transform:scale(1)}15%,45%{transform:scale(1.025)}30%{transform:scale(.99)}}
+.exam-result h1{font-size:clamp(48px,9vw,78px);line-height:1.1}
+.exam-feedback{margin-top:17px;padding:17px 19px;border-radius:14px;border:1px solid}
+.exam-feedback p{line-height:1.65;margin:8px 0}
+.feedback-good{background:#123e35;border-color:#387f61;color:#d3f8e5}
+.feedback-bad{background:#4a242d;border-color:#b56c7b;color:#ffe0e3}
+.feedback-bad strong{color:#ffb5bc}
+@media(max-width:650px){.book-paper{padding:24px 22px;min-height:480px;box-shadow:5px 8px 0 #153b4e,7px 11px 18px #010b1766;border-radius:6px 18px 18px 6px}.book-paper:before{left:6px}.book-controls .btn{flex:1;min-width:105px;padding:11px 8px;font-size:12px}.book-reading p{line-height:1.8}.heart-chart{padding:8px}.heart-chart svg text{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.hb-heart,.flow-blue,.flow-red{animation:none}}

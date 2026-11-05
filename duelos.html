@@ -23,7 +23,7 @@
 @media(max-width:560px){main{padding:12px}.card{padding:14px;border-radius:16px}.scoreboard{gap:7px}.player-card{padding:10px}.badge-line{gap:2px}.badge-symbol{font-size:18px}.player-card strong{font-size:13px}.player-counter{font-size:10px}.wheel-icon{font-size:18px}}
 </style></head><body><main><div class="bar"><div class="brand">🩻 RADIO<span>LAB</span> <small style="font-weight:400;font-size:13px">ARENA</small></div><a href="./">← Volver a la academia</a></div><div id="app"><div class="card hero"><h1>🎡 Duelos con ruleta</h1><p>Cargando la arena...</p></div></div></main><script type="module">
 import {subjects,lessons} from './content.js';
-import {augmentLessons,uniqueBank,drawVaried,varyQuestion,rng} from './quiz-variety.js';
+import {augmentLessons,uniqueBank,drawVaried,varyQuestion,rng,conciseGameQuestion} from './quiz-variety.js';
 import {visualQuestionMedia} from './visual-questions.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
@@ -39,7 +39,7 @@ const bank=uniqueBank(augmentLessons(course).flatMap(l=>(l.questions||[]).map((q
 const categories=subjects.map(x=>({id:x[0],name:x[1],emoji:x[2],pool:bank.filter(y=>y.sub===x[0])})).filter(x=>x.pool.length>=10);
 const palette=['#30c6cf','#517dde','#ad78ce','#f2a854','#4bb894','#df739f','#3c9cca','#adc15c','#c278b9','#2fc7a6','#f18b62','#728bd2','#bd78df','#ddba5b','#44b3ca','#bf80af','#92a5ca'];
 const names=Object.fromEntries(categories.map(x=>[x.id,x.name]));
-let supa,user,room=null,active=[],profiles={},busy=false,animating=false,polling=false,channel=null,gameError='',spinAngle=0,aiRoom=false,matchTimer=null,aiBusy=false;
+let supa,user,room=null,active=[],profiles={},busy=false,animating=false,polling=false,channel=null,gameError='',spinAngle=0,aiRoom=false,matchTimer=null,aiBusy=false,rematchPollBusy=false,lastRematchPoll=0;
 const AI_ID='00000000-0000-4000-8000-000000000001';
 const AI_NAMES=['🦊 Vega Rad','🤖 Dr. Pixel','🐙 Neutrón','🦉 Rayito','🐼 La Doctora','👾 Tecno-X','🦋 Nébula','🐸 Profe Gamma'];
 const byId=id=>categories.find(x=>x.id===id);
@@ -79,9 +79,9 @@ async function loadProfiles(){
  const r=await supa.from('profiles').select('id,username').in('id',ids);
  if(r.data)for(const v of r.data)profiles[v.id]=v.username;
 }
-function header(){return '<div class="bar"><button class="btn" id="exit">← Mis duelos</button><span class="pill">Sala '+esc(room.code)+'</span><span class="pill" id="expiry">⏳ '+formatTime(timeLeft())+'</span></div>';}
+function header(){return '<div class="bar"><button class="btn" data-exit-game>← Mis duelos</button><span class="pill">Sala '+esc(room.code)+'</span><span class="pill" id="expiry">⏳ '+formatTime(timeLeft())+'</span></div>';}
 function formatTime(n){return Math.floor(n/3600)+'h '+String(Math.floor(n%3600/60)).padStart(2,'0')+'m '+String(n%60).padStart(2,'0')+'s';}
-function bindExit(){const b=document.getElementById('exit');if(b)b.onclick=()=>{disconnect();if(matchTimer)clearTimeout(matchTimer);matchTimer=null;room=null;aiRoom=false;loadLobby();}}
+function bindExit(){document.querySelectorAll('[data-exit-game]').forEach(b=>b.onclick=()=>{disconnect();if(matchTimer)clearTimeout(matchTimer);matchTimer=null;room=null;aiRoom=false;aiBusy=false;lastRematchPoll=0;loadLobby()});}
 function completed(){
  const earned=(room?.awards||{});
  return [room.host_id,room.guest_id].some(x=>x&&Object.keys(earned[x]||{}).filter(y=>earned[x][y]).length===categories.length);
@@ -145,8 +145,8 @@ function renderRoom(){
  if(!room)return;
  const expired=timeLeft()<=0||room.status==='expired';
  if(expired||room.status==='finished'||completed()){
-  show(header()+board()+'<section class="card hero"><h1>🏁 Partida finalizada</h1><p>La duración máxima es de 2 horas. Los emojis conseguidos y el historial de la partida permanecen registrados.</p>'+resultBanner()+'<button class="btn primary" id="exit">Volver a mis duelos</button></section><p id="feedback" class="error"></p>');
-  bindExit();return;
+  show(header()+board()+'<section class="card hero"><h1>🏁 Partida finalizada</h1><p>La duración máxima es de 2 horas.</p>'+resultBanner()+'<div id="rematch-panel"><button class="btn primary" id="rematch">🔁 Revancha</button><p id="rematch-status" class="muted">Los dos jugadores deben aceptar. Tienes 30 segundos desde la primera solicitud.</p></div><button class="btn" data-exit-game>Salir al inicio de la actividad</button></section><p id="feedback" class="error"></p>');
+  bindExit();document.getElementById('rematch').onclick=()=>requestRematch(true);requestRematch(false);return;
  }
  if(room.status==='waiting'){
   show(header()+'<section class="card hero"><h1>⚔️ Sala de espera</h1><h2 style="font-size:40px;letter-spacing:5px">'+esc(room.code)+'</h2><p>Comparte el código con tu rival.</p><button class="btn" id="copy">Copiar código</button><p>'+(room.guest_id?'✅ Rival conectado. Comienza el anfitrión.':'⌛ Esperando al segundo jugador…')+'</p></section>'+board()+(room.host_id===user.id&&room.guest_id?'<section class="card"><h2>🎯 Empieza tu turno</h2><button id="start" class="btn primary">🎡 Girar ruleta</button></section>':'')+wheel()+'<p id="feedback" class="error"></p>');
@@ -163,7 +163,7 @@ function renderRoom(){
  }else if(!room.question_key){
   display+='<section class="card hero"><h2>🎯 ¡Te toca!</h2><p>Gira la ruleta para elegir asignatura. Si aciertas, podrás volver a girar. Si fallas, jugará tu rival.</p><button class="btn primary" id="spin">🎡 Girar ruleta</button></section>'+wheel();
  }else{
-  const original=bank.find(x=>x.key===room.question_key),found=original&&{...original,q:varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1)},cat=byId(room.category);
+  const original=bank.find(x=>x.key===room.question_key),found=original&&{...original,q:conciseGameQuestion(varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1))},cat=byId(room.category);
   display+='<section class="card"><span class="pill">'+esc(cat?.emoji||'🎡')+' '+esc(cat?.name||room.category)+'</span><h2>Pregunta para '+esc(profiles[user.id]||'ti')+'</h2><div class="count" id="seconds">'+questionLeft()+'s</div>';
   if(!found)display+='<p class="error">La pregunta no está en tu versión. Actualiza la aplicación.</p>';
   else display+='<h2>'+esc(found.q[0])+'</h2>'+visualQuestionMedia(found.q)+'<div class="options">'+found.q[1].map((o,i)=>'<button class="option" data-answer="'+i+'">'+String.fromCharCode(65+i)+'. '+esc(o)+'</button>').join('')+'</div><p class="muted">Solo responde el jugador que tiene el turno. ⏱️ 20 segundos.</p>';
@@ -206,8 +206,26 @@ async function answer(choice){
   room=r;renderRoom();
  }catch(e){status('Error al responder: '+e.message);await refresh()}finally{busy=false}
 }
+async function requestRematch(vote=false){
+ if(!room||!document.getElementById('rematch-panel')||rematchPollBusy)return;
+ if(aiRoom){if(vote)beginAi();return;}
+ const previous=room.id;rematchPollBusy=true;
+ try{
+  const {data,error}=await supa.rpc('game_rematch',{p_kind:'duel',p_room:previous,p_vote:vote});
+  if(!room||room.id!==previous)return;
+  if(error){const p=document.getElementById('rematch-status');if(p)p.textContent='No se pudo gestionar la revancha: '+error.message;return;}
+  if(data.state==='ready'){
+   const r=await supa.from('duel_rooms').select('*').eq('id',data.new_room).maybeSingle();
+   if(room?.id===previous&&r.data){await openRoom(r.data);return}
+  }
+  const btn=document.getElementById('rematch'),p=document.getElementById('rematch-status');
+  if(btn){btn.disabled=data.state==='expired'||data.voted;btn.style.display=data.state==='expired'?'none':'';btn.textContent=data.voted?'✅ Revancha solicitada':'🔁 Revancha';}
+  if(p)p.textContent=data.state==='expired'?'Tiempo agotado. Pulsa Salir.':data.state==='waiting'?'Esperando al otro jugador: '+data.seconds+' s.': 'Ambos debéis aceptar; 30 segundos desde la primera solicitud.';
+ }finally{rematchPollBusy=false}
+}
 async function tick(){
  if(!room)return;
+ if(document.getElementById('rematch-panel')&&Date.now()-lastRematchPoll>1800){lastRematchPoll=Date.now();requestRematch(false).catch(console.error)}
  if(aiRoom&&room.current_turn===AI_ID&&room.status==='playing'&&!room.question_key)scheduleAi();
  const exp=document.getElementById('expiry');if(exp)exp.textContent='⏳ '+formatTime(timeLeft());
  if(timeLeft()<=0&&room.status!=='expired'&&room.status!=='finished'){

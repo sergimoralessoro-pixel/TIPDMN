@@ -1,10 +1,11 @@
 import {generatePractice} from './practice-problems.js';
+import {generateVisualQuestions} from './visual-questions.js';
 // Selección variada con corrección inalterada para los modos de Radiolab.
 export const stableHash=(s)=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
 export function rng(seed){let n=stableHash(seed)||123456789;return ()=>{n+=0x6D2B79F5;let t=n;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296}}
 export function shuffled(items,random=Math.random){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 export function normalizedStem(q){return String(q?.[0]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
-export function uniqueBank(items){const found=new Set();return items.filter(item=>{const q=item.q||item;const stem=normalizedStem(q),answers=(q?.[1]||[]).map(x=>String(x).trim().toLowerCase()).sort().join('|');const signature=stem+'||'+answers;if(!stem||found.has(signature))return false;found.add(signature);return true})}
+export function uniqueBank(items){const found=new Set();return items.filter(item=>{const q=item.q||item;const stem=normalizedStem(q),answers=(q?.[1]||[]).map(x=>String(x).trim().toLowerCase()).sort().join('|');const signature=stem+'||'+answers+'||'+(q?.[5]?.target||'');if(!stem||found.has(signature))return false;found.add(signature);return true})}
 export function varyQuestion(question,random=Math.random,form=0){
  const q=[...question];if(!Array.isArray(q[1])||q[1].length<2||!Number.isInteger(q[2]))return q;
  const order=shuffled(q[1].map((value,i)=>({value,i})),random);
@@ -58,6 +59,6 @@ export function augmentLessons(lessons){
     ]);
    }
   }
-  return {...lesson,questions:[...(lesson.questions||[]),...extra,...generatePractice(lesson)]};
+  return {...lesson,questions:[...(lesson.questions||[]),...extra,...generatePractice(lesson),...generateVisualQuestions(lesson)]};
  });
 }

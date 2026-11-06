@@ -9,6 +9,7 @@ import {patientPart4} from './patient-part4.js';
 import {patientPart5} from './patient-part5.js';
 import {forensicBook} from './forensic-book.js';
 import {forensicExamSets} from './forensic-exams.js';
+import {classroomQuestions} from './classroom-questions-2026.js';
 import {ipe1Book} from './ipe1-book.js';
 import {protectionBookA} from './protection-book-a.js';
 import {protectionBookB} from './protection-book-b.js';
@@ -45,6 +46,7 @@ const englishTitles={
 7:'VT7 · Modal verbs e intensifiers'};
 const engl=[2,3,4,5,6,7].map(v=>chapter('eng-vt'+v+'-full','ingles',englishTitles[v],englishDescriptions[v],
  englishBook.filter(l=>l.title.startsWith('VT'+v+' · ')),'Videotutoría '+v+' de Inglés aportada por el alumno'));
+engl.forEach((book,i)=>{book.questions.push(...(classroomQuestions.english[i+2]||[]));});
 const patientParts=[patientPart1,patientPart2,patientPart3,patientPart4,patientPart5];
 const patientTitles=['TEMA 1 · El sistema de salud','TEMA 2 · Acogida del paciente','TEMA 3 · Comunicación y apoyo psicológico','TEMA 4 · Observación del paciente','TEMA 5 · Preparación, higiene y movilización del paciente'];
 const patientIntros=[
@@ -65,6 +67,8 @@ chapter('forense-vt-3-full','forense','TEMA 3 · Necroidentificación y sucesos 
 /* Replace the basic dictionary-only tests with varied exams that ask about methods,
  * sample handling, real decision-making, interpretation and identification. */
 forensic.forEach((book,index)=>{book.questions=forensicExamSets[index];});
+forensic[0].questions.push(...classroomQuestions.forensic[0]);
+forensic[1].questions.push(...classroomQuestions.forensic[1]);
 const disasterQuestions=[
 ['¿Cuál es la finalidad central de la necroidentificación?',['Establecer identidad de una persona fallecida','Averiguar únicamente la fecha de nacimiento','Detectar exclusivamente intoxicaciones','Determinar siempre una causa penal'],0,'La identidad se establece mediante métodos científicos y comparaciones verificables.'],
 ['En una investigación de víctimas de catástrofe, ¿qué significa DVI?',['Document Visual Inspection','Disaster Victim Identification','Data Verification Initiative','Disease Vector Imaging'],1,'DVI describe procedimientos de identificación de víctimas de desastres.'],

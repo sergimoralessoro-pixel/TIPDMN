@@ -112,10 +112,11 @@ function rememberMistake(){
  const l=room?.last_result;
  if(!user||!l?.question_key||l.user_id!==user.id||l.correct)return;
  const key=room.id+':'+l.question_key;
- const existing=savedMistakes();if(existing.some(x=>x.key===key))return;
+ const existing=savedMistakes();
  const original=bank.find(x=>x.key===l.question_key);if(!original)return;
- // Guardar también en el Test de fallos de la academia (cuenta Supabase).
+ // Registrar también los fallos previamente guardados solo en este navegador.
  void recordGameMistake(supa,user,original.key,key);
+ if(existing.some(x=>x.key===key))return;
  const q=conciseGameQuestion(varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1));
  const chosen=Number(l.choice);
  const row={key,room:room.id,category:names[original.sub]||original.sub,question:q[0],options:q[1],correct:q[2],choice:Number.isInteger(chosen)&&chosen>=0&&chosen<q[1].length?chosen:-1,explanation:q[3]||'Repasa la opción correcta y su relación con el enunciado.',date:new Date().toISOString()};
@@ -340,6 +341,11 @@ async function tick(){
 try{
  const sdk=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.10/+esm');
  supa=sdk.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);user=(await supa.auth.getUser()).data.user;
+ // Sincronizar fallos antiguos del historial local de Preguntados con Mis fallos.
+ for(const old of savedMistakes()){
+  const questionKey=String(old.key||'').slice(String(old.room||'').length+1);
+  if(bank.some(q=>q.key===questionKey))void recordGameMistake(supa,user,questionKey,old.key);
+ }
  await loadLobby();
  setInterval(()=>tick().catch(console.error),400);
  setInterval(()=>{if(room)refresh();},6000);

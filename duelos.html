@@ -48,9 +48,36 @@ import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from './config.js';
 const el=document.getElementById('app'),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[c]));
 const course=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(x=>x.subject!=='proteccion'),...additionalDriveBooks,...lessons.filter(x=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(x.subject)),...expandedLessons.filter(x=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(x.subject))];
 const bank=uniqueBank(augmentLessons(course).flatMap(l=>(l.questions||[]).map((q,i)=>({key:l.id+':'+i,sub:l.subject,q}))));
-const categories=subjects.map(x=>({id:x[0],name:x[1],emoji:x[2],pool:bank.filter(y=>y.sub===x[0])})).filter(x=>x.pool.length>=10);
+const allCategories=subjects.map(x=>({id:x[0],name:x[1],emoji:x[2],pool:bank.filter(y=>y.sub===x[0])})).filter(x=>x.pool.length>=10);
+let categories=allCategories;
+const subjectChoice=ids=>'mix:'+ids.join(',');
+const idsFromChoice=choice=>{
+ if(!String(choice||'').startsWith('mix:'))return allCategories.map(x=>x.id);
+ const allowed=new Set(String(choice).slice(4).split(','));
+ const chosen=allCategories.filter(x=>allowed.has(x.id)).map(x=>x.id);
+ return chosen.length>=5?chosen:allCategories.map(x=>x.id);
+};
+function applyRoomSubjects(r){
+ const allowed=new Set(idsFromChoice(r?.subject_choice));
+ categories=allCategories.filter(x=>allowed.has(x.id));
+}
+function selectedSubjects(){
+ const chosen=[...document.querySelectorAll('[data-game-subject]:checked')].map(x=>x.value);
+ if(chosen.length<5){alert('Selecciona al menos cinco asignaturas para jugar a Preguntados.');return null;}
+ return chosen;
+}
+function subjectPicker(){
+ return '<fieldset style="border:1px solid #3d6275;border-radius:14px;padding:12px;margin:14px 0"><legend style="font-weight:800">🎓 Elige al menos 5 asignaturas</legend><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px">'+allCategories.map(x=>'<label style="display:flex;align-items:center;gap:9px;padding:8px;border:1px solid #3b6073;border-radius:10px;cursor:pointer"><input type="checkbox" data-game-subject value="'+x.id+'" checked> '+x.emoji+' '+esc(x.name)+'</label>').join('')+'</div><p class="muted" id="subject-count">'+allCategories.length+' asignaturas seleccionadas · mínimo 5</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" id="select-all">Seleccionar todas</button><button type="button" class="btn" id="select-five">Seleccionar las 5 primeras</button></div></fieldset>';
+}
+function wireSubjectPicker(){
+ const inputs=[...document.querySelectorAll('[data-game-subject]')],count=document.getElementById('subject-count');
+ const update=()=>{const n=inputs.filter(x=>x.checked).length;count.textContent=n+' asignaturas seleccionadas · mínimo 5';count.style.color=n<5?'#ffb2a8':'';};
+ inputs.forEach(x=>x.onchange=update);
+ document.getElementById('select-all').onclick=()=>{inputs.forEach(x=>x.checked=true);update()};
+ document.getElementById('select-five').onclick=()=>{inputs.forEach((x,i)=>x.checked=i<5);update()};
+}
 const palette=['#30c6cf','#517dde','#ad78ce','#f2a854','#4bb894','#df739f','#3c9cca','#adc15c','#c278b9','#2fc7a6','#f18b62','#728bd2','#bd78df','#ddba5b','#44b3ca','#bf80af','#92a5ca'];
-const names=Object.fromEntries(categories.map(x=>[x.id,x.name]));
+const names=Object.fromEntries(allCategories.map(x=>[x.id,x.name]));
 let supa,user,room=null,active=[],profiles={},busy=false,animating=false,polling=false,channel=null,gameError='',spinAngle=0,aiRoom=false,matchTimer=null,aiBusy=false,rematchPollBusy=false,lastRematchPoll=0;
 const AI_ID='00000000-0000-4000-8000-000000000001';
 const AI_NAMES=['🦊 Vega Rad','🤖 Dr. Pixel','🐙 Neutrón','🦉 Rayito','🐼 La Doctora','👾 Tecno-X','🦋 Nébula','🐸 Profe Gamma'];
@@ -90,9 +117,9 @@ function mistakesReview(onlyRoom=false){
 }
 async function rpc(fn,args){if(aiRoom&&['duel_spin','duel_answer','duel_expire'].includes(fn))return localAiRpc(fn,args);const r=await supa.rpc(fn,args);if(r.error)throw Error(r.error.message);return r.data}
 function localAiRpc(fn,a){if(!room||!aiRoom)throw Error('La partida de IA no está activa');if(fn==='duel_expire'){room.status='expired';return room}if(fn==='duel_spin'){if(room.question_key)throw Error('Ya hay una pregunta activa');room.status='playing';room.current_turn=room.current_turn||user.id;room.category=a.p_category;room.question_key=a.p_question_key;room.correct_index=a.p_correct_index;room.question_started_at=new Date().toISOString();room.question_keys.push(a.p_question_key);room.revision++;return room}if(fn==='duel_answer'){if(room.question_key!==a.p_question_key)return room;const correct=a.p_choice===room.correct_index&&Date.now()<new Date(room.question_started_at).getTime()+45000;const actor=room.current_turn;if(correct){const id=String(actor),prog=room.category_progress[id]||{};prog[room.category]=(prog[room.category]||0)+1;room.category_progress[id]=prog;if(prog[room.category]>=3){room.awards[id]??={};room.awards[id][room.category]=true}}room.last_result={user_id:actor,correct,category:room.category,answer:room.correct_index,choice:a.p_choice,question_key:room.question_key};room.current_turn=correct?actor:(actor===user.id?AI_ID:user.id);room.question_key=null;room.question_started_at=null;room.correct_index=null;room.revision++;if(room.current_turn===AI_ID)scheduleAi();return room}return room}
-function beginAi(){if(matchTimer){clearTimeout(matchTimer);matchTimer=null}aiRoom=true;const chosen=AI_NAMES[randomOf(AI_NAMES.length)];profiles[AI_ID]=chosen;room={id:crypto.randomUUID(),code:'SOLOIA',host_id:user.id,guest_id:AI_ID,status:'playing',current_turn:user.id,created_at:new Date().toISOString(),expires_at:new Date(Date.now()+7200000).toISOString(),revision:0,category_progress:{},awards:{},question_keys:[],question_key:null,last_result:{},question_started_at:null};renderRoom()}
+function beginAi(ids=null){if(matchTimer){clearTimeout(matchTimer);matchTimer=null}if(!ids)ids=allCategories.map(x=>x.id);aiRoom=true;const chosen=AI_NAMES[randomOf(AI_NAMES.length)];profiles[AI_ID]=chosen;room={id:crypto.randomUUID(),code:'SOLOIA',subject_choice:subjectChoice(ids),host_id:user.id,guest_id:AI_ID,status:'playing',current_turn:user.id,created_at:new Date().toISOString(),expires_at:new Date(Date.now()+7200000).toISOString(),revision:0,category_progress:{},awards:{},question_keys:[],question_key:null,last_result:{},question_started_at:null};applyRoomSubjects(room);renderRoom()}
 function scheduleAi(){if(!aiRoom||aiBusy||room?.current_turn!==AI_ID)return;aiBusy=true;setTimeout(()=>{try{if(!aiRoom||!room||room.current_turn!==AI_ID||room.status!=='playing')return;const used=new Set(room.question_keys||[]),cats=categories.filter(c=>c.pool.some(q=>!used.has(q.key)));if(!cats.length){room.status='finished';renderRoom();return}const cat=cats[randomOf(cats.length)],pool=cat.pool.filter(q=>!used.has(q.key)),base=pool[randomOf(pool.length)],q={...base,q:varyQuestion(base.q,rng('duel|'+room.code+'|'+base.key),1)};localAiRpc('duel_spin',{p_category:cat.id,p_question_key:q.key,p_correct_index:q.q[2]});renderRoom();const delay=2500+randomOf(8500);setTimeout(()=>{if(!aiRoom||!room||room.current_turn!==AI_ID||room.question_key!==q.key)return;const hits=Math.random()<.63,choice=hits?q.q[2]:(q.q[2]+1+randomOf(3))%4;localAiRpc('duel_answer',{p_choice:choice,p_question_key:q.key});renderRoom()},delay)}finally{aiBusy=false}},850+randomOf(1550))}
-async function quickMatch(){if(busy)return;busy=true;try{aiRoom=false;const found=await rpc('duel_quickmatch',{});await openRoom(found);if(found.guest_id){status('✅ Rival encontrado. Comienza el creador de la sala.');return}matchTimer=setTimeout(async()=>{if(!room||room.id!==found.id||room.guest_id||room.status!=='waiting')return;try{const result=await rpc('duel_cancel_quickmatch',{p_room:found.id});if(room?.id!==found.id)return;if(result.guest_id){await openRoom(result);return}beginAi();status('🤖 No apareció otro jugador en 30 segundos: juegas contra la IA.')}catch(e){status('No se pudo completar la búsqueda: '+e.message)}},30000);status('🔎 Buscando a otro alumno durante 30 segundos…') }catch(e){alert('No se pudo buscar rival: '+e.message)}finally{busy=false}}
+async function quickMatch(){if(busy)return;busy=true;try{aiRoom=false;categories=allCategories;const found=await rpc('duel_quickmatch',{});await openRoom(found);if(found.guest_id){status('✅ Rival encontrado. Comienza el creador de la sala.');return}matchTimer=setTimeout(async()=>{if(!room||room.id!==found.id||room.guest_id||room.status!=='waiting')return;try{const result=await rpc('duel_cancel_quickmatch',{p_room:found.id});if(room?.id!==found.id)return;if(result.guest_id){await openRoom(result);return}beginAi();status('🤖 No apareció otro jugador en 30 segundos: juegas contra la IA.')}catch(e){status('No se pudo completar la búsqueda: '+e.message)}},30000);status('🔎 Buscando a otro alumno durante 30 segundos…') }catch(e){alert('No se pudo buscar rival: '+e.message)}finally{busy=false}}
 function wheel(canSpin=false){
  const slice=360/categories.length;
  const gradient='conic-gradient('+categories.map((c,i)=>palette[i%palette.length]+' '+i*slice+'deg '+(i+1)*slice+'deg').join(',')+')';
@@ -155,18 +182,21 @@ async function loadLobby(){
  const [a,b]=await Promise.all([supa.from('duel_rooms').select('*').eq('host_id',user.id).in('status',['waiting','playing']).gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(30),supa.from('duel_rooms').select('*').eq('guest_id',user.id).in('status',['waiting','playing']).gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(30)]);
  const all=[...(a.data||[]),...(b.data||[])];active=[...new Map(all.map(x=>[x.id,x])).values()].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));
  const rows=active.map(x=>'<div class="active-duel"><div><b>🎡 Sala '+esc(x.code)+'</b><p class="muted">'+(x.status==='waiting'?'Esperando al rival':x.current_turn===user.id?'🟢 Te toca jugar':'⏳ Turno del otro jugador')+' · finaliza '+new Date(x.expires_at).toLocaleString('es-ES')+'</p></div><button class="btn primary" data-resume="'+x.id+'">Continuar</button></div>').join('');
- show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 45 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas · salas eliminadas 1 h después</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2><button id="create" class="btn primary">Crear sala de 2 jugadores</button><p><button id="quickmatch" class="btn primary">🔎 Jugar contra cualquiera (30 s)</button></p><p><button id="aiMatch" class="btn">🤖 Jugar contra la IA</button></p><p class="muted">Si no aparece nadie en 30 segundos, entrarás contra un personaje aleatorio. El creador empieza.</p></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div>'+mistakesReview()+'<p id="feedback" class="error"></p>');
+ categories=allCategories;
+ show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 45 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas · salas eliminadas 1 h después</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2>'+subjectPicker()+'<button id="create" class="btn primary">Crear sala de 2 jugadores</button><p><button id="quickmatch" class="btn primary">🔎 Jugar contra cualquiera (30 s)</button></p><p><button id="aiMatch" class="btn">🤖 Jugar contra la IA</button></p><p class="muted">Si no aparece nadie en 30 segundos, entrarás contra un personaje aleatorio. El creador empieza.</p></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div>'+mistakesReview()+'<p id="feedback" class="error"></p>');
+ wireSubjectPicker();
  document.getElementById('create').onclick=create;
  document.getElementById('quickmatch').onclick=quickMatch;
- document.getElementById('aiMatch').onclick=()=>beginAi();
+ document.getElementById('aiMatch').onclick=()=>{const ids=selectedSubjects();if(ids)beginAi(ids)};
  document.getElementById('join').onclick=join;
  document.querySelectorAll('[data-resume]').forEach(x=>x.onclick=()=>openRoom(active.find(y=>y.id===x.dataset.resume)));
 }
 async function create(){
+ const ids=selectedSubjects();if(!ids)return;
  if(busy)return;busy=true;try{
   const bytes=crypto.getRandomValues(new Uint8Array(6)),chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const code=Array.from(bytes,x=>chars[x%chars.length]).join('');
-  const r=await supa.from('duel_rooms').insert({code,host_id:user.id}).select().single();
+  const r=await supa.from('duel_rooms').insert({code,host_id:user.id,subject_choice:subjectChoice(ids)}).select().single();
   if(r.error)throw Error(r.error.message);await openRoom(r.data);
  }catch(e){alert('No se pudo crear: '+e.message)}finally{busy=false}
 }
@@ -176,7 +206,7 @@ async function join(){
  try{const r=await rpc('duel_join',{p_code:code});await openRoom(r)}catch(e){alert(e.message)}
 }
 async function openRoom(r){
- disconnect();room=r;await loadProfiles();renderRoom();connect();
+ disconnect();room=r;applyRoomSubjects(r);await loadProfiles();renderRoom();connect();
 }
 function disconnect(){if(channel&&supa){supa.removeChannel(channel);channel=null;}}
 function connect(){
@@ -192,7 +222,7 @@ async function refresh(){
   if(r.data){
    const changed=r.data.revision!==room.revision||r.data.guest_id!==room.guest_id||r.data.status!==room.status;
    room=r.data;
-   if(changed){await loadProfiles();renderRoom();}
+   if(changed){applyRoomSubjects(r.data);await loadProfiles();renderRoom();}
   }
  }catch(e){status('No se ha podido sincronizar la partida. '+e.message)}finally{polling=false}
 }

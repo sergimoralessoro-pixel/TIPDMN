@@ -7,6 +7,7 @@ import {patientPart2} from './patient-part2.js';
 import {patientPart3} from './patient-part3.js';
 import {patientPart4} from './patient-part4.js';
 import {patientPart5} from './patient-part5.js';
+import {patientClassroomExtra} from './patient-classroom-extra.js';
 import {forensicBook} from './forensic-book.js';
 import {forensicExamSets} from './forensic-exams.js';
 import {classroomQuestions} from './classroom-questions-2026.js';
@@ -56,6 +57,7 @@ const patientIntros=[
  'Aprende a observar estado general, registrar constantes vitales, reconocer la escala de Glasgow y atender a pacientes con diferentes necesidades.',
  'Revisa las necesidades humanas y determinantes de salud, los procedimientos de higiene y confort y las técnicas de movilización con seguridad.' ];
 const patient=patientParts.map((p,i)=>chapter('patient-'+(i+1)+'-full','atencion',patientTitles[i],patientIntros[i],p,'Videotutorías y ampliaciones del Tema '+(i+1)+' de Atención al Paciente'));
+patient.forEach((book,i)=>book.questions.push(...patientClassroomExtra['t'+(i+1)]));
 const f1=forensicBook.filter(l=>/VT2 |VT3 /.test(l.title));
 const f2=forensicBook.filter(l=>/VT4 |VT5 |VT6 /.test(l.title));
 const f3=forensicBook.filter(l=>/VT7 /.test(l.title));

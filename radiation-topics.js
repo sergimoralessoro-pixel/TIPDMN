@@ -1,6 +1,7 @@
 /* Protección Radiológica. Cada UF se divide en capítulos temáticos que se basan en las diapositivas VT2–VT10. */
 import {protectionBookA} from './protection-book-a.js';
 import {protectionBookB} from './protection-book-b.js';
+import {radioprotectionClassroom} from './radioprotection-classroom.js';
 const slides=[...protectionBookA,...protectionBookB];
 function make(id,title,intro,from,to,formulas,tables,explain,tip){
  const parts=slides.slice(from,to);
@@ -52,3 +53,6 @@ make('pr-t9','TEMA 9 · Emergencias, control y garantía de calidad','Procedimie
 [['1. Qué hacer ante una incidencia','No se debe improvisar la manipulación de una fuente ni exponerse para corregir un problema fuera de las propias competencias. El personal debe comunicar la anomalía y seguir el plan de emergencia y normas internas de actuación; los responsables coordinan atención de afectados, avisos reglamentarios y documentación.','Alerta al responsable → activar plan → atender afectados → registrar y notificar.'],['2. Diferenciar garantía y control','El control es una medición o verificación concreta; la garantía de calidad es el conjunto de procedimientos que asegura que esas mediciones se hagan, registren e interpreten. Los resultados se comparan con criterios aceptables y las desviaciones conducen a medidas correctivas.','Garantía = sistema; control = prueba; registro = evidencia.']],
 'El plan de emergencia debe practicarse y estar disponible para el personal.')
 ];
+
+/* Actividades de clase incorporadas a cada unidad de Protección Radiológica. */
+radiationTopics.forEach((topic,i)=>{const qs=radioprotectionClassroom['t'+(i+1)]||[];topic.questions.push(...qs);});

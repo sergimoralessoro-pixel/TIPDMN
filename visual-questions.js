@@ -1,4 +1,5 @@
 /* Láminas vectoriales vinculadas exclusivamente a preguntas de identificación visual. */
+import {additionalVisualQuestions,additionalVisualMedia} from './visual-extended.js';
 const escapeHtml=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const boneTargets=[
  {target:'epifisis',answer:'Epífisis',x:142,y:62},
@@ -43,14 +44,14 @@ export function generateVisualQuestions(lesson){
  else if(sub==='atencion'&&/glasgow|nivel de consciencia/i.test(title))kind='glasgow';
  else if(sub==='forense'&&/laboratorio|muestra|microbiolog|cultivo|an[aá]lisis|forense/i.test(title))kind='lab';
  else if(sub==='ingles'&&/pasado|presente|futuro|past|present|future|verbos|tiempos verbales/i.test(title))kind='english';
- if(!kind)return [];
+ if(!kind)return additionalVisualQuestions(lesson);
  const list=groups[kind];
- return list.map((item,i)=>[
+ return [...list.map((item,i)=>[
   kind==='bone'?'¿Qué parte del hueso señala la flecha roja?':kind==='lungs'?'¿Qué estructura anatómica está señalada?':kind==='shield'?'¿Qué elemento de protección radiológica está señalado?':kind==='glasgow'?'¿Qué componente de la escala de Glasgow está señalado?':kind==='lab'?'¿Qué instrumento o material de laboratorio está señalado?':'¿Qué momento de la línea temporal está señalado?',
   list.map(x=>x.answer),i,
   'La flecha señala '+item.answer.toLowerCase()+'. Observa su posición en el esquema.',
   null,{kind,target:item.target}
- ]);
+ ]),...additionalVisualQuestions(lesson)];
 }
 function arrow(point){
  return '<circle cx="'+point.x+'" cy="'+point.y+'" r="7" fill="#ff5656" stroke="#fff" stroke-width="2"/><path d="M'+(point.x+86)+' '+(point.y-70)+' L'+(point.x+12)+' '+(point.y-10)+'" fill="none" stroke="#ff5656" stroke-width="6" stroke-linecap="round" marker-end="url(#tip)"/>';
@@ -74,6 +75,7 @@ function timeline(){
  return '<g><path d="M58 165H490" stroke="#8abbd5" stroke-width="9" stroke-linecap="round"/><path d="M486 150L508 165L486 180" fill="none" stroke="#8abbd5" stroke-width="8" stroke-linecap="round"/><circle cx="110" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><circle cx="270" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><circle cx="430" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><text x="270" y="253" fill="#d7edf4" text-anchor="middle" font-size="15">DIRECCIÓN DEL TIEMPO →</text></g>';
 }
 export function visualQuestionMedia(q){
+ const extra=additionalVisualMedia(q);if(extra)return extra;
  const m=q?.[5];if(!m||!groups[m.kind])return '';
  const found=groups[m.kind].find(x=>x.target===m.target);if(!found)return '';
  const base={bone:skeleton,shield,glasgow,lungs,lab:laboratory,english:timeline}[m.kind]();

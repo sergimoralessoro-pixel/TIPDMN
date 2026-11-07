@@ -341,10 +341,17 @@ async function tick(){
 try{
  const sdk=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.10/+esm');
  supa=sdk.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);user=(await supa.auth.getUser()).data.user;
- // Sincronizar fallos antiguos del historial local de Preguntados con Mis fallos.
- for(const old of savedMistakes()){
-  const questionKey=String(old.key||'').slice(String(old.room||'').length+1);
-  if(bank.some(q=>q.key===questionKey))void recordGameMistake(supa,user,questionKey,old.key);
+ // Importación única del historial anterior: no reintroducir fallos ya superados en tests.
+ const migrationKey='radiolab.duel.mistakes.imported.'+(user?.id||'guest');
+ if(!localStorage.getItem(migrationKey)){
+  const prior=savedMistakes().map(old=>({
+   questionKey:String(old.key||'').slice(String(old.room||'').length+1),
+   eventKey:old.key
+  })).filter(x=>bank.some(q=>q.key===x.questionKey));
+  if(prior.length){
+   const migrated=await Promise.all(prior.map(x=>recordGameMistake(supa,user,x.questionKey,x.eventKey)));
+   if(migrated.every(Boolean))localStorage.setItem(migrationKey,'1');
+  }else localStorage.setItem(migrationKey,'1');
  }
  await loadLobby();
  setInterval(()=>tick().catch(console.error),400);

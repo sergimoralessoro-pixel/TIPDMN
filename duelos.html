@@ -183,7 +183,7 @@ async function loadLobby(){
  const all=[...(a.data||[]),...(b.data||[])];active=[...new Map(all.map(x=>[x.id,x])).values()].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));
  const rows=active.map(x=>'<div class="active-duel"><div><b>🎡 Sala '+esc(x.code)+'</b><p class="muted">'+(x.status==='waiting'?'Esperando al rival':x.current_turn===user.id?'🟢 Te toca jugar':'⏳ Turno del otro jugador')+' · finaliza '+new Date(x.expires_at).toLocaleString('es-ES')+'</p></div><button class="btn primary" data-resume="'+x.id+'">Continuar</button></div>').join('');
  categories=allCategories;
- show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 45 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas · salas eliminadas 1 h después</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2>'+subjectPicker()+'<button id="create" class="btn primary">Crear sala de 2 jugadores</button><p><button id="quickmatch" class="btn primary">🔎 Jugar contra cualquiera (30 s)</button></p><p><button id="aiMatch" class="btn">🤖 Jugar contra la IA</button></p><p class="muted">Si no aparece nadie en 30 segundos, entrarás contra un personaje aleatorio. El creador empieza.</p></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div>'+mistakesReview()+'<p id="feedback" class="error"></p>');
+ show('<div class="card hero"><h1>🎡 Preguntados Radiolab</h1><p>Turnos individuales: gira, contesta en 45 segundos y sigue jugando mientras aciertes. Al fallar, pasa el turno. Tres aciertos de una misma asignatura desbloquean su emoji.</p><span class="pill">⏱️ Partidas de máximo 2 horas · salas eliminadas 1 h después</span></div><div class="grid"><div class="card"><h2>⚔️ Crear partida</h2>'+subjectPicker()+'<button id="create" class="btn primary">Crear sala de 2 jugadores</button><p><button id="quickmatch" class="btn primary">🔎 Partida rápida: todas las asignaturas (30 s)</button></p><p><button id="aiMatch" class="btn">🤖 Jugar contra la IA</button></p><p class="muted">Si no aparece nadie en 30 segundos, entrarás contra un personaje aleatorio. El creador empieza.</p></div><div class="card"><h2>🎟️ Entrar con código</h2><input id="code" class="field" maxlength="6" placeholder="ABC123"><button id="join" class="btn primary">Unirme</button></div></div><div class="card"><h2>📋 Partidas activas</h2>'+(rows||'<p class="muted">No tienes duelos en curso.</p>')+'</div>'+mistakesReview()+'<p id="feedback" class="error"></p>');
  wireSubjectPicker();
  document.getElementById('create').onclick=create;
  document.getElementById('quickmatch').onclick=quickMatch;
@@ -294,7 +294,7 @@ async function answer(choice){
 }
 async function requestRematch(vote=false){
  if(!room||!document.getElementById('rematch-panel')||rematchPollBusy)return;
- if(aiRoom){if(vote)beginAi();return;}
+ if(aiRoom){if(vote)beginAi(idsFromChoice(room.subject_choice));return;}
  const previous=room.id;rematchPollBusy=true;
  try{
   const {data,error}=await supa.rpc('game_rematch',{p_kind:'duel',p_room:previous,p_vote:vote});

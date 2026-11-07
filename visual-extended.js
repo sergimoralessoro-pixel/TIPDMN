@@ -8,7 +8,8 @@ const assetGroups={
  pcr:{file:'pcr.svg',title:'etapas de la PCR',answers:['Desnaturalización','Alineamiento','Extensión','Centrifugación']},
  maslow:{file:'maslow.svg',title:'pirámide de Maslow',answers:['Necesidades fisiológicas','Seguridad','Afiliación','Reconocimiento']},
  dosimetro:{file:'dosimetro.svg',title:'protección radiológica',answers:['Fuente radiactiva','Blindaje','Dosímetro personal','Pulsioxímetro']},
- posiciones:{file:'posiciones.svg',title:'posiciones del paciente',answers:['Decúbito supino','Decúbito prono','Fowler','Bipedestación']}
+ posiciones:{file:'posiciones.svg',title:'posiciones del paciente',answers:['Decúbito supino','Decúbito prono','Fowler','Bipedestación']},
+ riesgos:{file:'riesgos-laborales.svg',title:'factores de riesgo laboral',answers:['Ruido (factor físico)','Agente químico','Agente biológico','Factor ergonómico']}
 };
 function topicsFor(lesson){
  const sub=lesson.subject, t=String(lesson.title||'').toLowerCase();
@@ -25,6 +26,7 @@ function topicsFor(lesson){
    if(/estructura at[oó]mica|[aá]tomo|radiaciones y magnitudes/.test(t))return ['atomo'];
    if(/protecci[oó]n|exposici[oó]n|dosimetr[ií]a|salas de radiodiagn[oó]stico/.test(t))return ['dosimetro'];
  }
+ if(sub==='ipe1'&&/prevenci[oó]n de riesgos/.test(t))return ['riesgos'];
  if(sub==='atencion'){
    if(/preparaci[oó]n|higiene|movilizaci[oó]n/.test(t))return ['posiciones','maslow'];
    if(/observaci[oó]n del paciente/.test(t))return ['posiciones'];

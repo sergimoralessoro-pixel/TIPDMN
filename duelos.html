@@ -67,14 +67,22 @@ function selectedSubjects(){
  return chosen;
 }
 function subjectPicker(){
- return '<fieldset style="border:1px solid #3d6275;border-radius:14px;padding:12px;margin:14px 0"><legend style="font-weight:800">🎓 Elige al menos 5 asignaturas</legend><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px">'+allCategories.map(x=>'<label style="display:flex;align-items:center;gap:9px;padding:8px;border:1px solid #3b6073;border-radius:10px;cursor:pointer"><input type="checkbox" data-game-subject value="'+x.id+'" checked> '+x.emoji+' '+esc(x.name)+'</label>').join('')+'</div><p class="muted" id="subject-count">'+allCategories.length+' asignaturas seleccionadas · mínimo 5</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" id="select-all">Seleccionar todas</button><button type="button" class="btn" id="select-five">Seleccionar las 5 primeras</button></div></fieldset>';
+ return '<details id="duel-subject-dropdown" style="border:1px solid #3d6275;border-radius:14px;margin:14px 0;background:rgba(27,55,73,.45)"><summary style="padding:12px;cursor:pointer;list-style-position:inside"><span style="font-weight:800">🎓 Asignaturas</span> <span id="duel-selected-icons" style="display:inline-flex;gap:3px;flex-wrap:wrap;vertical-align:middle;margin-left:6px">'+allCategories.map(x=>'<span title="'+esc(x.name)+'">'+x.emoji+'</span>').join('')+'</span><small id="duel-selected-num" style="display:block;opacity:.75;padding:5px 0 0 20px">'+allCategories.length+' seleccionadas · mínimo 5 · toca para cambiar</small></summary><div style="padding:0 12px 12px"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px">'+allCategories.map(x=>'<label style="display:flex;align-items:center;gap:9px;padding:8px;border:1px solid #3b6073;border-radius:10px;cursor:pointer"><input type="checkbox" data-game-subject value="'+x.id+'" checked> '+x.emoji+' '+esc(x.name)+'</label>').join('')+'</div><p class="muted" id="subject-count">'+allCategories.length+' asignaturas seleccionadas · mínimo 5</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" id="select-all">Seleccionar todas</button><button type="button" class="btn" id="select-five">Seleccionar las 5 primeras</button></div></div></details>';
 }
 function wireSubjectPicker(){
- const inputs=[...document.querySelectorAll('[data-game-subject]')],count=document.getElementById('subject-count');
- const update=()=>{const n=inputs.filter(x=>x.checked).length;count.textContent=n+' asignaturas seleccionadas · mínimo 5';count.style.color=n<5?'#ffb2a8':'';};
+ const inputs=[...document.querySelectorAll('[data-game-subject]')],count=document.getElementById('subject-count'),icons=document.getElementById('duel-selected-icons'),num=document.getElementById('duel-selected-num'),dropdown=document.getElementById('duel-subject-dropdown');
+ const update=()=>{
+  const chosen=inputs.filter(x=>x.checked),n=chosen.length;
+  count.textContent=n+' asignaturas seleccionadas · mínimo 5';
+  count.style.color=n<5?'#ffb2a8':'';
+  num.textContent=n+' seleccionadas · mínimo 5 · toca para cambiar';
+  num.style.color=n<5?'#ffb2a8':'';
+  icons.innerHTML=chosen.map(input=>{const item=allCategories.find(x=>x.id===input.value);return item?'<span title="'+esc(item.name)+'">'+item.emoji+'</span>':''}).join('')||'<span style="opacity:.75">Sin asignaturas</span>';
+ };
  inputs.forEach(x=>x.onchange=update);
  document.getElementById('select-all').onclick=()=>{inputs.forEach(x=>x.checked=true);update()};
  document.getElementById('select-five').onclick=()=>{inputs.forEach((x,i)=>x.checked=i<5);update()};
+ update();
 }
 const palette=['#30c6cf','#517dde','#ad78ce','#f2a854','#4bb894','#df739f','#3c9cca','#adc15c','#c278b9','#2fc7a6','#f18b62','#728bd2','#bd78df','#ddba5b','#44b3ca','#bf80af','#92a5ca'];
 const names=Object.fromEntries(allCategories.map(x=>[x.id,x.name]));

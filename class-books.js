@@ -48,7 +48,20 @@ const englishTitles={
 7:'VT7 · Modal verbs e intensifiers'};
 const engl=[2,3,4,5,6,7].map(v=>chapter('eng-vt'+v+'-full','ingles',englishTitles[v],englishDescriptions[v],
  englishBook.filter(l=>l.title.startsWith('VT'+v+' · ')),'Videotutoría '+v+' de Inglés aportada por el alumno'));
-engl.forEach((book,i)=>{book.questions.push(...(classroomQuestions.english[i+2]||[]));});
+/* Reubicar actividades según el tiempo verbal estudiado, sin alterar los temas VT oficiales. */
+const englishClassroomAllocation={2:[],3:[],4:[],5:[],6:[],7:[]};
+for(const [rawTopic,items] of Object.entries(classroomQuestions.english)){
+ for(const question of items){
+  const s=String(question[0]).toLowerCase();
+  let unit=Number(rawTopic);
+  if(unit===2&&(/past simple|last saturday|yesterday|did not|did you/.test(s)))unit=4;
+  else if(unit===3&&(/last year|last summer/.test(s)))unit=4;
+  else if(unit===3&&(/last summer|last year/.test(s)))unit=4;
+  if(unit===4&&(/past perfect|had lived|had been/.test(s)))unit=5;
+  englishClassroomAllocation[unit].push(question);
+ }
+}
+engl.forEach((book,i)=>{book.questions.push(...englishClassroomAllocation[i+2]);});
 const patientParts=[patientPart1,patientPart2,patientPart3,patientPart4,patientPart5];
 const patientTitles=['TEMA 1 · El sistema de salud','TEMA 2 · Acogida del paciente','TEMA 3 · Comunicación y apoyo psicológico','TEMA 4 · Observación del paciente','TEMA 5 · Preparación, higiene y movilización del paciente'];
 const patientIntros=[
@@ -72,6 +85,7 @@ chapter('forense-vt-3-full','forense','TEMA 3 · Necroidentificación y sucesos 
 forensic.forEach((book,index)=>{book.questions=forensicExamSets[index];});
 forensic[0].questions.push(...classroomQuestions.forensic[0]);
 forensic[1].questions.push(...classroomQuestions.forensic[1]);
+/* La clasificación de Forense conserva la agrupación oficial por VT; las preguntas de laboratorio y toxicología están en Tema 1 y genética/microbiología en Tema 2. */
 const disasterQuestions=[
 ['¿Cuál es la finalidad central de la necroidentificación?',['Establecer identidad de una persona fallecida','Averiguar únicamente la fecha de nacimiento','Detectar exclusivamente intoxicaciones','Determinar siempre una causa penal'],0,'La identidad se establece mediante métodos científicos y comparaciones verificables.'],
 ['En una investigación de víctimas de catástrofe, ¿qué significa DVI?',['Document Visual Inspection','Disaster Victim Identification','Data Verification Initiative','Disease Vector Imaging'],1,'DVI describe procedimientos de identificación de víctimas de desastres.'],

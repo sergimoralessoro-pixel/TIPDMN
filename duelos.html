@@ -37,6 +37,7 @@
 import {subjects,lessons} from './content.js';
 import {augmentLessons,uniqueBank,drawVaried,varyQuestion,rng,conciseGameQuestion} from './quiz-variety.js';
 import {visualQuestionMedia} from './visual-questions.js';
+import {recordGameMistake} from './game-mistakes.js';
 import {expandedLessons} from './extra-content.js';
 import {classStudyBooks} from './class-books.js';
 import {radiationTopics} from './radiation-topics.js';
@@ -113,6 +114,8 @@ function rememberMistake(){
  const key=room.id+':'+l.question_key;
  const existing=savedMistakes();if(existing.some(x=>x.key===key))return;
  const original=bank.find(x=>x.key===l.question_key);if(!original)return;
+ // Guardar también en el Test de fallos de la academia (cuenta Supabase).
+ void recordGameMistake(supa,user,original.key,key);
  const q=conciseGameQuestion(varyQuestion(original.q,rng('duel|'+room.code+'|'+original.key),1));
  const chosen=Number(l.choice);
  const row={key,room:room.id,category:names[original.sub]||original.sub,question:q[0],options:q[1],correct:q[2],choice:Number.isInteger(chosen)&&chosen>=0&&chosen<q[1].length?chosen:-1,explanation:q[3]||'Repasa la opción correcta y su relación con el enunciado.',date:new Date().toISOString()};

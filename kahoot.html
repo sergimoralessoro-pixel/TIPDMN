@@ -46,14 +46,22 @@ function selectedQuizSubjects(){
  return ids;
 }
 function subjectSelector(){
- return '<fieldset style="border:1px solid #3c6177;border-radius:14px;padding:12px;margin:10px 0"><legend style="font-weight:800">📚 Elige las asignaturas que entran en el juego</legend><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:9px">'+quizSubjects.map(s=>'<label style="display:flex;align-items:center;gap:9px;padding:8px;border:1px solid #385d72;border-radius:10px;cursor:pointer"><input data-quiz-subject type="checkbox" value="'+s[0]+'" checked> '+s[2]+' '+safe(s[1])+'</label>').join('')+'</div><p class="muted" id="quiz-subject-count">'+quizSubjects.length+' seleccionadas · mínimo 1</p><button type="button" class="btn" id="quiz-select-all">Todas</button> <button type="button" class="btn" id="quiz-clear">Deseleccionar todas</button></fieldset>';
+ return '<details id="kahoot-subject-dropdown" style="border:1px solid #3c6177;border-radius:14px;margin:10px 0;background:rgba(27,55,73,.45)"><summary style="padding:12px;cursor:pointer;list-style-position:inside"><span style="font-weight:800">📚 Asignaturas</span> <span id="kahoot-selected-icons" style="display:inline-flex;gap:3px;flex-wrap:wrap;vertical-align:middle;margin-left:6px">'+quizSubjects.map(s=>'<span title="'+safe(s[1])+'">'+s[2]+'</span>').join('')+'</span><small id="kahoot-selected-num" style="display:block;opacity:.75;padding:5px 0 0 20px">'+quizSubjects.length+' seleccionadas · toca para cambiar</small></summary><div style="padding:0 12px 12px"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px">'+quizSubjects.map(s=>'<label style="display:flex;align-items:center;gap:9px;padding:8px;border:1px solid #385d72;border-radius:10px;cursor:pointer"><input data-quiz-subject type="checkbox" value="'+s[0]+'" checked> '+s[2]+' '+safe(s[1])+'</label>').join('')+'</div><p class="muted" id="quiz-subject-count">'+quizSubjects.length+' seleccionadas · mínimo 1</p><button type="button" class="btn" id="quiz-select-all">Todas</button> <button type="button" class="btn" id="quiz-clear">Deseleccionar todas</button></div></details>';
 }
 function wireSelector(){
- const checks=[...document.querySelectorAll('[data-quiz-subject]')],indicator=document.getElementById('quiz-subject-count');
- const update=()=>{const n=checks.filter(x=>x.checked).length;indicator.textContent=n+' asignaturas seleccionadas · mínimo 1';indicator.style.color=n===0?'#ffb2a8':'';};
+ const checks=[...document.querySelectorAll('[data-quiz-subject]')],indicator=document.getElementById('quiz-subject-count'),icons=document.getElementById('kahoot-selected-icons'),num=document.getElementById('kahoot-selected-num');
+ const update=()=>{
+  const chosen=checks.filter(x=>x.checked),n=chosen.length;
+  indicator.textContent=n+' asignaturas seleccionadas · mínimo 1';
+  indicator.style.color=n===0?'#ffb2a8':'';
+  num.textContent=n+' seleccionadas · toca para cambiar';
+  num.style.color=n===0?'#ffb2a8':'';
+  icons.innerHTML=chosen.map(input=>{const item=quizSubjects.find(s=>s[0]===input.value);return item?'<span title="'+safe(item[1])+'">'+item[2]+'</span>':''}).join('')||'<span style="opacity:.75">Sin asignaturas</span>';
+ };
  checks.forEach(x=>x.onchange=update);
  document.getElementById('quiz-select-all').onclick=()=>{checks.forEach(x=>x.checked=true);update()};
  document.getElementById('quiz-clear').onclick=()=>{checks.forEach(x=>x.checked=false);update()};
+ update();
 }
 const show=x=>app.innerHTML=x;const err=x=>alert(x);
 const pool=()=>room.question_keys.map(key=>all.find(q=>q.key===key)).filter(Boolean).map((x,i)=>({...x,q:conciseGameQuestion(varyQuestion(x.q,rng('kahoot|'+room.code+'|'+x.key),i%4))}));

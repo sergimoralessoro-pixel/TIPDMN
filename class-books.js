@@ -12,6 +12,7 @@ import {forensicBook} from './forensic-book.js';
 import {forensicExamSets} from './forensic-exams.js';
 import {classroomQuestions} from './classroom-questions-2026.js';
 import {ipe1Book} from './ipe1-book.js';
+import {ipeClassroomExtra} from './ipe-classroom-extra.js';
 import {protectionBookA} from './protection-book-a.js';
 import {protectionBookB} from './protection-book-b.js';
 
@@ -87,6 +88,7 @@ chapter('ipe1-book-1','ipe1','TEMA 1 · Características del sector productivo y
 chapter('ipe1-book-2','ipe1','TEMA 2 · Prevención de riesgos laborales','Identifica peligros, riesgos, consecuencias y medidas de prevención. Estudia riesgos físicos, químicos, biológicos, psicosociales, protección y emergencias.',ipe1Book.filter(l=>l.title.startsWith('Tema 2')),'VT3–VT5 de IPE1: Prevención de riesgos laborales'),
 chapter('ipe1-book-3','ipe1','TEMA 3 · Análisis de las condiciones laborales','Repasa contrato de trabajo, salario, nómina, derechos y deberes, convenio colectivo y protección de Seguridad Social.',ipe1Book.filter(l=>l.title.startsWith('Tema 3')),'VT del Tema 3 y material de IPE1: Condiciones laborales')
 ];
+ipe1.forEach((book,i)=>book.questions.push(...ipeClassroomExtra['t'+(i+1)]));
 const allPR=[...protectionBookA,...protectionBookB];
 const protection=[
 chapter('pr-slides-uf-1','proteccion','BLOQUE 1 · Radiobiología, dosimetría y protección operacional','La radiación ionizante, sus unidades, la interacción con la materia viva, efectos celulares, detectores y medidas de protección del trabajador y del paciente.',allPR.slice(0,11),'Diapositivas VT2 a VT6 de Protección Radiológica'),

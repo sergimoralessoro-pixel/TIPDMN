@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#071320">
 <meta name="robots" content="noindex,nofollow">
 <title>Radiolab Academy · Academia de Imagen</title>
-<link rel="stylesheet" href="./styles.css?v=26">
+<link rel="stylesheet" href="./styles.css?v=29">
 <style>
 #startup{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 80% -15%,#143b53 0%,transparent 45%),#071320;color:#edf6ff;font-family:system-ui,sans-serif}
 #startup .start-card{max-width:680px;width:100%;padding:38px;border-radius:24px;border:1px solid #2a586c;background:#0c2435}
@@ -25,31 +25,57 @@
  </section></div>
 </div>
 <script>
-/* Visible recovery when the module graph fails to load (older browsers/offline/cache). */
 (function(){
- let hadModuleError=false;
- window.addEventListener('error',function(ev){
-  if(ev.target&&ev.target.tagName==='SCRIPT'&&ev.target.type==='module')hadModuleError=true;
- },true);
- setTimeout(function(){
+ let lastFailure='';
+ function showFailure(reason){
   const startup=document.getElementById('startup');
-  if(!startup)return; // The academy rendered correctly.
+  if(!startup)return;
   const card=startup.querySelector('.start-card');
   if(!card)return;
-  let p=document.getElementById('startup-help');
-  if(p)return;
-  p=document.createElement('div');
-  p.id='startup-help';
-  p.innerHTML='<p style="color:#ffd7ac"><strong>La academia está tardando demasiado en cargar.</strong> Puede ser un problema temporal de conexión o de algún archivo.</p><button type="button" id="startup-retry" style="background:#42d8e7;border:0;border-radius:12px;padding:13px 18px;font-weight:800;color:#052336;cursor:pointer">↻ Reintentar carga</button><p style="font-size:13px">Si persiste, prueba desde otra red o navegador y comunica el error.</p>';
-  card.appendChild(p);
-  document.getElementById('startup-retry').onclick=function(){
-   const url=new URL(location.href);
-   url.searchParams.set('retry',String(Date.now()));
-   location.replace(url.href);
-  };
- },12000);
+  lastFailure=String(reason||'Error al descargar o ejecutar un archivo').slice(0,350);
+  let panel=document.getElementById('startup-help');
+  if(!panel){
+   panel=document.createElement('div');
+   panel.id='startup-help';
+   panel.style.marginTop='18px';
+   const title=document.createElement('p');
+   title.style.color='#ffd6b4';
+   title.innerHTML='<strong>⚠️ No se ha podido cargar Radiolab</strong>';
+   const detail=document.createElement('p');
+   detail.id='startup-error-detail';
+   detail.style.cssText='overflow-wrap:anywhere;font-size:13px;opacity:.85';
+   const retry=document.createElement('button');
+   retry.textContent='↻ Reintentar con archivos nuevos';
+   retry.style.cssText='padding:13px 18px;border:0;border-radius:12px;background:#42d8e7;color:#052336;font-weight:800;cursor:pointer';
+   retry.onclick=function(){
+    const u=new URL(location.href);
+    u.searchParams.set('reload',String(Date.now()));
+    location.replace(u.href);
+   };
+   panel.append(title,detail,retry);
+   card.appendChild(panel);
+  }
+  document.getElementById('startup-error-detail').textContent='Detalle: '+lastFailure;
+ }
+ window.radiolabShowBootError=showFailure;
+ window.addEventListener('error',function(e){
+  if(document.getElementById('startup'))lastFailure=e.message||('Error al descargar '+(e.target&&e.target.src||'un recurso'));
+ },true);
+ window.addEventListener('unhandledrejection',function(e){
+  if(document.getElementById('startup'))lastFailure=e.reason&&e.reason.message||String(e.reason||'Error desconocido');
+ });
+ setTimeout(function(){
+  if(document.getElementById('startup'))showFailure(lastFailure||'La carga ha superado los 25 segundos. Puede haber un archivo bloqueado o una conexión lenta.');
+ },25000);
 })();
 </script>
-<script type="module" src="./app.js?v=27"></script>
+<script type="module">
+const reload=new URLSearchParams(location.search).get('reload');
+const version=reload?'29-'+reload:'29';
+import('./app.js?v='+encodeURIComponent(version)).catch(error=>{
+ console.error('Radiolab: error al cargar módulos',error);
+ window.radiolabShowBootError?.(error?.message||String(error));
+});
+</script>
 </body>
 </html>

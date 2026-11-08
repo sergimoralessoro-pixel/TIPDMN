@@ -33,7 +33,17 @@
 .active-duel p{margin:5px 0;font-size:12px}
 .result-banner{background:#15374c;border-radius:12px;padding:12px 16px}
 @media(max-width:560px){main{padding:12px}.card{padding:14px;border-radius:16px}.scoreboard{gap:7px}.player-card{padding:10px}.badge-line{gap:2px}.badge-symbol{font-size:18px}.player-card strong{font-size:13px}.player-counter{font-size:10px}.wheel-icon{font-size:18px}}
-</style></head><body><main><div class="bar"><div class="brand">🩻 RADIO<span>LAB</span> <small style="font-weight:400;font-size:13px">ARENA</small></div><a href="./">← Volver a la academia</a></div><div id="app"><div class="card hero"><h1>🎡 Duelos con ruleta</h1><p>Cargando la arena...</p></div></div></main><script type="module">
+</style></head><body><main><div class="bar"><div class="brand">🩻 RADIO<span>LAB</span> <small style="font-weight:400;font-size:13px">ARENA</small></div><a href="./">← Volver a la academia</a></div><div id="app"><div class="card hero"><h1>🎡 Duelos con ruleta</h1><p>Cargando la arena...</p></div></div></main><script>
+/* If an imported module cannot load, never leave a blank or endless loading screen. */
+setTimeout(function(){
+ const panel=document.getElementById('app');
+ if(!panel)return;
+ const txt=panel.textContent||'';
+ if(!/Cargando la arena|Cargando sala de juego|Cargando la arena\.\.\./i.test(txt))return;
+ panel.innerHTML='<section class="card hero"><h1>⚠️ El juego no ha podido cargar</h1><p>Puede haber fallado algún archivo o la conexión. Prueba a recargar la partida.</p><button id="game-retry" class="btn primary">↻ Reintentar</button><p><a href="./">Volver a la academia</a></p></section>';
+ document.getElementById('game-retry').onclick=function(){location.reload()};
+},12000);
+</script><script type="module">
 import {subjects,lessons} from './content.js';
 import {augmentLessons,uniqueBank,drawVaried,varyQuestion,rng,conciseGameQuestion} from './quiz-variety.js';
 import {visualQuestionMedia} from './visual-questions.js';

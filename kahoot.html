@@ -21,7 +21,17 @@
 @keyframes timer-spin{to{transform:rotate(450deg)}}
 @media(max-width:650px){main{padding:12px}.gridp{gap:9px}.option{min-height:90px;padding:11px 9px;font-size:13px;gap:7px}.option .option-symbol{font-size:21px;min-width:21px}.timer-circle{width:76px;height:76px;flex-basis:76px}.timer-icon{font-size:25px}}
 @media(prefers-reduced-motion:reduce){.option.is-correct,.timer-icon{animation:none}}
-.vote-count{margin-left:auto;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:38px;padding:5px 9px;border:1px solid #ffffff55;border-radius:999px;background:#081c2b88;color:#fff;font-size:15px;font-weight:850}.vote-count::before{content:"👥";margin-right:5px;font-size:13px}.vote-summary{margin-top:13px;color:#b9dce4;font-weight:750}</style></head><body><main><header class="top"><strong class="brand">🩻 RADIO<span style="color:#52d9ea">LAB</span> LIVE</strong><a href="./">← Academia</a></header><div id="app"><section class="card"><h1>Cargando sala de juego…</h1></section></div></main><script type="module">
+.vote-count{margin-left:auto;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;min-width:38px;padding:5px 9px;border:1px solid #ffffff55;border-radius:999px;background:#081c2b88;color:#fff;font-size:15px;font-weight:850}.vote-count::before{content:"👥";margin-right:5px;font-size:13px}.vote-summary{margin-top:13px;color:#b9dce4;font-weight:750}</style></head><body><main><header class="top"><strong class="brand">🩻 RADIO<span style="color:#52d9ea">LAB</span> LIVE</strong><a href="./">← Academia</a></header><div id="app"><section class="card"><h1>Cargando sala de juego…</h1></section></div></main><script>
+/* If an imported module cannot load, never leave a blank or endless loading screen. */
+setTimeout(function(){
+ const panel=document.getElementById('app');
+ if(!panel)return;
+ const txt=panel.textContent||'';
+ if(!/Cargando la arena|Cargando sala de juego|Cargando la arena\.\.\./i.test(txt))return;
+ panel.innerHTML='<section class="card hero"><h1>⚠️ El juego no ha podido cargar</h1><p>Puede haber fallado algún archivo o la conexión. Prueba a recargar la partida.</p><button id="game-retry" class="btn primary">↻ Reintentar</button><p><a href="./">Volver a la academia</a></p></section>';
+ document.getElementById('game-retry').onclick=function(){location.reload()};
+},12000);
+</script><script type="module">
 import {subjects,lessons} from './content.js';
 import {uniqueBank,augmentLessons,varyQuestion,rng,drawVaried,conciseGameQuestion} from './quiz-variety.js';
 import {visualQuestionMedia} from './visual-questions.js';

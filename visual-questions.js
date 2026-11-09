@@ -1,5 +1,6 @@
 /* Láminas vectoriales vinculadas exclusivamente a preguntas de identificación visual. */
 import {additionalVisualQuestions,additionalVisualMedia} from './visual-extended.js?v=32';
+import {vt4Ra2VisualMedia} from './vt4-ra2-visual.js';
 const escapeHtml=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const boneTargets=[
  {target:'epifisis',answer:'Epífisis',x:142,y:62},
@@ -75,6 +76,7 @@ function timeline(){
  return '<g><path d="M58 165H490" stroke="#8abbd5" stroke-width="9" stroke-linecap="round"/><path d="M486 150L508 165L486 180" fill="none" stroke="#8abbd5" stroke-width="8" stroke-linecap="round"/><circle cx="110" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><circle cx="270" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><circle cx="430" cy="165" r="34" fill="#2d7090" stroke="#a6d8ec" stroke-width="6"/><text x="270" y="253" fill="#d7edf4" text-anchor="middle" font-size="15">DIRECCIÓN DEL TIEMPO →</text></g>';
 }
 export function visualQuestionMedia(q){
+ const sourceVisual=vt4Ra2VisualMedia(q);if(sourceVisual)return sourceVisual;
  const extra=additionalVisualMedia(q);if(extra)return extra;
  const m=q?.[5];if(!m||!groups[m.kind])return '';
  const found=groups[m.kind].find(x=>x.target===m.target);if(!found)return '';

@@ -9,13 +9,18 @@ const assetGroups={
  maslow:{file:'maslow.svg',title:'pirámide de Maslow',answers:['Necesidades fisiológicas','Seguridad','Afiliación','Reconocimiento']},
  dosimetro:{file:'dosimetro.svg',title:'protección radiológica',answers:['Fuente radiactiva','Blindaje','Dosímetro personal','Pulsioxímetro']},
  posiciones:{file:'posiciones.svg',title:'posiciones del paciente',answers:['Decúbito supino','Decúbito prono','Fowler','Bipedestación']},
- riesgos:{file:'riesgos-laborales.svg',title:'factores de riesgo laboral',answers:['Ruido (factor físico)','Agente químico','Agente biológico','Factor ergonómico']}
+ riesgos:{file:'riesgos-laborales.svg',title:'factores de riesgo laboral',answers:['Ruido (factor físico)','Agente químico','Agente biológico','Factor ergonómico']},
+ huesolargo:{file:'anatomia-hueso-largo.svg',title:'regiones de un hueso largo',answers:['Epífisis','Metáfisis','Diáfisis','Periostio']},
+ carpo:{file:'anatomia-carpo.svg',title:'huesos del carpo',answers:['Trapecio','Hueso grande','Escafoides','Astrágalo']},
+ tarso:{file:'anatomia-tarso.svg',title:'huesos del tarso',answers:['Astrágalo','Calcáneo','Navicular o escafoides tarsiano','Trapecio']},
+ craneo:{file:'anatomia-craneo.svg',title:'huesos del cráneo lateral',answers:['Hueso frontal','Hueso parietal','Hueso occipital','Vómer']},
+ esternon:{file:'anatomia-esternon.svg',title:'partes del esternón',answers:['Manubrio','Cuerpo del esternón','Apófisis xifoides','Apófisis espinosa']}
 };
 function topicsFor(lesson){
  const sub=lesson.subject, t=String(lesson.title||'').toLowerCase();
  if(sub==='anatomia'){
    if(/localizaci[oó]n|planos|ejes/.test(t))return ['planes'];
-   if(/locomotor|articulaci[oó]n|m[uú]scul/.test(t))return ['articulacion'];
+   if(/locomotor|articulaci[oó]n|m[uú]scul/.test(t))return ['huesolargo','carpo','tarso','craneo','esternon','articulacion'];
    if(/nervioso|sentidos/.test(t))return ['oido'];
  }
  if(sub==='forense'){

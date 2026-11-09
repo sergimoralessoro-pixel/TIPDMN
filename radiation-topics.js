@@ -2,6 +2,7 @@
 import {protectionBookA} from './protection-book-a.js';
 import {protectionBookB} from './protection-book-b.js';
 import {radioprotectionClassroom} from './radioprotection-classroom.js';
+import {detectorEfficiencyProblems} from './detector-efficiency-problems.js';
 const slides=[...protectionBookA,...protectionBookB];
 function make(id,title,intro,from,to,formulas,tables,explain,tip){
  const parts=slides.slice(from,to);
@@ -56,3 +57,15 @@ make('pr-t9','TEMA 9 · Emergencias, control y garantía de calidad','Procedimie
 
 /* Actividades de clase incorporadas a cada unidad de Protección Radiológica. */
 radiationTopics.forEach((topic,i)=>{const qs=radioprotectionClassroom['t'+(i+1)]||[];topic.questions.push(...qs);});
+/* Banco común: usado por tests de tema, tests mixtos, Kahoot y Preguntados. */
+const detectorTopic=radiationTopics.find(topic=>topic.id==='pr-t4');
+if(!detectorTopic)throw new Error('No se encontró el tema 4 de Protección Radiológica');
+detectorTopic.questions.push(...detectorEfficiencyProblems);
+detectorTopic.formulas.push(
+ ['Eficiencia extrínseca geométrica','EE = (rayos que llegan al detector / rayos emitidos) × 100','Se expresa en %. En estos ejercicios mide la proporción de los emitidos que alcanza el detector.'],
+ ['Eficiencia intrínseca','EI = (rayos que generan señal / rayos que llegan al detector) × 100','Se expresa en %. Mide la fracción de partículas incidentes que se detecta.']
+);
+detectorTopic.sections.push(
+ ['Ejercicios de eficiencia de detectores','En este apartado hay 30 problemas: 15 de eficiencia extrínseca y 15 de eficiencia intrínseca. Primero identifica qué cantidad va en el numerador y cuál en el denominador. EE = llegan / emitidos × 100; EI = detectados / llegan × 100. Comprueba que el resultado esté entre 0 % y 100 %.','EE: llegan frente a emitidos. EI: detectados frente a llegan.']
+);
+

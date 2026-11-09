@@ -3,6 +3,8 @@ import {protectionBookA} from './protection-book-a.js';
 import {protectionBookB} from './protection-book-b.js';
 import {radioprotectionClassroom} from './radioprotection-classroom.js';
 import {detectorEfficiencyProblems} from './detector-efficiency-problems.js';
+import {vt4Ra2Questions} from './vt4-ra2-questions.js';
+import {vt4Ra2VisualQuestions} from './vt4-ra2-visual.js';
 const slides=[...protectionBookA,...protectionBookB];
 function make(id,title,intro,from,to,formulas,tables,explain,tip){
  const parts=slides.slice(from,to);
@@ -69,3 +71,18 @@ detectorTopic.sections.push(
  ['Ejercicios de eficiencia de detectores','En este apartado hay 30 problemas: 15 de eficiencia extrínseca y 15 de eficiencia intrínseca. Primero identifica qué cantidad va en el numerador y cuál en el denominador. EE = llegan / emitidos × 100; EI = detectados / llegan × 100. Comprueba que el resultado esté entre 0 % y 100 %.','EE: llegan frente a emitidos. EI: detectados frente a llegan.']
 );
 
+
+/* VT4 RA2 (primera parte), páginas 1-31: conceptos, lesiones y repaso visual. */
+for(const id of ['pr-t2','pr-t3']){
+ const topic=radiationTopics.find(x=>x.id===id);
+ if(!topic)throw new Error('Falta el tema de radiobiología '+id);
+ topic.questions.push(...vt4Ra2Questions[id]);
+}
+radiationTopics.find(x=>x.id==='pr-t2').questions.push(...vt4Ra2VisualQuestions);
+radiationTopics.find(x=>x.id==='pr-t2').sections.push(
+ ['VT4 RA2: etapas física, química y biológica','La etapa física comprende la transferencia de energía, excitación e ionización. Entre las interacciones de los fotones están fotoeléctrico (absorción completa), Compton (fotón dispersado con menor energía) y producción de pares (electrón y positrón; umbral aproximado de 1,022 MeV). Después, la etapa química puede afectar directamente a moléculas críticas o generar radicales por radiólisis del agua, seguidos de respuestas biológicas.','Física → química → biológica. Fotoeléctrico: absorción; Compton: dispersión; pares: electrón + positrón.']
+);
+radiationTopics.find(x=>x.id==='pr-t3').sections.push(
+ ['VT4 RA2: estructura, lesión y reparación del ADN','El ADN es una doble hélice de nucleótidos con azúcar, fosfato y base. La radiación puede modificar bases y originar lesiones de una o dos hebras; estas últimas son especialmente complejas de reparar. Enzimas celulares pueden reparar muchas lesiones, pero otras comprometen la viabilidad o la reproducción de la célula. La presentación distingue muerte celular inmediata y diferida tras intentos de división.','Rotura de una hebra: habitualmente más reparable; rotura doble: lesión compleja.'],
+ ['VT4 RA2: dosis efectiva de un solo órgano','En el ejercicio de la presentación, la contribución del hígado a la dosis efectiva se calcula multiplicando la dosis equivalente de 10 Sv por el factor de ponderación tisular del hígado de 0,04: E = 0,4 Sv. Es un ejemplo matemático de protección radiológica.','E = H del órgano × factor tisular; 10 × 0,04 = 0,4 Sv.']
+);

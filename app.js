@@ -1,6 +1,6 @@
 import { subjects,lessons } from './content.js?v=32';
 import {drawVaried,uniqueBank,varyQuestion,shuffled,augmentLessons} from './quiz-variety.js?v=32';
-import {visualQuestionMedia} from './visual-questions.js?v=32';
+import {visualQuestionMedia} from './visual-questions.js?v=34';
 import {hasPractice,generatePractice} from './practice-problems.js?v=32';
 import {expandedLessons} from './extra-content.js?v=32';
 import {englishBook} from './english-book.js?v=32';
@@ -12,7 +12,7 @@ import {patientPart5} from './patient-part5.js?v=32';
 import {forensicBook} from './forensic-book.js?v=32';
 import {ipe1Book} from './ipe1-book.js?v=32';
 import {classStudyBooks} from './class-books.js?v=32';
-import {radiationTopics} from './radiation-topics.js?v=32';
+import {radiationTopics} from './radiation-topics.js?v=34';
 import {additionalDriveBooks} from './additional-drive-books.js?v=32';
 import {renderStudyBook} from './book-reader.js?v=32';
 import {anatomyBookA} from './anatomy-book-a.js?v=32';

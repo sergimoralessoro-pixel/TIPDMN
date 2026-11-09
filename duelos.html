@@ -46,15 +46,15 @@ setTimeout(function(){
 </script><script type="module">
 import {subjects,lessons} from './content.js';
 import {augmentLessons,uniqueBank,drawVaried,varyQuestion,rng,conciseGameQuestion} from './quiz-variety.js';
-import {visualQuestionMedia} from './visual-questions.js';
+import {visualQuestionMedia} from './visual-questions.js?v=32';
 import {recordGameMistake} from './game-mistakes.js';
 import {expandedLessons} from './extra-content.js';
-import {classStudyBooks} from './class-books.js';
-import {radiationTopics} from './radiation-topics.js?v=30';
+import {classStudyBooks} from './class-books.js?v=32';
+import {radiationTopics} from './radiation-topics.js?v=32';
 import {additionalDriveBooks} from './additional-drive-books.js?v=2';
-import {anatomyBookA} from './anatomy-book-a.js';
-import {anatomyBookB} from './anatomy-book-b.js';
-import {anatomyBookC} from './anatomy-book-c.js';
+import {anatomyBookA} from './anatomy-book-a.js?v=32';
+import {anatomyBookB} from './anatomy-book-b.js?v=32';
+import {anatomyBookC} from './anatomy-book-c.js?v=32';
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from './config.js';
 const el=document.getElementById('app'),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[c]));
 const course=[...anatomyBookA,...anatomyBookB,...anatomyBookC,...radiationTopics,...classStudyBooks.filter(x=>x.subject!=='proteccion'),...additionalDriveBooks,...lessons.filter(x=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(x.subject)),...expandedLessons.filter(x=>!['anatomia','ingles','atencion','forense','ipe1','proteccion',...additionalDriveBooks.map(b=>b.subject)].includes(x.subject))];

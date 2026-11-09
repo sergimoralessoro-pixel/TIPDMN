@@ -2,6 +2,7 @@
  * Cada VT/tema es una unidad de lectura única y sus preguntas proceden exclusivamente
  * de los apartados de esa unidad. Los capítulos son resúmenes originales, no copias de PDFs. */
 import {englishBook} from './english-book.js';
+import {englishConditionalsExtra} from './english-conditionals-extra.js';
 import {exam2026TopicQuestions} from './exam-2026-topic-questions.js';
 import {patient2026Questions} from './patient-2026-questions.js';
 import {patientPart1} from './patient-part1.js';
@@ -139,7 +140,7 @@ protection[2].sections.push(
 ipe1.forEach(x=>x.sourceLabel='Síntesis original basada en el índice y el material del libro IPE1 disponible en Drive; contraste de cada diapositiva de clase pendiente.');
 engl.forEach(x=>x.sourceLabel='Guía de práctica organizada según videotutorías de Inglés 2–7 facilitadas por el alumno; ejemplos originales pendientes de contraste pormenorizado con los PDF.');
 patient.forEach(x=>x.sourceLabel='Guía de práctica organizada según los temas 1–5 de las videotutorías de Atención al Paciente; pendiente de cotejo pormenorizado de diapositivas.');
-export const classStudyBooks=[...engl,...patient,...forensic,...ipe1,...protection];
+export const classStudyBooks=[...engl,englishConditionalsExtra,...patient,...forensic,...ipe1,...protection];
 /* Add the supplied practice evaluations to their matching lessons. */
 for(const topic of classStudyBooks){
  const checked=[...(exam2026TopicQuestions[topic.id]||[]),...(patient2026Questions[topic.id]||[])];

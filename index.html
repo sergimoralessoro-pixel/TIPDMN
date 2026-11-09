@@ -71,7 +71,7 @@
 </script>
 <script type="module">
 const reload=new URLSearchParams(location.search).get('reload');
-const version=reload?'34-'+reload:'34';
+const version=reload?'35-'+reload:'35';
 import('./app.js?v='+encodeURIComponent(version)).catch(error=>{
  console.error('Radiolab: error al cargar módulos',error);
  window.radiolabShowBootError?.(error?.message||String(error));

@@ -1,5 +1,5 @@
 /* Láminas vectoriales vinculadas exclusivamente a preguntas de identificación visual. */
-import {additionalVisualQuestions,additionalVisualMedia} from './visual-extended.js';
+import {additionalVisualQuestions,additionalVisualMedia} from './visual-extended.js?v=32';
 const escapeHtml=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const boneTargets=[
  {target:'epifisis',answer:'Epífisis',x:142,y:62},
